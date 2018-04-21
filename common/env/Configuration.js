@@ -1,11 +1,12 @@
 import { Objects } from "../utils/Objects";
 import { Hardware } from "./Hardware";
+import { root } from "./Root";
 
 export class Configuration {
     static data = {};
     static env()
     {
-        if(!Configuration.get('app.env'))
+        if(!Configuration.has('app.env'))
         {
             let env = "production";
             if(Hardware.isNode())
@@ -21,16 +22,19 @@ export class Configuration {
                     }
                 }else
                 {
+                    console.log('node_env');
                     env = process.env.NODE_ENV;
                 }
             }
-            Configuration.set('app.env', env);
+            Configuration.set('app.env', env); 
         }
+        console.log(Configuration.data);
+        console.log( Configuration.get('app.env'));
         return Configuration.get('app.env');
     }
     static isDebug()
     {
-        return Configuration.env() == "DEBUG";
+        return Configuration.env() == "DEBUG" || Configuration.env() == "local";
     }
     static merge(key, data) {
         if (typeof key == "string") {
@@ -50,6 +54,10 @@ export class Configuration {
         return Configuration.data[key] != undefined;
     }
     static get(key, defaultValue = null) {
+        if(!key)
+        {
+            return Objects.clone(Configuration.data);
+        }
         let  keys = key.split('.');
         //not last
         key = keys.pop();
@@ -60,6 +68,7 @@ export class Configuration {
             {
                 current[k] = {};
             } 
+            console.log(k,current[k]);
             if(typeof current[k] != "object")
             {
                 current[k] = {}; 
@@ -120,5 +129,5 @@ export class Configuration {
         Configuration.data = data;
     }
 }
-
-export const config = Configuration;
+export const config = Configuration.get;
+root.config = config;
