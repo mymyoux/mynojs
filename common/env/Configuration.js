@@ -22,14 +22,11 @@ export class Configuration {
                     }
                 }else
                 {
-                    console.log('node_env');
                     env = process.env.NODE_ENV;
                 }
             }
             Configuration.set('app.env', env); 
         }
-        console.log(Configuration.data);
-        console.log( Configuration.get('app.env'));
         return Configuration.get('app.env');
     }
     static isDebug()
@@ -68,14 +65,13 @@ export class Configuration {
             {
                 current[k] = {};
             } 
-            console.log(k,current[k]);
             if(typeof current[k] != "object")
             {
                 current[k] = {}; 
             }
             current = current[k];
         }
-        return Configuration.data[key] != undefined ? Configuration.data[key] : defaultValue;
+        return current[key] != undefined ? current[key] : defaultValue;
     }
     static set(key, value) {
         let keys = key.split('.');

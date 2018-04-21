@@ -9,7 +9,7 @@ import Login from "../components/Login.vue";
 
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["api", "router", "user", "selector", "app", "vue"];
+    _steps=["api", "configuration", "router", "user", "selector", "app", "vue"];
     _router =  null;
     _selector =  null;
     _app =  null;
@@ -31,6 +31,13 @@ export class Application extends StepHandler(CoreObject)
         console.log('next');
         api.request().path('test/test').param("test","ok").then((data)=>{console.log('resolve', data);},(error)=>{console.log('error', error);})
         console.log('next');
+    }
+    configuration()
+    {
+        return api.request().path('configuration/get').then((data)=>
+        {
+            console.log(data);  
+        })
     }
     router()
     {

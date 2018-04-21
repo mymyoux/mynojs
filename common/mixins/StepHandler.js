@@ -1,3 +1,6 @@
+import { Configuration } from "../env/Configuration";
+import colors from "colors";
+import { Classes } from "../utils/Classes";
 export function StepHandler(parent)
 {
     let steps = 0;
@@ -27,6 +30,10 @@ export function StepHandler(parent)
             if(typeof this[step] != "function")
             {
                 throw new Error('Error step '+step+' is not a function ', this);
+            }
+            if(Configuration.isDebug())
+            {
+                console.log(colors.gray(Classes.getName(this))+"["+colors.red('step')+"]: "+step);
             }
             let result = this[step]();
             if(!(result instanceof Promise))

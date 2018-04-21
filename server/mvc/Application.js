@@ -3,7 +3,7 @@ import { StepHandler } from "../../common/mixins/StepHandler";
 
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=[];
+    _steps=["server"];
     async boot()
     {
        await super.boot();
@@ -12,6 +12,10 @@ export class Application extends StepHandler(CoreObject)
     booted()
     {
         console.log('app booted');
+    }
+    server()
+    {
+        console.log('server');
     }
     
 }
