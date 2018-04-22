@@ -1,3 +1,6 @@
 {
-    "controllers":"main/controllers"
+    /**
+    * Controller's folder
+    */
+    "controllers":source_path("main/controllers")
 }

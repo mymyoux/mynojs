@@ -25,3 +25,6 @@ global.view_path = function (folder) {
 global.public_path = function (folder) {
     return base_path(path.join('public', folder ? folder : ""));
 };
+global.source_path = function (folder) {
+    return base_path(path.join('src', folder ? folder : ""));
+};

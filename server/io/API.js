@@ -1,6 +1,6 @@
 import { Objects } from "../../common/utils/Objects";
 import { Strings } from "../../common/utils/Strings";
-
+import path from "path";
 export class API
 {
 
@@ -24,9 +24,8 @@ export class API
         }
         var parts = name.split("/");
         //var cls = global.requirejs('main/controllers' + name)[parts[parts.length - 1]];
-        console.log('main/controllers/' + Strings.Camel(parts[0]));
         let className = Strings.Camel(parts[0]);
-        var cls = require(app_path('src/main/controllers/' +className))[className];//[parts[parts.length - 1]];
+        var cls = require(source_path(path.join(config('api.controllers'),className)))[className];//[parts[parts.length - 1]];
         this._controllers[name] = new cls();
         let boot;
         try{

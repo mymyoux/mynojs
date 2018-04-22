@@ -1,10 +1,11 @@
 import { Configuration } from '../../common/env/Configuration';
 import colors from "colors";
+import { JSONLoader } from '../utils/JSONLoader';
 const fs = require('fs');
 const path = require('path');
 export class ConfigurationLoader {
     boot() {
-        return new Promise((resolve, reject)=>
+        return new Promise(async (resolve, reject)=>
     {
 
         try{
@@ -17,27 +18,31 @@ export class ConfigurationLoader {
             let config = {}
             //default config
             let corePath = path.join(__dirname,'../../config');
-            fs.readdirSync(corePath).filter(file => {
+            await fs.readdirSync(corePath).filter(file => {
                 return path.extname(file) == ".json";
-            }).forEach((file) => {
-                this.mergeWithDefaultOptions(file.substring(0, file.length - path.extname(file).length), config, JSON.parse(fs.readFileSync(path.join(corePath, file), 'utf8')));
+            }).forEach(async (file) => {
+                let data =  await JSONLoader.asJavascriptFile(path.join(corePath, file));
+                this.mergeWithDefaultOptions(file.substring(0, file.length - path.extname(file).length), config, data);
             });
 
             let globalConfigPath = storage_path("config.json");
-            let globalConfig = fs.existsSync(globalConfigPath)?JSON.parse(fs.readFileSync(globalConfigPath, 'utf8')):{};
+            let globalConfig = fs.existsSync(globalConfigPath)?await JSONLoader.asJavascriptFile(globalConfigPath):{};
             this.mergeWithDefaultOptions(null, config, globalConfig);
             
             let globalPath = config_path();
-            fs.readdirSync(globalPath).filter(file => {
+            await fs.readdirSync(globalPath).filter(file => {
                 return path.extname(file) == ".json";
-            }).forEach((file) => {
-                this.mergeWithDefaultOptions(file.substring(0, file.length - path.extname(file).length), config, JSON.parse(fs.readFileSync(path.join(globalPath, file), 'utf8')));
+            }).forEach(async (file) => {
+                let data =  await JSONLoader.asJavascriptFile(path.join(globalPath, file));
+                this.mergeWithDefaultOptions(file.substring(0, file.length - path.extname(file).length), config, data);
             });
-            this.mergeWithDefaultOptions(null, config, JSON.parse(fs.readFileSync(localPath, 'utf8')));
+
+            
+            this.mergeWithDefaultOptions(null, config,await JSONLoader.asJavascriptFile(localPath));
 
 
             Configuration.readExternal(config);
-            console.log(config);
+            console.log("CONFIG",config);
             resolve();
         }catch(error)
         {
@@ -45,6 +50,12 @@ export class ConfigurationLoader {
             reject();
         }
     });
+    }
+    loadFileData(path)
+    {
+        let data = "return "+fs.readFileSync(path, 'utf8');
+        let result = new Function(data);
+        return result();
     }
     mergeWithDefaultOptions(name, config, default_options) {
         if (name) {
