@@ -44,6 +44,15 @@
             text = text.substring(0, 1).toLowerCase() + text.substring(1);
             return text;
         }
+        static Camel(text, delimiter = "-|_") {
+            if (!text) {
+                return text;
+            }
+            var reg = new RegExp(delimiter, "g");
+            text = Strings.capitalizeAllWords(text.replace(reg, " "));
+            text = text.replace(/ /g, "");
+            return text;
+        }
         static uncamel(text, delimiter = "_") {
             if (!text) {
                 return text;

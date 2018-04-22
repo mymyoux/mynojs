@@ -14,10 +14,10 @@ global.storage_path = function (folder) {
     return app_path(path.join('storage', folder ? folder : ""));
 };
 global.config_path = function (folder) {
-    return storage_path(path.join('config', folder ? folder : ""));
+    return app_path(path.join('config', folder ? folder : ""));
 };
 global.certificates_path = function (folder) {
-    return storage_path(path.join('certificates', folder ? folder : ""));
+    return app_path(path.join('certificates', folder ? folder : ""));
 };
 global.view_path = function (folder) {
     return base_path(path.join('views', folder ? folder : ""));

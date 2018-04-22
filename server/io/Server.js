@@ -8,19 +8,49 @@ const colors = require('colors');
 import { URI } from '../../common/utils/URI';
 import { CoreObject } from '../../common/core/CoreObject';
 import { StepHandler } from '../../common/mixins/StepHandler';
+import { Classes } from '../../common/utils/Classes';
+import { Strings } from '../../common/utils/Strings';
 export class Server extends StepHandler(CoreObject){
-    _steps = [""];
+    _steps = ["listeners"];
+    _listeners = {};
     constructor() {
         super();
         this._controllers = {};
+    }
+    listener(listener)
+    {
+        let name = Strings.uncamel(Classes.getName(listener));
+        this._listeners[name] = listener;
+    }
+    async listeners()
+    {
+        for(let listener of Object.values(this._listeners))
+        {
+            await listener.boot();
+        }
+    }
+    async listen()
+    {
+        for(let listener of Object.values(this._listeners))
+        {
+            await listener.listen();
+        }
     }
     config(options) {
         this._options = options;
         console.log(this._options);
     }
+    get expressApp()
+    {
+        return this._listeners['express'].app;
+    }
+    get expressServer()
+    {
+        return this._listeners['express'].expressServer;
+    }
     boot2() {
-        this._app = express();
-        this._app.use(cors());
+        // this._app = express();
+        // this._app.use(cors());
         let options = {
             key: fs.readFileSync(certificates_path(config('server.express.key')), 'utf8'),
             cert: fs.readFileSync(certificates_path(config('server.express.cert')), 'utf8')
