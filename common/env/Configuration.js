@@ -48,7 +48,27 @@ export class Configuration {
         }
     }
     static has(key) {
-        return Configuration.data[key] != undefined;
+        if(!key)
+        {
+            return false;
+        }
+        let  keys = key.split('.');
+        //not last
+        key = keys.pop();
+        let current = Configuration.data;
+        for(var k of keys)
+        {
+            if(current[k] == null)
+            {
+                current[k] = {};
+            } 
+            if(typeof current[k] != "object")
+            {
+                current[k] = {}; 
+            }
+            current = current[k];
+        }
+        return current[key] != undefined;
     }
     static get(key, defaultValue = null) {
         if(!key)
@@ -125,5 +145,20 @@ export class Configuration {
         Configuration.data = data;
     }
 }
-export const config = Configuration.get;
+export const config = function(key, value)
+{
+    if(value != undefined)
+    {
+        return Configuration.set(key, value);
+    }
+    return Configuration.get(key);
+}
+//add Configuration methods to config
+for(let key of Object.getOwnPropertyNames(Configuration))
+{
+    if(typeof Configuration[key] == "function")
+    {
+        config[key] = Configuration[key];
+    }
+}
 root.config = config;

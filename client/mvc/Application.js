@@ -9,31 +9,29 @@ import Login from "../components/Login.vue";
 
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["api", "configuration", "router", "user", "selector", "app", "vue"];
+    _steps=["preconfig","api", "configuration", "router", "user", "selector", "app", "vue"];
     _router =  null;
     _selector =  null;
     _app =  null;
     async boot()
     {
+        console.log('app loading');
        await super.boot();
        this.booted();
     }
+    preconfig()
+    {
+        
+    }
     api()
     {
-        API.register({baseUrl:'http://yb.local/'});
-        API.register("v2",{});
-
-        api.boot();
-        api.instance("v2").boot();
-        console.log('api', api);
-        window["api"] = api;
-        api.request().path('test/test').param("test","ok").then((data)=>{console.log('resolve', data);},(error)=>{console.log('error', error);})
-        console.log('next');
-        api.request().path('test/test').param("test","ok").then((data)=>{console.log('resolve', data);},(error)=>{console.log('error', error);})
-        console.log('next');
+        console.log('api');
+        API.register({baseUrl:window.location.origin});
+        return api.boot();
     }
     configuration()
     {
+        console.log('configuration');
         return api.request().path('configuration/get').then((data)=>
         {
             console.log(data);  

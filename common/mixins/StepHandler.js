@@ -1,6 +1,7 @@
 import { Configuration } from "../env/Configuration";
 import colors from "colors";
 import { Classes } from "../utils/Classes";
+import { Hardware } from "../env/Hardware";
 export function StepHandler(parent)
 {
     let steps = 0;
@@ -17,6 +18,7 @@ export function StepHandler(parent)
         }
         steps()
         {
+            console.log('step', this._steps);
             if(!this._steps[steps])
             {
                 //end
@@ -33,7 +35,19 @@ export function StepHandler(parent)
             }
             if(Configuration.isDebug())
             {
-                console.log(colors.gray(Classes.getName(this))+"["+colors.red('step')+"]: "+step);
+                console.log('debug');
+                if(Hardware.isNode())
+                {
+                    console.log('node');
+                    console.log(colors.gray(Classes.getName(this))+"["+colors.red('step')+"]: "+step);
+                }else{
+                    
+                    console.log('pas node');
+                    console.log(Classes.getName(this)+"["+'step'+"]: "+step);
+                }
+            }else
+            {
+                console.log('not debug');
             }
             let result = this[step]();
             if(!(result instanceof Promise))

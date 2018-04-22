@@ -1,6 +1,7 @@
 import { Objects } from "../../common/utils/Objects";
 import { Strings } from "../../common/utils/Strings";
 import path from "path";
+import fs from "fs";
 export class API
 {
 
@@ -25,7 +26,19 @@ export class API
         var parts = name.split("/");
         //var cls = global.requirejs('main/controllers' + name)[parts[parts.length - 1]];
         let className = Strings.Camel(parts[0]);
-        var cls = require(source_path(path.join(config('api.controllers'),className)))[className];//[parts[parts.length - 1]];
+        let controllerPath = path.join(config('api.controllers'),className);
+        let file = controllerPath+".js";
+        if(!fs.existsSync(file))
+        {
+            console.log('path doesnt exist');
+            controllerPath = path.join(__dirname, "../controllers", className);
+        }else
+        {
+
+            console.log('path  exist');
+        }
+        console.log(controllerPath);
+        var cls = require(controllerPath)[className];//[parts[parts.length - 1]];
         this._controllers[name] = new cls();
         let boot;
         try{
