@@ -33,6 +33,14 @@ export class Configuration {
     {
         return Configuration.env() == "DEBUG" || Configuration.env() == "local";
     }
+    static isLocal()
+    {
+        return this.env() == "local";
+    }
+    static isProduction()
+    {
+        return this.env() == "production";
+    }
     static merge(key, data) {
         if (typeof key == "string") {
             if (Configuration.data[key]) {
