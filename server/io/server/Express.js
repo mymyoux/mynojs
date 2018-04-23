@@ -53,7 +53,7 @@ export class Express extends StepHandler(CoreObject)
     }
     async onRequest(request, result) {
         let path = request.path.substring(1);
-        api().path(path).execute().then((data)=>
+        api().path(path).sender(request).execute().then((data)=>
         {
             result.setHeader('Content-Type', 'application/json');
             result.send(JSON.stringify({

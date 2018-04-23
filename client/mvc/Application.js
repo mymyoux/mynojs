@@ -56,8 +56,12 @@ export class Application extends StepHandler(CoreObject)
     {
         //throw new Error('you must override Application#routes');
         return [{
-            path:"/",
+            path:"/debug",
             name:"debug",
+            component:Debug
+        },{
+            path:"/",
+            name:"debughome",
             component:Debug
         },
         {

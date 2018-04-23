@@ -8,6 +8,7 @@ export class API
     _path = null;
     _params = {};
     _user = null;
+    _sender = null;
     _controllers = {};
     path(path)
     {
@@ -17,6 +18,11 @@ export class API
     user(user)
     {
         this._user = user;
+        return this;
+    }
+    sender(sender)
+    {
+        this._sender = sender;
         return this;
     }
     async loadController(name) {
@@ -65,7 +71,9 @@ export class API
     params(params)
     {
         this._params = Objects.merge(this._params, params);
+        return this;
     }
+
     execute()
     {
         return new Promise(async (resolve, reject)=>
@@ -102,7 +110,7 @@ export class API
                 return reject({ lineNumber: 0, fileName: "main", message: 'no action:' + controller + '#' + action + '()' }, true);
             }
             try {
-                var resultAPI = this._controllers[controller][action](user, this._params);
+                var resultAPI = this._controllers[controller][action](user, this._params, this._sender);
             }
             catch (error) {
                 return reject(error, true);

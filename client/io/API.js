@@ -1,6 +1,7 @@
 import { CoreObject } from "../../common/core/CoreObject";
 import { json } from "./api/json";
 import { Buffer } from "../../common/buffer/Buffer";
+import { Stream } from "../../common/io/Stream";
 
 export class API extends CoreObject
 {
@@ -132,6 +133,15 @@ export class API extends CoreObject
             {
                 return Promise.reject(request.exception);
             }
+            if(request.data && request.data.streamID !== undefined)
+            {
+                //stream;
+                let stream = new Stream((type, data, answerID)=>
+                {
+                    this._config.adapter.sendStream(stream, type, data, answerID);
+                }, request.data.streamID);
+                return stream;
+            }   
             return request.data;
         });
     }
@@ -194,6 +204,11 @@ class Request
     {
         console.log("request then");
        return this._api.load(this).then(resolve, reject);
+    }
+    stream(resolve, reject)
+    {
+        console.log("request then");
+       return this._api.stream(this).then(resolve, reject);
     }
 
     apidata(value)

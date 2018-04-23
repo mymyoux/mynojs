@@ -24,7 +24,6 @@ export class VueComponent extends Vue
  */
 export function Event(event)
 {
-    
     return function(target, key, descriptor)
     {
         if(!event)
