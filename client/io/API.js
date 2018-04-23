@@ -66,7 +66,6 @@ export class API extends CoreObject
 
         this._config.adapter.config(this._config);
 
-        return this;
     }
     _getBufferKey(request)
     {

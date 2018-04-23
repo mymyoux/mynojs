@@ -6,6 +6,7 @@ import VueRouter from "vue-router";
 import Vue from "vue";
 import Debug from "../components/Debug.vue";
 import Login from "../components/Login.vue";
+import { Configuration } from "../../common/env/Configuration";
 
 export class Application extends StepHandler(CoreObject)
 {
@@ -25,16 +26,14 @@ export class Application extends StepHandler(CoreObject)
     }
     api()
     {
-        console.log('api');
         API.register({baseUrl:window.location.origin});
         return api.boot();
     }
     configuration()
     {
-        console.log('configuration');
         return api.request().path('configuration/get').then((data)=>
         {
-            console.log(data);  
+            Configuration.merge(data);
         })
     }
     router()
