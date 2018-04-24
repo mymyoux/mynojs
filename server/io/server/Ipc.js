@@ -1,7 +1,8 @@
 import { CoreObject } from "../../../common/core/CoreObject";
 import { StepHandler } from "../../../common/mixins/StepHandler";
 
-import {ipcMain} from "electron";
+import electron from "../../electron/Electron";
+const ipcMain = electron.ipcMain;
 import { api } from "../API";
 import { Stream } from "../../../common/io/Stream";
 

@@ -1,6 +1,6 @@
 import { adapter } from "./adapter";
 //import electron from "electron";
-const {ipcRenderer} = window.require('electron')
+const {ipcRenderer} = window.require?window.require('electron'):{};
 import axios from "axios";
 import { Maths } from "../../../common/utils/Maths";
 import { Stream } from "../../../common/io/Stream";
