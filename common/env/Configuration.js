@@ -31,15 +31,15 @@ export class Configuration {
     }
     static isDebug()
     {
-        return Configuration.env() == "DEBUG" || Configuration.env() == "local";
+        return Configuration.env() == "DEBUG" || Configuration.isLocal();
     }
     static isLocal()
     {
-        return this.env() == "local";
+        return ~this.env().indexOf('local');
     }
     static isProduction()
     {
-        return this.env() == "production";
+        return ~this.env().indexOf('production');
     }
     static merge(key, data) {
         if (typeof key == "string") {

@@ -1,7 +1,12 @@
 var path = require("path");
+import {Hardware} from "../../common/env/Hardware";
 
 global.base_path = function (folder) {
     var p = path.resolve(path.resolve());
+    if(Hardware.isElectron())
+    {
+        p = require('electron').app.getAppPath();
+    }
     if (folder) {
         p = path.resolve(p, folder);
     }
@@ -28,3 +33,6 @@ global.public_path = function (folder) {
 global.source_path = function (folder) {
     return base_path(path.join('src', folder ? folder : ""));
 };
+
+console.log('app_path:'+app_path());
+console.log('config_path:'+config_path());

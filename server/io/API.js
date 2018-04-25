@@ -32,6 +32,7 @@ export class API
         var parts = name.split("/");
         //var cls = global.requirejs('main/controllers' + name)[parts[parts.length - 1]];
         let className = Strings.Camel(parts[0]);
+        console.log('Controller path:'+config('api.controllers'));
         let controllerPath = path.join(config('api.controllers'),className);
         let file = controllerPath+".js";
         if(!fs.existsSync(file))

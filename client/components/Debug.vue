@@ -1,5 +1,8 @@
 <template>
   <div class="debug">
+            <li> 
+                {{env}}
+            </li>
             <li v-if="isElectron"> 
                 electron {{electronVersion}}
                 node {{nodeVersion}}
@@ -23,6 +26,7 @@
 import {VueComponent, Component, Prop, Watch, Emit} from "../mvc/VueComponent";
 import Vue from 'vue';
 import {Hardware} from "../../common/env/Hardware";
+import {Configuration} from "../../common/env/Configuration";
 import {streamStats} from "../../common/io/Stream";
 import {Auth} from "../mvc/Auth";
 @Component
@@ -30,7 +34,7 @@ export default class Debug extends VueComponent
 {
     data()
     {
-        return {...Hardware.toObject(), user:Auth.user(), streamStats };
+        return {...Hardware.toObject(), user:Auth.user(),'env':Configuration.env(), streamStats };
     }
 }
 </script>

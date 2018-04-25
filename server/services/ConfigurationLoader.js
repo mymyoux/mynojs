@@ -17,7 +17,7 @@ export class ConfigurationLoader {
             }
             let config = {}
             //default config
-            let corePath = path.join(__dirname,'../../config');
+            let corePath = source_path('myno/config');//(path.join(__dirname,'../../config');
             await fs.readdirSync(corePath).filter(file => {
                 return path.extname(file) == ".json";
             }).forEach(async (file) => {

@@ -13,7 +13,10 @@ export class Application extends StepHandler(CoreObject)
     }
     configuration()
     {
-        return configurationLoader.boot();
+        return configurationLoader.boot().then(()=>
+        {
+                console.log("Environment: "+Configuration.env());
+        })
     }
     booted()
     {
