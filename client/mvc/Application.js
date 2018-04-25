@@ -7,10 +7,11 @@ import Vue from "vue";
 import Debug from "../components/Debug.vue";
 import Login from "../components/Login.vue";
 import { Configuration } from "../../common/env/Configuration";
+import { getAllScroll } from "../debug/HTML";
 
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["preconfig","api", "configuration", "router", "user", "selector", "app", "vue"];
+    _steps=["debug","preconfig","api", "configuration", "router", "user", "selector", "app", "vue"];
     _router =  null;
     _selector =  null;
     _app =  null;
@@ -19,6 +20,10 @@ export class Application extends StepHandler(CoreObject)
         console.log('app loading');
        await super.boot();
        this.booted();
+    }
+    debug()
+    {
+        window.getAllScroll = getAllScroll;
     }
     preconfig()
     {
