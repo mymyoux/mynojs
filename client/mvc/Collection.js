@@ -633,4 +633,3 @@ export function Sorted(Model) {
         }
     };
 }
-//# sourceMappingURL=Collection.js.map
