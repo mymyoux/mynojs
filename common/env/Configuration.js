@@ -11,7 +11,7 @@ export class Configuration {
             let env = "production";
             if(Hardware.isNode())
             {
-                if(!process.env.NODE_ENV)
+                if(!process.env.NODE_ENV && !process.env.BABEL_ENV)
                 {
                     if(Hardware.isElectron())
                     {
@@ -22,7 +22,12 @@ export class Configuration {
                     }
                 }else
                 {
-                    env = process.env.NODE_ENV;
+                    env = process.env.NODE_ENV || process.env.BABEL_ENV;
+                    if(env == "node")
+                    {
+                        //exception
+                        env = "local";
+                    }
                 }
             }
             Configuration.set('app.env', env); 
