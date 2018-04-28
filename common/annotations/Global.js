@@ -1,11 +1,11 @@
 import { root } from "../env/Root";
 
 
-export function Global(cls)
+export function Global(clsOrName)
 {
     return function(target, key, descriptor)
     {
-        root[cls.name] = cls;
+        root[typeof clsOrName == "string"?clsOrName:clsOrName.name] = target?target:clsOrName;
         return descriptor;
     }
 }
