@@ -6,18 +6,33 @@ export class Command extends EventDispatcher
 {
     _closedPromise = null;
     _resolved = null;
+    _rejected = null;
+    _hadError = false;
     constructor(command, parameters, options)
     {
         super();
         this._closedPromise = new Promise((resolve, reject)=>
         {
             this._resolved = resolve;
+            this._rejected = reject;
         }); 
-        console.log(options);
+        if(!options)
+        {
+            options = {};
+        }
         this._child = spawn(command, parameters, options);
-        this._child.stdout.on('data', this.onData.bind(this));
-        this._child.stderr.on('data', this.onError.bind(this));
+        if(this._child.stdout)
+            this._child.stdout.on('data', this.onData.bind(this));
+        if(this._child.stderr)
+            this._child.stderr.on('data', this.onError.bind(this));
         this._child.on('close', this.onClose.bind(this));
+    }
+    show()
+    {
+        if(this._child.stdout)
+            this._child.stdout.pipe(process.stdout);
+        if(this._child.stderr)
+            this._child.stderr.pipe(process.stderr);
     }
     onData(data)
     {
@@ -25,12 +40,20 @@ export class Command extends EventDispatcher
     }
     onError(data)
     {
+        this._hadError = true;
         this.trigger("error", data.toString());
+
     }
     onClose()
     {
         this.trigger("close");
-        this._resolved();
+        if(false && this._hadError)
+        {
+            this._rejected();
+        }else
+        {
+            this._resolved();
+        }
         this.dispose();
     }
     end()
