@@ -34,7 +34,8 @@ export function Global(name, onInstance)
         {
             alias = object.name;
         }
-        alias = Strings.uncamel(alias);
+        if(alias == object.name)
+            alias = Strings.uncamel(alias);
         if(instance)
         {
             if(object.is__vuecomponent)
@@ -83,7 +84,8 @@ export function Global(name, onInstance)
                         }
                     });
                 }
-                authorized.push(object.name);
+                if(!~authorized.indexOf(object.name))
+                    authorized.push(object.name);
                 return;
             }
             let old = object.prototype;
