@@ -2,11 +2,48 @@
 import { Component, Emit, Inject, Model, Prop, Provide, Watch,Vue } from 'vue-property-decorator'
 import { bus } from "../../common/events/Bus";
 import { Strings } from '../../common/utils/Strings';
+import { Global } from '../../common/annotations/Global';
+import { log } from '../../common/annotations/Global';
+
+
+//@Global(true)
+//@Global('test', true)
+//de@Global("test",true)
+
+@Component
 export class VueComponent extends Vue
 {
-    
+    /**
+     * @private required for Global
+     */
+    static is__vuecomponent = true;
+    static onBeforeMounted(instance)
+    {
+        bus.trigger('component:mounted', instance);
+    }
+    static onDestroyed(instance)
+    {
+        bus.trigger('component:destroyed', instance);
+    }
+    static getComponent(element)
+    {
+        if(!element)
+        {
+            return null;
+        }
+        if(element instanceof Vue)
+        {
+            return element;
+        }
+        if(element.__vue__)
+        {
+            return element.__vue__;
+        }
+        return this.getComponent(element.parentNode);
+    }
     beforeMount()
     {
+        VueComponent.onBeforeMounted(this);
         console.log('beforeMount');
     }
     mounted()
@@ -15,7 +52,31 @@ export class VueComponent extends Vue
     }
     destroyed()
     {
+        VueComponent.onDestroyed(this);
         console.log('destroyed');
+    }
+    contains(element, recursive = true)
+    {
+        if(!element)
+        {
+            return false;
+        }
+        if(element instanceof Vue)
+        {
+            element = element.$el;
+        }
+        if(element.__vue__)
+        {
+            if(element.__vue__ === this)
+            {
+                return true;
+            }else
+            if(!recursive)
+            {
+                return false;
+            }
+        }
+        return this.contains(element.parentNode);
     }
 }
 /**
