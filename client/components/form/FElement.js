@@ -103,7 +103,6 @@ export default class FElement extends VueComponent
         if(errorField.__vue__ && errorField.__vue__.$options.name == "FError")
         {
             errorField.__vue__.error = error;
-            debugger;
         }else
         {
             errorField.textContent = error;

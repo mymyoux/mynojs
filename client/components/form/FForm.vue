@@ -64,6 +64,7 @@ export default class FForm extends VueComponent
     onSubmit(event)
     {
 
+        this.loading = true;
         let objects = this.getItems();
 
 
@@ -104,6 +105,7 @@ export default class FForm extends VueComponent
     }
     validate()
     {
+        this.loading = true;
         let objects = this.getItems();
         let allPromises = [];
         objects.forEach((item)=>
@@ -160,10 +162,11 @@ export default class FForm extends VueComponent
         });
         return Promise.all(allPromises).then(()=>
         {
+            this.loading = false;
             return true;
-        }).catch(function()
+        }).catch(()=>
         {
-            debugger;
+            this.loading = false;
             return false;
         })
 
