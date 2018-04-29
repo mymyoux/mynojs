@@ -8,10 +8,13 @@ import Debug from "../components/Debug.vue";
 import Login from "../components/Login.vue";
 import { Configuration } from "../../common/env/Configuration";
 import { getAllScroll } from "../debug/HTML";
+import FForm  from "myno/client/components/form/FForm";
+import FFile  from "myno/client/components/form/FFile";
+import FProgress  from "myno/client/components/form/FProgress";
 
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["debug","preconfig","api", "configuration", "router", "user", "selector", "app", "vue"];
+    _steps=["debug","preconfig","api", "configuration", "router", "form","user", "selector", "app", "vue"];
     _router =  null;
     _selector =  null;
     _app =  null;
@@ -56,6 +59,12 @@ export class Application extends StepHandler(CoreObject)
                 next(); 
             }
         })
+    }
+    form()
+    {
+        Vue.component('f-form', FForm);
+        Vue.component('f-progress', FProgress);
+        Vue.component('f-file', FFile);
     }
     routes()
     {

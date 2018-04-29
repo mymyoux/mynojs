@@ -1,16 +1,22 @@
 <template>
-    <input v-if="electron" type="button" @click="loadFile" :value="dialog_message">
-    <input v-else type="file" @change="onFile" ref="file">
+    <p>
+        <input v-if="electron" type="button" @click="loadFile" :value="dialog_message">
+        <input v-else type="file" @change="onFile" ref="file">
+         <f-progress>
+
+      </f-progress>
+   </p> 
 </template>
 
 <script>
-import {VueComponent, Component, Prop, Watch, Emit} from "../mvc/VueComponent";
+import {VueComponent, Component, Prop, Watch, Emit} from "../../mvc/VueComponent";
 import Vue from 'vue';
-import {Hardware} from "../../common/env/Hardware";
-import electron from "../../common/electron/Electron";
+import {Hardware} from "../../../common/env/Hardware";
+import FElement from "./FElement";
+import electron from "../../../common/electron/Electron";
 
 @Component
-export default class File extends VueComponent
+export default class FFile extends FElement
 {
     @Prop({default:'choose file'})
     dialog_message
@@ -45,6 +51,14 @@ export default class File extends VueComponent
             this.$emit('value', {path:file.name, text:reader.result})
         }
         reader.readAsText(file);
+    }
+    getFormData()
+    {
+        return "mon file";
+    }
+    mounted()
+    {
+        super.mounted();
     }
 }
 </script>

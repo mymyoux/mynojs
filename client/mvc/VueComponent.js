@@ -6,11 +6,11 @@ import { Global } from '../../common/annotations/Global';
 import { log } from '../../common/annotations/Global';
 
 
+
+
 //@Global(true)
 //@Global('test', true)
 //de@Global("test",true)
-
-@Component
 export class VueComponent extends Vue
 {
     /**
@@ -44,6 +44,7 @@ export class VueComponent extends Vue
     beforeMount()
     {
         VueComponent.onBeforeMounted(this);
+        
         console.log('beforeMount');
     }
     mounted()
@@ -77,6 +78,18 @@ export class VueComponent extends Vue
             }
         }
         return this.contains(element.parentNode);
+    }
+    getAllChildren()
+    {
+        let components = this.$children.slice();
+        for(let component of this.$children)
+        {
+            if(component.getAllChildren)
+                components = components.concat(component.getAllChildren());
+            else
+                components = components.concat(VueComponent.prototype.getAllChildren.call(component));
+        }
+        return components;
     }
 }
 /**

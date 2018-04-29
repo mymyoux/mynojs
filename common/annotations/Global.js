@@ -7,6 +7,7 @@ import { Strings } from "../utils/Strings";
 let authorized;
 export function Global(name, onInstance)
 {
+    debugger;
     let alias;
     let instance;
     let object;
@@ -86,7 +87,7 @@ export function Global(name, onInstance)
                 }
                 if(!~authorized.indexOf(object.name))
                     authorized.push(object.name);
-                return;
+                return object;
             }
             let old = object.prototype;
             let Model = function(...args)
