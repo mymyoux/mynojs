@@ -8,11 +8,8 @@ import Debug from "../components/Debug.vue";
 import Login from "../components/Login.vue";
 import { Configuration } from "../../common/env/Configuration";
 import { getAllScroll } from "../debug/HTML";
-import FForm  from "myno/client/components/form/FForm";
 import FFile  from "myno/client/components/form/FFile";
-import FProgress  from "myno/client/components/form/FProgress";
-import FError  from "myno/client/components/form/FError";
-
+import VeeValidate from 'vee-validate';
 export class Application extends StepHandler(CoreObject)
 {
     _steps=["debug","preconfig","api", "configuration", "router", "form","user", "selector", "app", "vue"];
@@ -63,10 +60,10 @@ export class Application extends StepHandler(CoreObject)
     }
     form()
     {
-        Vue.component('f-error', FError);
+     
+
+        Vue.use(VeeValidate);
         Vue.component('f-file', FFile);
-        Vue.component('f-form', FForm);
-        Vue.component('f-progress', FProgress);
     }
     routes()
     {
