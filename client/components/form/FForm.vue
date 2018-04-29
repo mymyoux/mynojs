@@ -75,6 +75,7 @@ export default class FForm extends VueComponent
             if(!name)
             {
                 console.log('no name', item);
+                debugger;
                 throw new Error('no name for a form element');
             }
 
@@ -108,6 +109,16 @@ export default class FForm extends VueComponent
         objects.forEach((item)=>
         {   
             let validators = item.$el.getAttribute('validator');
+            if(item.$el.hasAttribute('required'))
+            {
+                if(validators)
+                {
+                    validator+=",required";
+                }else
+                {
+                    validators = "required";
+                }
+            }
             if(!validators)
             {
                 return [];
@@ -171,14 +182,11 @@ class FieldWrapper
     {
         return this.$el.value;
     }
-    getName()
-    {
-        return this.$el.getAttribute('name') || this.$el.id
-    }
 }
 FieldWrapper.prototype.getCleanedName = FElement.prototype.getCleanedName;
 FieldWrapper.prototype.isArray = FElement.prototype.isArray;
 FieldWrapper.prototype.addError = FElement.prototype.addError;
+FieldWrapper.prototype.getName = FElement.prototype.getName;
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -1,7 +1,11 @@
 <template>
     <p>
+        
         <input v-if="electron" type="button" @click="loadFile" :value="dialog_message">
         <input v-else type="file" @change="onFile" ref="file">
+         <f-error>
+
+      </f-error>
          <f-progress>
 
       </f-progress>

@@ -30,9 +30,35 @@ export default class FElement extends VueComponent
     }
     addError(error)
     {
-        if(this.$el.$children)
+        if(this.$children)
         {
-            this.$el.$children
+            let components; 
+            if(this.$parent)
+            {
+                components = this.$parent.$children;
+                let index = components.indexOf(this);
+                if(!~index)
+                {
+                    debugger;
+                }
+                components = components.slice(index+1);
+                debugger;
+            }else
+            {
+                components = [];
+            }
+
+            components = this.$children.concat(components);
+            let errorFields = components.filter((item)=>
+            {
+                return item.$options.name == "FError";
+            })
+            if(errorFields.length)
+            {
+                let errorField = errorFields[0];
+                errorField.error = error;
+                return;
+            }
         }
 
 
@@ -51,7 +77,17 @@ export default class FElement extends VueComponent
                 return found && item!==this.$el
             });
     
-            siblings = siblings.filter((item)=>item.hasAttribute('error'));
+            siblings = siblings.filter((item)=>
+            {
+                if(item.__vue__)
+                {
+                    if(item.__vue__.$options.name == "FError")
+                    {
+                        return true;
+                    }
+                }
+                return item.hasAttribute('error')
+            });
             if(!siblings.length)
             {
                 console.warn('No Error element to display this error', this);
@@ -64,6 +100,13 @@ export default class FElement extends VueComponent
         {
             return;
         }
-        errorField.textContent = error;
+        if(errorField.__vue__ && errorField.__vue__.$options.name == "FError")
+        {
+            errorField.__vue__.error = error;
+            debugger;
+        }else
+        {
+            errorField.textContent = error;
+        }
     }
 }

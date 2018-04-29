@@ -11,6 +11,7 @@ import { getAllScroll } from "../debug/HTML";
 import FForm  from "myno/client/components/form/FForm";
 import FFile  from "myno/client/components/form/FFile";
 import FProgress  from "myno/client/components/form/FProgress";
+import FError  from "myno/client/components/form/FError";
 
 export class Application extends StepHandler(CoreObject)
 {
@@ -62,9 +63,10 @@ export class Application extends StepHandler(CoreObject)
     }
     form()
     {
+        Vue.component('f-error', FError);
+        Vue.component('f-file', FFile);
         Vue.component('f-form', FForm);
         Vue.component('f-progress', FProgress);
-        Vue.component('f-file', FFile);
     }
     routes()
     {

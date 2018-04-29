@@ -6,4 +6,12 @@ export class RequiredValidator extends Validator
     {
         return "required";
     }
+    handle(data)
+    {
+        if(data)
+        {
+            return true;
+        }
+        return "required";
+    }
 }
