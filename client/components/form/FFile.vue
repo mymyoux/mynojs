@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import {VueComponent, Component, Prop, Watch, Emit, Provide} from "../../mvc/VueComponent";
+import {VueComponent, Component, Prop, Watch, Emit, Provide,Event} from "../../mvc/VueComponent";
 import Vue from 'vue';
 import {Hardware} from "../../../common/env/Hardware";
 import FElement from "./FElement";
@@ -20,33 +20,20 @@ import electron from "../../../common/electron/Electron";
 
 @Component({
     $_veeValidate: {
-        // fetch the current value from the innerValue defined in the component data.
+        //not used when using v-model
         value () {
-            debugger;
-        return this.file;
+            return this.file;
         }
+    },
+    props:
+    {
+        value:{},
+        dialog_message:{default:'choose file',type:String},
+        dialog_properties:{default:()=>['openFile', 'showHiddenFiles']}
     }
 })
 export default class FFile extends FElement
 {
-      @Provide() $_veeValidate= {
-        // fetch the current value from the innerValue defined in the component data.
-        value () {
-            debugger;
-        return this.innerValue;
-        },
-        name()
-        {
-            debugger;
-        }
-    };
-
-    @Prop({})
-    value
-    @Prop({default:'choose file'})
-    dialog_message
-    @Prop({default:()=>['openFile', 'showHiddenFiles']})
-    dialog_properties
     data()
     {
         return {electron:Hardware.isElectron(), file:null,showPrevious:null };
@@ -63,15 +50,17 @@ export default class FFile extends FElement
         }else
         {
             this.file = null;
+            this.$emit('input', null);
         }
     }
     onFile()
     {
-        this.file = null;
         let file = this.$refs.file.files[0];
 
         if(!file)
         {
+            this.file = null;
+            this.$emit('input', null);
             return;
         }
         var reader = new FileReader();
@@ -90,7 +79,6 @@ export default class FFile extends FElement
     {
         if(this.value)
         {
-            debugger;
             this.file = typeof this.value == "string"?{path:this.value}:Object.assign({},this.value);
         }
         this.showPrevious = true;
