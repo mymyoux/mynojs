@@ -34,12 +34,13 @@ export class Window {
                 experimentalFeatures: true,
                 title: "DBViewer",
             } });
-        // and load the index.html of the app.
-        window.loadURL(url.format({
+            // and load the index.html of the app.
+            console.log('LOAD URL '+path);
+        window.loadURL(path/*url.format({
             pathname: path,
             protocol: 'file:',
             slashes: true
-        }));
+        })*/);
         //mainWindow.maximize();
         // Open the DevTools.
         // mainWindow.webContents.openDevTools()
