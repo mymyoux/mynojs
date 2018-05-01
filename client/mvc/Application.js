@@ -10,6 +10,7 @@ import { Configuration } from "../../common/env/Configuration";
 import { getAllScroll } from "../debug/HTML";
 import FFile  from "myno/client/components/form/FFile";
 import FRadioList  from "myno/client/components/form/FRadioList";
+import FColor  from "myno/client/components/form/FColor";
 import VeeValidate from 'vee-validate';
 export class Application extends StepHandler(CoreObject)
 {
@@ -66,6 +67,7 @@ export class Application extends StepHandler(CoreObject)
         Vue.use(VeeValidate);
         Vue.component('f-file', FFile);
         Vue.component('f-radiolist', FRadioList);
+        Vue.component('f-color', FColor);
     }
     routes()
     {

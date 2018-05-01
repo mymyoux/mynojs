@@ -1,9 +1,12 @@
 <template>
     <ul>
-        <li v-for="item,i in items" :key="i" @click="select($event, item, i)" :class="{selected:~selected.indexOf(item)}">
+        <li v-for="item,i in items" :key="i" @click="select($event, item, i)" :class="{selected:selected === item}" :style="{backgroundColor:item}">
             <slot name="item" :item="item" :index="i">
                     {{item}}
             </slot>
+        </li>
+        <li class="custom" v-if="custom">
+            <input type="color" v-model="selected" @change="onCustom">
         </li>
     </ul>
 </template>
@@ -23,51 +26,40 @@ import FElement from "./FElement";
     {
         value:{},
         list:{},
-        multiple:{default:false,type:Boolean},
+        custom:{default:true, type:Boolean},
         none:{default:false,type:Boolean}
     }
 })
-export default class FRadioList extends FElement
+export default class FColor extends FElement
 {
     data()
     {
-        return {items:null,selected:[] };
+        return {items:null,selected:null };
     }
    select(event, item, index)
    {
-       let idx = this.selected.indexOf(item);
-       if(~idx)
+       if(this.none && this.selected === item)
        {
-           if(this.none || this.selected.length>1)
-           {
-               this.selected.splice(idx, 1);
-               this._emitValue();
-               return;
-           }
-       }
-       //to add
-       if(!this.multiple)
+           this.selected = null;
+       }else
        {
-           this.selected.splice(0, this.selected.length);
+           this.selected = item;
        }
-       this.selected.push(item);
+       this._emitValue();
+   }
+   onCustom()
+   {
        this._emitValue();
    }
    _emitValue()
    {
-       if(this.multiple)
-       {
-           this.$emit("input", this.selected);
-       }else
-       {
-           this.$emit("input", this.selected[0]);
-       }
+        this.$emit("input", this.selected);
    }
     mounted()
     {
         if(this.value != undefined)
         {
-            this.selected = Array.isArray(this.value)?this.value.slice():[this.value];
+            this.selected = this.value;
         }
         this.items = this.list;
         super.mounted();
