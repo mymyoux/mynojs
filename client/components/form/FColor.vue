@@ -2,7 +2,7 @@
     <ul>
         <li v-for="item,i in items" :key="i" @click="select($event, item, i)" :class="{selected:selected === item}" :style="{backgroundColor:item}">
             <slot name="item" :item="item" :index="i">
-                    {{item}}
+                    
             </slot>
         </li>
         <li class="custom" v-if="custom">
@@ -25,7 +25,10 @@ import FElement from "./FElement";
     props:
     {
         value:{},
-        list:{},
+        list:{default:()=>
+        {
+            return ["#e0e0e0", "#f44336", "#AB47BC", "#3F51B5", "#03A9F4", "#4CAF50", "#FBC02D", "#FF9800"];
+        }},
         custom:{default:true, type:Boolean},
         none:{default:false,type:Boolean}
     }
@@ -71,6 +74,8 @@ export default class FColor extends FElement
 <style scoped lang="scss">
     .selected
     {
-        color:red;
+        border-color:red;
+        border-width:1px;
+        border-style:solid;
     }
 </style>
