@@ -62,9 +62,11 @@ export default class FColor extends FElement
     {
         if(this.value != undefined)
         {
-            this.selected = this.value;
+            this.selected = this.value.toLowerCase();
         }
         this.items = this.list;
+        if(this.items)
+            this.items = this.items.map(item=>item.toLowerCase());
         super.mounted();
     }
 }
