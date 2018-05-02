@@ -11,6 +11,13 @@ export class Hardware {
     {
         return root.process && root.process.versions && root.process.versions['electron'];
     }
+    static isWindows()
+    {
+        if (root.process)
+            return root.process && root.process.platform && /^win/.test(root.process.platform);
+        else
+            return Hardware.getOS() === Hardware.OS_WINDOW_DESKTOP;
+    }
     static isCordova()
     {
         return  root.device && root.device.cordova != undefined;
