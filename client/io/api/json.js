@@ -2,12 +2,18 @@ import { adapter } from "./adapter";
 import axios from "axios";
 export class json extends adapter
 {
+    constructor(config)
+    {
+        super();
+        this._adapterConfig = Object.assign({}, config?config:{});
+    }
     load(request)
     {
         let req = request._request;
-        return axios.get(this._config.baseUrl + req.path, {
-            params:req.params            
-        }).then((response)=>
+        let config =  Object.assign(this._adapterConfig,{
+            params:req.params
+        });
+        return axios.get(this._config.baseUrl + req.path,config).then((response)=>
         {
             request.api_data = response.data.api_data;
             request.data = response.data.data;
