@@ -9,16 +9,20 @@
                 <input type="password">
                 <input type="submit" value="login">
            </form>
-           <a href="https://local.yborder.com/login/twitter">Twitter</a>
+            <connectors></connectors>
   </div>
 </template>
 
 <script>
 import {VueComponent, Component, Prop, Watch, Emit, Event} from "../mvc/VueComponent";
 import Vue from 'vue';
+import Connectors from 'myno/client/components/Connectors.vue'
 
-
-@Component
+@Component({
+  components: {
+    Connectors
+  }
+})
 export default class Login extends VueComponent
 {
     data()
