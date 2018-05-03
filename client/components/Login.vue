@@ -9,6 +9,7 @@
                 <input type="password">
                 <input type="submit" value="login">
            </form>
+           <a href="https://local.yborder.com/login/twitter">Twitter</a>
   </div>
 </template>
 

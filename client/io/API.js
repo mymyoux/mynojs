@@ -220,6 +220,7 @@ class Request extends EventDispatcher
        return this._api.load(this).then(resolve, reject).then((data)=>
         {
             this.trigger(API.EVENT_DATA, data);
+            return data;
         })
     }
     stream(resolve, reject)
