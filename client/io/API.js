@@ -2,9 +2,11 @@ import { CoreObject } from "../../common/core/CoreObject";
 import { json } from "./api/json";
 import { Buffer } from "../../common/buffer/Buffer";
 import { Stream } from "../../common/io/Stream";
+import { EventDispatcher } from "../../common/events/EventDispatcher";
 
 export class API extends CoreObject
 {
+    static EVENT_DATA = "eventdData";
     static _instances = {};
     static register(name, config)
     {
@@ -156,7 +158,7 @@ export class API extends CoreObject
     }
 }
 
-class Request
+class Request extends EventDispatcher
 {
     _request = {params:{}};
     _api_data = null;
@@ -166,6 +168,7 @@ class Request
     _config = {};
     constructor(api)
     {
+        super();
         this._api = api;
         this._config = Object.assign({requestInstance:true}, this._api._config);
     }
@@ -178,6 +181,18 @@ class Request
     {
         this._config = Object.assign(this._config, config);
         return this;
+    }
+    hasNoPaginate()
+    {
+        return !!this._api_data && !this._api_data.paginate
+    }
+    getPath()
+    {
+        return this._request.path;
+    }
+    hasParam(name)
+    {
+        return this._request.params[name] != undefined;
     }
     param(name, value)
     {
@@ -202,7 +217,10 @@ class Request
     }
     then(resolve, reject)
     {
-       return this._api.load(this).then(resolve, reject);
+       return this._api.load(this).then(resolve, reject).then((data)=>
+        {
+            this.trigger(API.EVENT_DATA, data);
+        })
     }
     stream(resolve, reject)
     {

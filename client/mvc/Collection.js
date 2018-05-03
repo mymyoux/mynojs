@@ -2,6 +2,7 @@ import { Model, ModelLoadRequest } from "./Model";
 import { Objects } from "../../common/utils/Objects";
 import { Inst } from "../../common/core/Inst";
 import { Arrays } from "../../common/utils/Arrays";
+import { API } from "../io/API";
 export function Collection(A) {
     return _a = class _Collection extends A {
             constructor(...args) {
@@ -171,7 +172,7 @@ export function Collection(A) {
                     config.execute = tmp;
                     
                    //TODO:check this
-                    //this._request.on(API2.EVENT_DATA, this.prereadExternal, this, this._request.getPath(), this._request);
+                    this._request.on(API.EVENT_DATA, this.prereadExternal, this, this._request.getPath(), this._request);
                 }
                 var path = this.constructor["PATH_GET"];
                 if (typeof path == "function")
@@ -386,7 +387,7 @@ export function Collection(A) {
                 return request.previousAll(quantity);
             }
         },
-        _a.PATH_GET = () => new ModelLoadRequest("%root-path%/list", { '%id-name%': '%id%' }, { replaceDynamicParams: true }),
+        _a.PATH_GET = () => new ModelLoadRequest("%root-path%/list", {}, { replaceDynamicParams: true }),
         _a;
     var _a;
 }
@@ -418,7 +419,7 @@ export function Unique(Model) {
                 this._keys.push(this._getUnicityKey(model));
             }
         }
-        _hasUnicity() {
+        _hasParamUnicity() {
             return this._unicity && this._unicity.length > 0;
         }
         _registerKey(model) {
