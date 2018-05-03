@@ -202,7 +202,6 @@ class Request
     }
     then(resolve, reject)
     {
-        console.log("request then");
        return this._api.load(this).then(resolve, reject);
     }
     stream(resolve, reject)
@@ -227,5 +226,13 @@ class Request
         this._loaded = true;
     }
 }
-
-export const api = API.register({});
+let ___api = API.register({});
+export const api = new Proxy(function(name)
+{
+    return API.instance(name).request();
+},{
+    get:function(obj, prop)
+    {
+        return ___api[prop];
+    }
+});
