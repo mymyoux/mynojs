@@ -12,6 +12,24 @@ export function StepHandler(parent)
         {
             await this.handleSteps();
         }
+        insertStepBefore(before, step)
+        {
+            let index = this._steps.indexOf(before);
+            if(!~index)
+            {
+                throw new Error("step "+before+" not found");
+            }
+            this._steps.splice(index, 0, step);
+        }
+        insertStepAfter(after, step)
+        {
+            let index = this._steps.indexOf(after);
+            if(!~index)
+            {
+                throw new Error("step "+after+" not found");
+            }
+            this._steps.splice(index+1, 0, step);
+        }
         handleSteps()
         {
             return this.steps();
