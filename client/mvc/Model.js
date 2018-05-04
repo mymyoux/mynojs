@@ -8,74 +8,20 @@ import { Classes } from "../../common/utils/Classes";
 export class Model extends CoreObject {
     constructor() {
         super();
+        Object.defineProperty(this, "_pathLoaded", {
+            enumerable: false,
+            writable:true
+        });
         this._pathLoaded = {};
     }
     getClassName()
     {
         return Classes.getName(this);
     }
-    get(key) {
-        if (!key || key.length == 0) {
-            throw new Error("Key must be defined - null given");
-        }
-        var methodName = "get" + key.substring(0, 1).toUpperCase() + key.substring(1);
-        if (this[methodName]) {
-            return this[methodName]();
-        }
-        return this[key];
-    }
-    set(key, value) {
-        if (!key || key.length == 0) {
-            throw new Error("Key must be defined - null given");
-        }
-        var methodName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
-        if (this[methodName]) {
-            return this[methodName](value);
-        }
-        else {
-            //TODO:add possibility to set key.object1.name = 'value'
-            this[key] = value;
-        }
-        this.triggerForceChange(key);
-    }
-    getIDName() {
-        var name = this.getModelName();
-        return "id_" + Strings.uncamel(name);
-    }
-    getID() {
-        var id_name = this.getIDName();
-        if (id_name && this[id_name])
-            return this[id_name];
-        if (this["id"]) {
-            return this["id"];
-        }
-        return null;
-    }
-    setID(value) {
-        this.id = value;
-        this[this.getIDName()] = value;
-    }
-    triggerChange(key) {
-        this._trigger(Model.EVENT_CHANGE, key, this[key]);
-    }
-    triggerForceChange(key = null) {
-        if (key)
-            this._trigger(Model.EVENT_FORCE_CHANGE, key, this[key]);
-        else
-            this._trigger(Model.EVENT_FORCE_CHANGE);
-    }
-    _trigger(...params) {
-        if (this["trigger"]) {
-            this["trigger"](...params);
-        }
-    }
-    triggerFirstData() {
-        if (!this._firstData) {
-            this._firstData = true;
-            setTimeout(() => {
-                this._trigger(Model.EVENT_FIRST_DATA);
-            }, 0);
-        }
+   
+    getID()
+    {
+        return this.id;
     }
     getRootPath() {
         return this.getModelName();
@@ -97,40 +43,24 @@ export class Model extends CoreObject {
         return path;
     }
     api(name, api_name) {
-        return API.instance().request();//.name(this.getClassName() + "_" + name);
+        return api();//.name(this.getClassName() + "_" + name);
     }
     cache() {
         return LocalForage.instance().war(this.getClassName());
     }
     readExternal(input, path = null) {
         for (var p in input) {
-            if (this[p] === undefined)
-                this.invalidate();
             if (typeof this[p] == "function") {
-                // console.warn("you overwrite function: "+p);
+                 console.warn("you overwrite function: "+p);
             }
             this[p] = input[p];
         }
-        this.triggerFirstData();
-        //this.data = input;
-    }
-    invalidate() {
-        this._invalidated = true;
-    }
-    isInvalidated() {
-        return this._invalidated;
-    }
-    validate() {
-        if (!this.isInvalidated())
-            return;
-        this._invalidated = false;
-        this._trigger(Model.EVENT_FORCE_CHANGE);
     }
     /**
     * Returns model's data
     * @returns {any}
     */
-    writeExternal(remove_null_values = false) {
+    writeExternal() {
         var external = {};
         for (var p in this) {
             //TODO:check this not sure if needed
@@ -142,39 +72,14 @@ export class Model extends CoreObject {
             if (Strings.startsWith(p, "_")) {
                 continue;
             }
-            if (remove_null_values === true && this[p] === null) {
-                continue;
-            }
             if (this[p] && typeof this[p] == "object" && typeof this[p]['writeExternal'] === 'function') {
-                console.log("child writeExtenral", this[p]);
-                external[p] = this[p]['writeExternal'](remove_null_values);
+                external[p] = this[p]['writeExternal']();
             }
             else {
                 external[p] = this[p];
-                // if(Arrays.isArray(external[p]))
-                // {
-                //     external[p] = this._writeExternal(external[p].slice());
-                // }
             }
         }
         return external;
-    }
-    _writeExternal(data) {
-        console.log(data);
-        for (var i = 0; i < data.length; i++) {
-            //TODO:check this not sure if needed
-            // if(!this.hasOwnProperty(p))
-            //     continue;
-            if (data[i] && typeof data[i] == "object" && typeof data[i]['writeExternal'] === 'function') {
-                console.log("subchild writeExtenral", data[i]);
-                data[i] = data[i]['writeExternal']();
-            }
-            else if (Arrays.isArray(data[i])) {
-                console.log("is array: [" + i + "]", data[i]);
-                data[i] = this._writeExternal(data[i].slice());
-            }
-        }
-        return data;
     }
     /**
      * Replace %key% in strings
@@ -355,9 +260,6 @@ export class Model extends CoreObject {
         return this.api(path, config.api_name).path(path).params(params);
     }
 }
-Model.EVENT_CHANGE = "change";
-Model.EVENT_FIRST_DATA = "first_data";
-Model.EVENT_FORCE_CHANGE = "force_change";
 Model.PATH_CREATE = () => new ModelLoadRequest("%root-path%/create", null, { replaceDynamicParams: true, ignorePathLoadState: true, marksPathAsLoaded: false });
 Model.PATH_GET = () => new ModelLoadRequest("%root-path%/get", { '%id-name%': '%id%' }, { replaceDynamicParams: true });
 Model.PATH_DELETE = () => new ModelLoadRequest("%root-path%/delete", { '%id-name%': '%id%' }, { replaceDynamicParams: true, ignorePathLoadState: true, marksPathAsLoaded: false });

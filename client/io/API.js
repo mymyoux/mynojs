@@ -3,10 +3,10 @@ import { json } from "./api/json";
 import { Buffer } from "../../common/buffer/Buffer";
 import { Stream } from "../../common/io/Stream";
 import { EventDispatcher } from "../../common/events/EventDispatcher";
+import { Objects } from "../../common/utils/Objects";
 
 export class API extends CoreObject
 {
-    static EVENT_DATA = "eventdData";
     static _instances = {};
     static register(name, config)
     {
@@ -99,12 +99,11 @@ export class API extends CoreObject
         return this._config.adapter.load(request, this._config).then((request)=>
         {   
             request = request[0];
-            request.then = null;
             let requestConfig = request._config;
 
             console.log("load", request);
             let promise;
-            if(request.exception && requestConfig.retry)
+            if(request._exception && requestConfig.retry)
             {
                 promise = buffer.unshift(this._execute, this, request, true);
             }
@@ -118,33 +117,34 @@ export class API extends CoreObject
             {
                 return promise;
             }
-            if(!fromAPI && request.exception)
+            if(!fromAPI && request._exception)
             {
                 return Promise.reject(request);
             }
-            return request;
-        });
+            return [request];
+        }); 
     }
     load(request)
     {
         return this.execute(request, true).then((request)=>
         {   
+            request = request[0];
             let requestConfig = request._config;
 
-            if(request.exception)
+            if(request._exception)
             {
-                return Promise.reject(request.exception);
+                return Promise.reject(request._exception);
             }
-            if(request.data && request.data.streamID !== undefined)
+            if(request._data && request._data.streamID !== undefined)
             {
                 //stream;
                 let stream = new Stream((type, data, answerID)=>
                 {
                     this._config.adapter.sendStream(stream, type, data, answerID);
-                }, request.data.streamID);
+                }, request._data.streamID);
                 return stream;
             }   
-            return request.data;
+            return request._data;
         });
     }
     then(resolve, reject)
@@ -158,19 +158,61 @@ export class API extends CoreObject
     }
 }
 
-class Request extends EventDispatcher
+class Request 
 {
     _request = {params:{}};
     _api_data = null;
     _data = null;
     _exception = null;
-    _exception = null;
+    _executed = false;
+    _executing = false;
+    _promise = null;
     _config = {};
     constructor(api)
     {
-        super();
         this._api = api;
         this._config = Object.assign({requestInstance:true}, this._api._config);
+        this._promise = null;
+    }
+    reset()
+    {
+        this._data = null;
+        this._exception = null;
+        this._executing = null;
+        this._promise = null;
+        this._executed = false;
+        this._api_data = null;
+        this._request.params = {};
+    }
+    clone()
+    {
+        let cls =  this.constructor;
+        let req = new cls(this._api);
+        req._config = Objects.clone(this._config);
+        req._request = Objects.clone(this._request);
+        return req;
+    }
+    apidata(key)
+    {
+        if(!this._api_data)
+        {
+            return null;
+        }
+        if(!key)
+        {
+            return this._api_data;
+        }
+        let keys = key.split('.');
+        let value = this._api_data;
+        for(let k of keys)
+        {
+            value = value[k];
+            if(value == null)
+            {
+                return value;
+            }
+        }
+        return value;
     }
     path(path)
     {
@@ -182,9 +224,9 @@ class Request extends EventDispatcher
         this._config = Object.assign(this._config, config);
         return this;
     }
-    hasNoPaginate()
+    hasNext()
     {
-        return !!this._api_data && !this._api_data.paginate
+        return this._api_data && this._api_data.paginate && !this._api_data.full;
     }
     getPath()
     {
@@ -217,11 +259,22 @@ class Request extends EventDispatcher
     }
     then(resolve, reject)
     {
-       return this._api.load(this).then(resolve, reject).then((data)=>
+        if( this._promise)
         {
-            this.trigger(API.EVENT_DATA, data);
+            return  this._promise.then(resolve, reject);
+        }
+        this._executing = true;
+       return this._promise = this._api.load(this).then(resolve, reject).then((data)=>
+        {
+            this._executing = false;
+            this._executed = true;
             return data;
-        })
+        }, (error)=>
+        {
+            this._executing = false;
+            this._executed = true;
+            return Promise.reject(error);
+        });
     }
     stream(resolve, reject)
     {
@@ -229,9 +282,9 @@ class Request extends EventDispatcher
        return this._api.stream(this).then(resolve, reject);
     }
 
-    apidata(value)
+    setapidata(value)
     {
-        this._apidata = value;
+        this._api_data = value;
         this._loaded = true;
     }
     data(value)
