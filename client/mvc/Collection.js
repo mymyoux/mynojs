@@ -2,19 +2,52 @@ import { Model, ModelLoadRequest } from "./Model";
 import { Objects } from "../../common/utils/Objects";
 import { Inst } from "../../common/core/Inst";
 import { Arrays } from "../../common/utils/Arrays";
+import { API } from "../io/API";
 export function Collection(A) {
     return _a = class _Collection extends A {
             constructor(...args) {
                 super(...args);
+                // Object.defineProperty(this, "models", {
+                //     enumerable: false,
+                //     writable:true
+                // });
+                Object.defineProperty(this, "_modelClass", {
+                    enumerable: false,
+                    writable:true
+                });
+                Object.defineProperty(this, "_modelName", {
+                    enumerable: false,
+                    writable:true
+                });
+           
+                Object.defineProperty(this, "_request", {
+                    enumerable: false,
+                    writable:true
+                });
+           
+                Object.defineProperty(this, "_paginate", {
+                    enumerable: false,
+                    writable:true
+                });
                 this.models = [];
                 this._modelClass = A; //eval('_super');
-                this.models = [];
+                this._paginate = {};
             }
-            isFullLoaded() {
-                var apiData = this.request().getAPIData();
-                if (apiData && apiData.paginate && apiData.paginate.full)
-                    return true;
-                return false;
+            *[Symbol.iterator]()
+            {
+                let i = 0;
+                while(i<this.models.length)
+                {
+                    yield this.models[i++];
+                }
+            }
+            // get [Symbol.toStringTag]()
+            // {
+            //     return this._modelClass.name.replace(/Model/,'Collection').kprZ7jGm;
+            // }
+            hasNext() {
+                return this.request().hasNext();
+
             }
             createModel() {
                 return new this._modelClass();
@@ -144,35 +177,269 @@ export function Collection(A) {
             toArray() {
                 return this.splice();
             }
+
+            async loadGet(params, config)
+            {
+                if(!config)
+                {
+                    config = {};
+                }
+                config = Object.assign({
+                    removePreviousModels:false,
+                    readExternal:true
+                }, config);
+
+                if(this._request)
+                {
+                    await this._request;
+                   // this._request.reset();
+                }
+
+
+
+                if(!this._request)
+                {
+                    this._request = this.request(config);
+                }
+                if(config.removePreviousModels)
+                {
+                    this.clearModels();
+                }
+                return this._request.then((data)=>
+                {
+                    this._computePaginate();
+                    if(config.readExternal)
+                    {
+                        this.readExternal(data);
+                    }
+                    return data;
+                });
+            }
+            _computePaginate()
+            {
+                //TODO: change next to nextAll 
+                // save next and previous 
+                //why ? => if no data no next/previou
+                let current = this._request.apidata("paginate")
+                //no paginated request
+                if(!current)
+                    return;
+                if(!this._request.__paginate)
+                {
+                    this._request.__paginate = 
+                    {
+                        nextAll:current.next,
+                        next:current.next,
+                        previousAll:current.previous,
+                        previous:current.previous
+                    }
+                    return;
+                }
+                if (current.next && current.next.length) {
+                    this._request.next = current.next;
+                    let isNextAll = true;
+                    debugger;
+						for (let i = 0; i < current.next.length; i++) {
+							if (!((this._request.__paginate.nextAll[i] < current.next[i] && current.directions[i] > 0) || (this._request.__paginate.nextAll[i] > current.next[i] && current.directions[i] < 0))) {
+								if (this._request.__paginate.nextAll[i] == current.next[i]) {
+									continue;
+								}
+								isNextAll = false;
+								break;
+							} else {
+								break;
+							}
+						}
+                    if(isNextAll)
+                    {
+                        this._request.__paginate.nextAll = current.next;
+                    }
+                }
+                if (current.previous && current.previous.length) {
+                    let isPreviousAll = true;
+                    this._request.previous = current.previous;
+						for (let i = 0; i < current.previous.length; i++) {
+							if (!((this._request.__paginate.previousAll[i] < current.previous[i] && current.directions[i] < 0) || (this._request.__paginate.previousAll[i] > current.previous[i] && current.directions[i] > 0))) {
+								if (this._request.__paginate.previousAll[i] == current.previous[i]) {
+									continue;
+								}
+								isPreviousAll = false;
+								break;
+							} else {
+								break;
+							}
+						}
+                    if(isPreviousAll)
+                    {
+                        this._request.__paginate.previousAll = current.previous;
+                    }
+				}
+            }
+            async next(quantity)
+            {
+                if(!this._request)
+                {
+                    throw new Error('you can\'t next a non initialized collection');
+                }
+                await this._request;
+                let config = this._request["model_config"];
+                let current = this._request.apidata("paginate");
+                if(!current)
+                {
+                    throw new Error('you can\'t next a non paginated collection');
+                }
+          
+                
+                let paginate = {
+                    keys:current.keys,
+                    directions:current.directions,
+                    next:this._request.__paginate.next
+                };
+                if(quantity)
+                {
+                    paginate.limit = quantity;
+                }
+                let params = Objects.clone(this._request._request.params);
+                this._request.reset();
+                this._request._request.params.paginate = paginate;
+
+                return this._request.then((data)=>
+                {
+                    this._computePaginate();
+                    if(config.readExternal)
+                    {
+                        this.readExternal(data);
+                    }
+                    return data;
+                });
+            }
+            async nextAll(quantity)
+            {
+                if(!this._request)
+                {
+                    throw new Error('you can\'t next a non initialized collection');
+                }
+                await this._request;
+                let config = this._request["model_config"];
+                let current = this._request.apidata("paginate");
+                if(!current)
+                {
+                    throw new Error('you can\'t next a non paginated collection');
+                }
+
+                let paginate = {
+                    keys:current.keys,
+                    directions:current.directions,
+                    next:this._request.__paginate.nextAll
+                };
+                if(quantity)
+                {
+                    paginate.limit = quantity;
+                }
+                let params = Objects.clone(this._request._request.params);
+                this._request.reset();
+                this._request._request.params.paginate = paginate;
+
+                return this._request.then((data)=>
+                {
+                    this._computePaginate();
+                    if(config.readExternal)
+                    {
+                        this.readExternal(data);
+                    }
+                    return data;
+                });
+            }
+            async previous(quantity)
+            {
+                if(!this._request)
+                {
+                    throw new Error('you can\'t next a non initialized collection');
+                }
+                await this._request;
+                let config = this._request["model_config"];
+                let current = this._request.apidata("paginate");
+                if(!current)
+                {
+                    throw new Error('you can\'t next a non paginated collection');
+                }
+               
+                let paginate = {
+                    keys:current.keys,
+                    directions:current.directions,
+                    previous:this._request.__paginate.previous
+                };
+                if(quantity)
+                {
+                    paginate.limit = quantity;
+                }
+                let params = Objects.clone(this._request._request.params);
+                this._request.reset();
+                this._request._request.params.paginate = paginate;
+
+                return this._request.then((data)=>
+                {
+                    this._computePaginate();
+                    if(config.readExternal)
+                    {
+                        this.readExternal(data);
+                    }
+                    return data;
+                });
+            }
+            async previousAll(quantity)
+            {
+                if(!this._request)
+                {
+                    throw new Error('you can\'t next a non initialized collection');
+                }
+                await this._request;
+                let config = this._request["model_config"];
+                let current = this._request.apidata("paginate");
+                if(!current)
+                {
+                    throw new Error('you can\'t next a non paginated collection');
+                }
+               
+                let paginate = {
+                    keys:current.keys,
+                    directions:current.directions,
+                    previous:this._request.__paginate.previousAll
+                };
+                if(quantity)
+                {
+                    paginate.limit = quantity;
+                }
+                let params = Objects.clone(this._request._request.params);
+                this._request.reset();
+                this._request._request.params.paginate = paginate;
+
+                return this._request.then((data)=>
+                {
+                    this._computePaginate();
+                    if(config.readExternal)
+                    {
+                        this.readExternal(data);
+                    }
+                    return data;
+                });
+            }
+
+
+
+
+
+
             _path(path) {
                 var path = super._path(path);
                 return path.replace('collection', '');
             }
-            unselect() {
-                for (var p in this.models) {
-                    if (this.models[p].models) {
-                        for (var q in this.models[p].models) {
-                            this.models[p].models[q].selected = false;
-                        }
-                    }
-                    else {
-                        this.models[p].selected = false;
-                    }
-                }
-                return this;
-            }
             request(config) {
-                if (!this._request) {
-                    if (!config)
-                        config = {};
-                    var tmp;
-                    config.execute = false;
-                    this._request = this.load(this.constructor["PATH_GET"], null, config);
-                    config.execute = tmp;
-                    
-                   //TODO:check this
-                    //this._request.on(API2.EVENT_DATA, this.prereadExternal, this, this._request.getPath(), this._request);
-                }
+
+                config.execute = false;
+
+                let request =  this.load(this.constructor["PATH_GET"], null, config);
+
                 var path = this.constructor["PATH_GET"];
                 if (typeof path == "function")
                     path = path();
@@ -184,7 +451,7 @@ export function Collection(A) {
                     }
                     path = path.path;
                 }
-                if (this._request["model_config"].replaceDynamicParams) {
+                if (request["model_config"].replaceDynamicParams) {
                     path = this.replace(path);
                     if (params) {
                         var k;
@@ -206,79 +473,10 @@ export function Collection(A) {
                     }
                 }
                 for (var p in params) {
-                    if (!this._request.hasParam(p))
-                        this._request.param(p, params[p]);
+                    if (!request.hasParam(p))
+                        request.param(p, params[p]);
                 }
-                return this._request;
-            }
-            async loadGet(params, config) {
-                var tmp = config;
-                var request = this.request(config);
-                if (tmp) {
-                    config = Objects.clone(request["model_config"]);
-                    for (var p in tmp)
-                        config[p] = tmp[p];
-                }
-                else {
-                    config = request["model_config"];
-                }
-                // if(!request.hasNoPaginate() && this._pathLoaded[request.getPath()] && (!config || config.ignorePathLoadState !== true))
-                // {
-                //     if(typeof this._pathLoaded[request.getPath()] != "boolean" && !this._pathLoaded[request.getPath()].done)
-                //     {
-                //         try{
-                //             await this._pathLoaded[request.getPath()];
-                //         }catch(error)
-                //         {
-                //             //if request failed or been cancelled
-                //         }
-                //     }
-                // }
-                if (request.hasNoPaginate()) {
-                    if (this._pathLoaded[request.getPath()] && config.ignorePathLoadState !== true) {
-                        var promise = this._pathLoaded[request.getPath()];
-                        if (!promise || typeof promise == "boolean") {
-                            promise = new Promise((resolve, reject) => {
-                                resolve();
-                            }).then(function () { });
-                        }
-                        return promise;
-                    }
-                }
-                else {
-                    //useful if two calls are made before one gets a result so we don't know if there is any paginate
-                    if (this._pathLoaded[request.getPath()] && (!config || config.ignorePathLoadState !== true)) {
-                        if (typeof this._pathLoaded[request.getPath()] != "boolean") {
-                            try {
-                                await this._pathLoaded[request.getPath()];
-                            }
-                            catch (error) {
-                                //if request failed or been cancelled
-                            }
-                        }
-                    }
-                }
-                for (var key in params) {
-                    request.param(key, params[key]);
-                }
-                if (config.removePreviousModels) {
-                    this.models = [];
-                }
-                var promise = request.then((data) => {
-                    return data;
-                });
-                if (config.execute === false) {
-                    return request;
-                }
-                if (config.marksPathAsLoaded !== false) {
-                    this._pathLoaded[request.getPath()] = promise;
-                }
-                return promise;
-            }
-            prereadExternal(data, ...args) {
-                if (data && data.data)
-                    data = data.data;
-                this.readExternal(data, ...args);
+                return request;
             }
             readExternal(input, path, api) {
                 if (!input)
@@ -301,14 +499,18 @@ export function Collection(A) {
                 if (input) {
                     if (!input.length || !input.forEach) {
                         //needed to not break the flow
-                        this.triggerFirstData();
-                        this._trigger(this.constructor["EVENT_FORCE_CHANGE"]);
                         return;
                     }
                     input.forEach(function (rawModel) {
                         if (!rawModel) {
                             return;
                         }
+
+                        
+
+
+
+
                         if (rawModel.__class) {
                             //TODO:check id too
                             var model = Inst.get(rawModel.__class);
@@ -361,35 +563,21 @@ export function Collection(A) {
                             }
                         }
                     }, this);
-                    this.triggerFirstData();
-                    this._trigger(this.constructor["EVENT_FORCE_CHANGE"]);
                 }
             }
             prepareModel(model) {
             }
             postModel(model) {
             }
-            next(quantity) {
-                var request = this.request();
-                return request.next(quantity);
-            }
-            nextAll(quantity) {
-                var request = this.request();
-                return request.nextAll(quantity);
-            }
-            previous(quantity) {
-                var request = this.request();
-                return request.previous(quantity);
-            }
-            previousAll(quantity) {
-                var request = this.request();
-                return request.previousAll(quantity);
-            }
+          
         },
-        _a.PATH_GET = () => new ModelLoadRequest("%root-path%/list", { '%id-name%': '%id%' }, { replaceDynamicParams: true }),
+        _a.PATH_GET = () => new ModelLoadRequest("%root-path%/list", {}, { replaceDynamicParams: true }),
         _a;
     var _a;
 }
+
+
+
 export function Unique(Model) {
     return class Unique extends Model {
         constructor() {
@@ -418,7 +606,7 @@ export function Unique(Model) {
                 this._keys.push(this._getUnicityKey(model));
             }
         }
-        _hasUnicity() {
+        _hasParamUnicity() {
             return this._unicity && this._unicity.length > 0;
         }
         _registerKey(model) {
@@ -609,10 +797,10 @@ export function Sorted(Model) {
             if (api) {
                 request = api.getLastRequest();
             }
-            if (request && request.data && request.data.paginate && request.data.paginate.direction != undefined && request.data.paginate.key) {
-                if (Objects.deepEquals(this._order, request.data.paginate.key) && Objects.deepEquals(this._orderDirection, request.data.paginate.direction)) {
-                    if (apidata && apidata.paginate && apidata.paginate.limit && length < apidata.paginate.limit) {
-                        if (request.data.paginate.next || (!request.data.paginate.next && !request.data.paginate.previous)) {
+            if (request && request.data && request.paginate && request.paginate.direction != undefined && request.paginate.key) {
+                if (Objects.deepEquals(this._order, request.paginate.key) && Objects.deepEquals(this._orderDirection, request.paginate.direction)) {
+                    if (apidata && apipaginate && apipaginate.limit && length < apipaginate.limit) {
+                        if (request.paginate.next || (!request.paginate.next && !request.paginate.previous)) {
                             this._isFullLoaded = true;
                         }
                     }

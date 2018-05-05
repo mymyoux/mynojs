@@ -19,6 +19,9 @@
             <li>
                 streams:{{streamStats.count}}
             </li>
+            <li v-if="user">
+                    {{user}}
+            </li>
   </div>
 </template>
 

@@ -9,15 +9,20 @@
                 <input type="password">
                 <input type="submit" value="login">
            </form>
+            <connectors></connectors>
   </div>
 </template>
 
 <script>
 import {VueComponent, Component, Prop, Watch, Emit, Event} from "../mvc/VueComponent";
 import Vue from 'vue';
+import Connectors from 'myno/client/components/Connectors.vue'
 
-
-@Component
+@Component({
+  components: {
+    Connectors
+  }
+})
 export default class Login extends VueComponent
 {
     data()

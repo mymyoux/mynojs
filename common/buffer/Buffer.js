@@ -38,7 +38,6 @@ export class Buffer
         let buffer = this._buffer.shift();
         try
         {
-
             let result = buffer.method.apply(buffer.scope, buffer.params);
             if(result instanceof Promise)
             {

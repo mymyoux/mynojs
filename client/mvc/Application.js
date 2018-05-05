@@ -10,12 +10,15 @@ import { Configuration } from "../../common/env/Configuration";
 import { getAllScroll } from "../debug/HTML";
 import FFile  from "myno/client/components/form/FFile";
 import FRadioList  from "myno/client/components/form/FRadioList";
+import List  from "myno/client/components/List";
 import FColor  from "myno/client/components/form/FColor";
 import FInput  from "myno/client/components/form/FInput";
 import VeeValidate from 'vee-validate';
+import { make, register } from "../../common/maker/make";
+import { User } from "../models/User";
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["debug","preconfig","api", "configuration", "router", "form","user", "selector", "app", "vue"];
+    _steps=["debug","preconfig","maker","api", "configuration", "router", "form","user", "selector", "app", "vue"];
     _router =  null;
     _selector =  null;
     _app =  null;
@@ -28,6 +31,10 @@ export class Application extends StepHandler(CoreObject)
     debug()
     {
         window.getAllScroll = getAllScroll;
+    }
+    maker()
+    {
+        register('user', User);
     }
     preconfig()
     {
@@ -56,6 +63,10 @@ export class Application extends StepHandler(CoreObject)
             {
                 next({name:"login", params:{message:"restricted page"}});
             }else
+            if(to.meta.requiresUnauth && Auth.check())
+            {
+                next({name:"home"});
+            }else
             {
                 next(); 
             }
@@ -66,27 +77,41 @@ export class Application extends StepHandler(CoreObject)
      
 
         Vue.use(VeeValidate);
-        Vue.component('f-file', FFile);
+        Vue.component('list',List);
         Vue.component('f-radiolist', FRadioList);
+        Vue.component('f-file', FFile);
         Vue.component('f-color', FColor);
         Vue.component('f-input', FInput);
     }
     routes()
     {
         //throw new Error('you must override Application#routes');
-        return [{
+        return [
+        {
+            path:'/logout',
+            name:'logout',
+            beforeEnter: (to, from, next) => {
+                Auth.logout();
+                next({replace:true,name:'login'}) 
+              }
+        },    
+        {
             path:"/debug",
             name:"debug",
             component:Debug
         },{
             path:"/",
-            name:"debughome",
+            name:"home",
             component:Debug
         },
         {
             path:"/login",
             name:"login",
-            component:Login
+            component:Login,
+            meta:
+            {
+                requiresUnauth:true
+            }
         }];
     }
     user()

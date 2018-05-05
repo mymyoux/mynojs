@@ -106,17 +106,28 @@ export function Event(event)
         }
         if(target instanceof VueComponent)
         {
-            if(target.destroyed)
+            if(!target.___events)
+            {
+                target.___events = [];
+            }
+            if(!~target.___events.indexOf(event))
+                target.___events.push(event);
+                
+            if(target.destroyed && !target.____destroyed)
             {
                 target.____destroyed = target.destroyed
             }
-            if(target.beforeMount)
+            if(target.beforeMount && !target.____beforeMount)
             {
                 target.____beforeMount = target.beforeMount
             }
             target.beforeMount = function()
             { 
-                bus.on(event, descriptor.value, target);
+                target.___events.forEach((event)=>
+                {
+                    bus.on(event, descriptor.value, target);
+                });
+
                 if( target.____beforeMount)
                 {
                     target.____beforeMount();
@@ -124,7 +135,10 @@ export function Event(event)
             }
             target.destroyed = function()
             {
-                bus.off(event, descriptor.value, target);
+                target.___events.forEach((event)=>
+                {
+                    bus.off(event, descriptor.value, target);
+                });
                 if( target.____destroyed)
                 {
                     target.____destroyed();

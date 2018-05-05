@@ -1,6 +1,8 @@
 import { spawn } from 'child_process';
 import { EventDispatcher } from '../../common/events/EventDispatcher';
 import { Promise } from 'bluebird';
+import { Hardware } from '../../common/env/Hardware';
+import path from "path";
 
 export class Command extends EventDispatcher
 {
@@ -11,6 +13,7 @@ export class Command extends EventDispatcher
     constructor(command, parameters, options)
     {
         super();
+        
         this._closedPromise = new Promise((resolve, reject)=>
         {
             this._resolved = resolve;
@@ -20,7 +23,21 @@ export class Command extends EventDispatcher
         {
             options = {};
         }
+
+        if (Hardware.isWindows())
+        {
+            if (command.indexOf('./') === 0 && options.cwd)
+            {
+                command = path.join(options.cwd, command);
+            }
+
+            var new_parameters  = ['/s', '/c', command];
+            command             = 'cmd';
+            parameters          = new_parameters.concat(parameters);
+        }
+
         this._child = spawn(command, parameters, options);
+
         if(this._child.stdout)
             this._child.stdout.on('data', this.onData.bind(this));
         if(this._child.stderr)

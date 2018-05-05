@@ -1,13 +1,22 @@
 import { LocalForage } from "../data/Forage";
 import { event } from "../../common/events/Bus";
+import { make } from "../../common/maker/make";
 
 export class Auth
 {
     static _user;
     static retrieveUser()
     {
-        //TODO:check cache
-        return null;
+        return api().path('user/me').then((user)=>{
+            if(!user)
+            {
+                return null;
+            }
+            let cls = make('user');
+            let model = new cls();
+            model.readExternal(user);
+            Auth.setUser(model);
+        });
     }
     static check()
     {
@@ -50,6 +59,9 @@ export class Auth
         this.cache().removeItem('user').then(()=>
         {
             event('user:logout');
+        });
+        return api().path('logout').then((user)=>{
+            
         });
     }
     static cache() {
