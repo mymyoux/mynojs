@@ -1,7 +1,7 @@
 <template>
     <p>
         <template v-if="electron">
-            <input type="button" @click="loadFile" :value="dialog_message" ref="file">
+            <input type="button" @click="loadFile" :value="dialogMessage" ref="file">
             <input type="text" :value="file && file.path" disabled>
         </template>
         <template v-else>
@@ -28,8 +28,8 @@ import electron from "../../../common/electron/Electron";
     props:
     {
         value:{},
-        dialog_message:{default:'choose file',type:String},
-        dialog_properties:{default:()=>['openFile', 'showHiddenFiles']}
+        dialogMessage:{default:'choose file',type:String},
+        dialogProperties:{default:()=>['openFile', 'showHiddenFiles']}
     }
 })
 export default class FFile extends FElement
@@ -40,7 +40,7 @@ export default class FFile extends FElement
     }
     loadFile()
     {
-        let result = electron.remote.dialog.showOpenDialog({properties:this.dialog_properties,message:this.dialog_message});
+        let result = electron.remote.dialog.showOpenDialog({properties:this.dialogProperties,message:this.dialogMessage});
         if(result)
         {
             console.log( {path:result[0]});

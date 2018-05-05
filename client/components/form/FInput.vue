@@ -92,7 +92,6 @@ export default class FInput extends FElement
         {
             this.localLabel = this.name+":";
         }
-        debugger;
         super.mounted();
     }
 }
