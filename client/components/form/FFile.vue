@@ -5,6 +5,7 @@
             <input type="text" :value="file && file.path" disabled>
         </template>
         <template v-else>
+            <label v-if="dialogMessage">{{dialogMessage}}</label>
             <input type="file" @change="onFile" ref="file" :placeholder="file && file.path">
             <span v-if="showPrevious && value">{{typeof value == "string"?value:value.path}}</span>
         </template>

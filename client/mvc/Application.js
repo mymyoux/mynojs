@@ -19,6 +19,7 @@ import { User } from "../models/User";
 import { Validator } from 'vee-validate';
 import { host } from "../components/form/validators/host";
 import { path } from "../components/form/validators/path";
+import { file_exists } from "../components/form/validators/file_exists";
 export class Application extends StepHandler(CoreObject)
 {
     _steps=["debug","preconfig","maker","api", "configuration", "router", "form","user", "selector", "app", "vue"];
@@ -82,6 +83,7 @@ export class Application extends StepHandler(CoreObject)
         Vue.use(VeeValidate);
         
 
+        Validator.extend('file_exists', file_exists);
         Validator.extend('host', host);
         Validator.extend('path', path);
         Vue.component('list',List);
