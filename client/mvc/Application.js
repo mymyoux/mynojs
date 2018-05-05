@@ -18,6 +18,7 @@ import { make, register } from "../../common/maker/make";
 import { User } from "../models/User";
 import { Validator } from 'vee-validate';
 import { host } from "../components/form/validators/host";
+import { path } from "../components/form/validators/path";
 export class Application extends StepHandler(CoreObject)
 {
     _steps=["debug","preconfig","maker","api", "configuration", "router", "form","user", "selector", "app", "vue"];
@@ -82,6 +83,7 @@ export class Application extends StepHandler(CoreObject)
         
 
         Validator.extend('host', host);
+        Validator.extend('path', path);
         Vue.component('list',List);
         Vue.component('f-radiolist', FRadioList);
         Vue.component('f-file', FFile);
