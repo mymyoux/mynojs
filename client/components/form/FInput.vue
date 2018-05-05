@@ -1,8 +1,8 @@
 <template>
     <div>
-        <label>{{label}}</label>
-        <input :type="type" @change="onChange" :disabled="disabled" v-model="val">
-         
+        <label v-if="localLabel">{{localLabel}}</label>
+        <input :type="type" @change="onChange" :disabled="disabled" v-model="val" :min="min" :max="max">
+        <span v-if="name && errors.has(name)">{{errors.first(name)}}</span>
    </div> 
 </template>
 
@@ -12,6 +12,7 @@ import Vue from 'vue';
 import FElement from "./FElement";
 
 @Component({
+    inject: ['$validator'],
     $_veeValidate: {
         //not used when using v-model
         value () {
@@ -20,10 +21,13 @@ import FElement from "./FElement";
     },
     props:
     {
-        value:{},
+        disabled:{type:Boolean, default:false},
         label:{type:String},
+        min:{type:Number},
+        max:{type:Number},
+        name:{type:String},
         type:{type:String, required:true},
-        disabled:{type:Boolean, default:false}
+        value:{},
     },
      watch: {
         value (newVal, oldVal) {
@@ -33,7 +37,7 @@ import FElement from "./FElement";
         },
         val (newVal, oldVal) {
             if (newVal !== oldVal) {
-                this.$emit('input', newVal)
+                this.emit(newVal);
             }
         }
     }
@@ -42,11 +46,21 @@ export default class FInput extends FElement
 {
     data()
     {
-        return {val:null};
+        return {val:null,localLabel:null};
     }
     onChange()
     {
+        this.emit(this.val);
         this.$emit('input', this.val);
+    }
+    emit(value)
+    {
+        if(this.type == "number")
+        {
+            this.$emit('input', parseInt(value, 10))
+        }else{
+            this.$emit('input', value)
+        }
     }
     mounted()
     {
@@ -54,7 +68,14 @@ export default class FInput extends FElement
         {
             this.val = this.value;
         }
-        
+        if(this.label)
+        {
+            this.localLabel = this.label
+        }else
+        if(this.name)
+        {
+            this.localLabel = this.name+":";
+        }
         super.mounted();
     }
 }
