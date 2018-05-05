@@ -74,6 +74,15 @@ export default class FColor extends FElement
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+    ul
+    {
+        display:flex;
+        li
+        {
+            width:20px;
+            height:20px;
+        }
+    }
     .selected
     {
         border-color:red;
