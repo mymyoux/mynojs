@@ -39,6 +39,22 @@ import FElement from "./FElement";
             if (newVal !== oldVal) {
                 this.emit(newVal);
             }
+        },
+        label(newVal, oldVal)
+        {
+            if (newVal !== oldVal) {
+               if(newVal)
+               {
+                   this.localLabel = newVal;
+               }else
+               if(this.name)
+               {
+                   this.localLabel = this.name+":";
+               }else
+               {
+                   this.localLabel = null;
+               }
+            }
         }
     }
 })
@@ -76,6 +92,7 @@ export default class FInput extends FElement
         {
             this.localLabel = this.name+":";
         }
+        debugger;
         super.mounted();
     }
 }
