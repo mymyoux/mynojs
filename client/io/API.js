@@ -119,7 +119,7 @@ export class API extends CoreObject
             }
             if(!fromAPI && request._exception)
             {
-                return Promise.reject(request);
+                return Promise.reject([request]);
             }
             return [request];
         }); 
@@ -224,10 +224,6 @@ class Request
         this._config = Object.assign(this._config, config);
         return this;
     }
-    hasNext()
-    {
-        return this._api_data && this._api_data.paginate && !this._api_data.full;
-    }
     getPath()
     {
         return this._request.path;
@@ -264,7 +260,7 @@ class Request
             return  this._promise.then(resolve, reject);
         }
         this._executing = true;
-       return this._promise = this._api.load(this).then(resolve, reject).then((data)=>
+       return this._promise = this._api.load(this).then((data)=>
         {
             this._executing = false;
             this._executed = true;
@@ -274,7 +270,7 @@ class Request
             this._executing = false;
             this._executed = true;
             return Promise.reject(error);
-        });
+        }).then(resolve, reject)
     }
     stream(resolve, reject)
     {
@@ -296,6 +292,10 @@ class Request
     {
         this._exception = value;
         this._loaded = true;
+    }
+    get [Symbol.toStringTag]()
+    {
+        return this._request.path;
     }
 }
 let ___api = API.register({});
