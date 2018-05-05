@@ -128,9 +128,11 @@ export class API
                     data = data.writeExternal(user);
                 }
                 return data;
-            }).then(resolve);
+            }).then(resolve).catch((error)=>
+            {
+                reject(error);
+            });
         });
-        return Promise.resolve().then(resolve, reject);
     }
 }
 export const api = function()

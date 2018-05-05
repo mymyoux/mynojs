@@ -6,6 +6,7 @@ import { config } from "../../../common/env/Configuration";
 import fs from "fs";
 import https from "https";
 import { api } from "../API";
+import bodyParser from "body-parser";
 export class Express extends StepHandler(CoreObject)
 {
     _steps = ["configuration"]
@@ -16,6 +17,10 @@ export class Express extends StepHandler(CoreObject)
     {
         super();
         this._app = express();
+        this._app.use( bodyParser.json() );       // to support JSON-encoded bodies
+        this._app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+            extended: true
+        })); 
         var proxy = new Proxy(this, WrapProxy('_app'));
         return proxy;
     }
@@ -52,8 +57,10 @@ export class Express extends StepHandler(CoreObject)
         });
     }
     async onRequest(request, result) {
+        let params = Object.assign(request.query, request.body);
+
         let path = request.path.substring(1);
-        api().path(path).sender(request).execute().then((data)=>
+        api().path(path).sender(request).params(params).execute().then((data)=>
         {
             result.setHeader('Content-Type', 'application/json');
             result.send(JSON.stringify({

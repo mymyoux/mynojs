@@ -95,7 +95,7 @@ export class Model extends CoreObject {
                     value = value.replace('%root-path%', this.getRootPath());
                 }
                 else if (key == "id-name") {
-                    value = value.replace('%id-name%', this.getIDName());
+                    value = value.replace('%id-name%', typeof this.getIDName == "function"?this.getIDName():"id");
                 }
                 else if (key == "id") {
                     value = value.replace('%id%', "" + this.getID());
