@@ -16,6 +16,8 @@ import FInput  from "myno/client/components/form/FInput";
 import VeeValidate from 'vee-validate';
 import { make, register } from "../../common/maker/make";
 import { User } from "../models/User";
+import { Validator } from 'vee-validate';
+import { host } from "../components/form/validators/host";
 export class Application extends StepHandler(CoreObject)
 {
     _steps=["debug","preconfig","maker","api", "configuration", "router", "form","user", "selector", "app", "vue"];
@@ -77,6 +79,9 @@ export class Application extends StepHandler(CoreObject)
      
 
         Vue.use(VeeValidate);
+        
+
+        Validator.extend('host', host);
         Vue.component('list',List);
         Vue.component('f-radiolist', FRadioList);
         Vue.component('f-file', FFile);
