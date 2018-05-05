@@ -6,7 +6,7 @@
         </template>
         <template v-else>
             <input type="file" @change="onFile" ref="file" :placeholder="file && file.path">
-            <span v-if="showPrevious">{{typeof value == "string"?value:value.path}}</span>
+            <span v-if="showPrevious && value">{{typeof value == "string"?value:value.path}}</span>
         </template>
    </p> 
 </template>
