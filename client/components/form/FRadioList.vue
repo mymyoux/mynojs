@@ -11,6 +11,7 @@
 <script>
 import {VueComponent, Component, Prop, Watch, Emit, Provide,Event} from "../../mvc/VueComponent";
 import FElement from "./FElement";
+import { Objects } from "../../../common/utils/Objects";
 
 @Component({
     $_veeValidate: {
@@ -20,11 +21,58 @@ import FElement from "./FElement";
         }
     },
     props:
-    {
+    { 
         value:{},
         list:{},
         multiple:{default:false,type:Boolean},
-        none:{default:false,type:Boolean}
+        none:{default:false,type:Boolean},
+        object:{default:false, type:Boolean},
+        objectFull:{default:false, type:Boolean}
+    },
+    watch:{
+        value(newVal, oldVal)
+        {
+            if (!Objects.deepEquals(newVal, oldVal))
+            {
+                if(newVal == null)
+                {
+                    newVal = [];
+                }
+                if(!Array.isArray(newVal))
+                {
+                    if((this.object || this.objectFull) && typeof newVal == "object")
+                    {
+                        newVal = Object.keys(newVal).filter((item)=>newVal[item]);
+                    }else
+                    {
+                        newVal = [newVal];
+                    }
+                }
+                this.selected = newVal;
+                this._emitValue();
+            }
+        },
+        multiple(newVal, oldVal)
+        {
+            if (newVal !== oldVal) {
+                //needs to retrigger due to difference value format
+                this._emitValue();
+            }
+        },
+        object(newVal, oldVal)
+        {
+            if (newVal !== oldVal) {
+                //needs to retrigger due to difference value format
+                this._emitValue();
+            }
+        },
+        list(newVal, oldVal)
+        {
+            if (newVal !== oldVal && this.objectFull) {
+                //needs to retrigger due to difference value format
+                this._emitValue();
+            }
+        }
     }
 })
 export default class FRadioList extends FElement
@@ -55,19 +103,55 @@ export default class FRadioList extends FElement
    }
    _emitValue()
    {
-       if(this.multiple)
+       if(this.object || this.objectFull)
        {
-           this.$emit("input", this.selected);
+           if(this.objectFull)
+           {
+            this.$emit("input", this.list.reduce((previous, item)=>
+               {
+                   previous[item] = !!~this.selected.indexOf(item);
+                   return previous;
+               },{}));
+           }else
+           {
+               this.$emit("input", this.selected.reduce((previous, item)=>
+               {
+                   previous[item] = true;
+                   return previous;
+               },{}));
+           }
        }else
        {
-           this.$emit("input", this.selected[0]);
+           if(this.multiple)
+           {
+               this.$emit("input", this.selected);
+           }else
+           {
+               this.$emit("input", this.selected[0]);
+           }
        }
    }
     mounted()
     {
         if(this.value != undefined)
         {
-            this.selected = Array.isArray(this.value)?this.value.slice():[this.value];
+            let value = this.value;
+            if(value == null)
+            {
+                value = [];
+            }
+            if(!Array.isArray(value))
+            {
+                if((this.object || this.objectFull) && typeof value == "object")
+                {
+                    value = Object.keys(value).filter((item)=>value[item]);
+                }
+            }
+            if(!Array.isArray(value))
+            {
+                    value = [value];
+            }
+            this.selected = value;
         }
         this.items = this.list;
         super.mounted();
