@@ -4,6 +4,7 @@ import { bus } from "../../common/events/Bus";
 import { Strings } from '../../common/utils/Strings';
 import { Global } from '../../common/annotations/Global';
 import { log } from '../../common/annotations/Global';
+import { root } from '../../common/env/Root';
 
 
 
@@ -50,6 +51,22 @@ export class VueComponent extends Vue
         VueComponent.onBeforeMounted(this);
         
         console.log('beforeMount');
+    }
+    emit(name, ...data)
+    {
+        let current = this;
+        do
+        {
+            if(current._events[name])
+            {
+                return current.$emit(name, ...data);
+            }else
+            {
+                current = current.$parent;
+            }
+        }while(current);
+        var event = new CustomEvent(name, {bubbles:true,detail:data})
+        this.$el.dispatchEvent(event);
     }
     mounted()
     {
