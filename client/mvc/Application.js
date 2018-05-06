@@ -20,9 +20,10 @@ import { Validator } from 'vee-validate';
 import { host } from "../components/form/validators/host";
 import { path } from "../components/form/validators/path";
 import { file_exists } from "../components/form/validators/file_exists";
+import { Model } from "../../common/mvc/Model";
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["debug","preconfig","maker","api", "configuration", "router", "form","user", "selector", "app", "vue"];
+    _steps=["debug","model","preconfig","maker","api", "configuration", "router", "form","user", "selector", "app", "vue"];
     _router =  null;
     _selector =  null;
     _app =  null;
@@ -35,6 +36,10 @@ export class Application extends StepHandler(CoreObject)
     debug()
     {
         window.getAllScroll = getAllScroll;
+    }
+    model()
+    {
+        //Model.ID_NAME = "_id";
     }
     maker()
     {

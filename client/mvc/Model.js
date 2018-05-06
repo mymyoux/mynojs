@@ -5,7 +5,8 @@ import { LocalForage } from "../data/Forage";
 import { Strings } from "../../common/utils/Strings";
 import { API } from "../io/API";
 import { Classes } from "../../common/utils/Classes";
-export class Model extends CoreObject {
+import {Model as BaseModel} from "../../common/mvc/Model";
+export class Model extends BaseModel {
     constructor() {
         super();
         Object.defineProperty(this, "_pathLoaded", {
@@ -14,27 +15,8 @@ export class Model extends CoreObject {
         });
         this._pathLoaded = {};
     }
-    getClassName()
-    {
-        return Classes.getName(this);
-    }
-   
-    getID()
-    {
-        return this.id;
-    }
     getRootPath() {
         return this.getModelName();
-    }
-    getModelName() {
-        if (!this._modelName) {
-            var name = this.getClassName();
-            name = name.replace('Model', '').toLowerCase();
-            if (typeof this == "function")
-                return name;
-            this._modelName = name;
-        }
-        return this._modelName;
     }
     _path(path) {
         if (path.substring(0, 1) == ".") {
@@ -47,39 +29,6 @@ export class Model extends CoreObject {
     }
     cache() {
         return LocalForage.instance().war(this.getClassName());
-    }
-    readExternal(input, path = null) {
-        for (var p in input) {
-            if (typeof this[p] == "function") {
-                 console.warn("you overwrite function: "+p);
-            }
-            this[p] = input[p];
-        }
-    }
-    /**
-    * Returns model's data
-    * @returns {any}
-    */
-    writeExternal() {
-        var external = {};
-        for (var p in this) {
-            //TODO:check this not sure if needed
-            // if(!this.hasOwnProperty(p))
-            //     continue;
-            if (typeof this[p] == "function") {
-                continue;
-            }
-            if (Strings.startsWith(p, "_")) {
-                continue;
-            }
-            if (this[p] && typeof this[p] == "object" && typeof this[p]['writeExternal'] === 'function') {
-                external[p] = this[p]['writeExternal']();
-            }
-            else {
-                external[p] = this[p];
-            }
-        }
-        return external;
     }
     /**
      * Replace %key% in strings
@@ -95,7 +44,7 @@ export class Model extends CoreObject {
                     value = value.replace('%root-path%', this.getRootPath());
                 }
                 else if (key == "id-name") {
-                    value = value.replace('%id-name%', typeof this.getIDName == "function"?this.getIDName():"id");
+                    value = value.replace('%id-name%', this.getIDName());
                 }
                 else if (key == "id") {
                     value = value.replace('%id%', "" + this.getID());
