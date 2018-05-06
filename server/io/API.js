@@ -2,6 +2,7 @@ import { Objects } from "../../common/utils/Objects";
 import { Strings } from "../../common/utils/Strings";
 import path from "path";
 import fs from "fs";
+import colors from "colors";
 export class API
 {
 
@@ -32,19 +33,14 @@ export class API
         var parts = name.split("/");
         //var cls = global.requirejs('main/controllers' + name)[parts[parts.length - 1]];
         let className = Strings.Camel(parts[0]);
-        console.log('Controller path:'+config('api.controllers'));
         let controllerPath = path.join(config('api.controllers'),className);
         let file = controllerPath+".js";
         if(!fs.existsSync(file))
         {
-            console.log('path doesnt exist');
+            console.log('API['+colors.red('error')+'] '+colors.red('path doesnt exist'));
             controllerPath = path.join(__dirname, "../controllers", className);
-        }else
-        {
-
-            console.log('path  exist');
         }
-        console.log(controllerPath);
+        
         var cls = require(controllerPath)[className];//[parts[parts.length - 1]];
         this._controllers[name] = new cls();
         let boot;
@@ -77,9 +73,9 @@ export class API
 
     execute()
     {
+        console.log("API["+colors.red(this._path)+"]");
         return new Promise(async (resolve, reject)=>
         {
-            console.log('THEN')
             let path = this._path;
             var parts = path.split('/');
             var action = parts.pop();
@@ -90,9 +86,7 @@ export class API
             var controller = parts.join('/');
             if (!this._controllers[controller]) {
                 try {
-                    console.log('before');
                     var resultAPI = await this.loadController(controller);
-                    console.log('after');
                     // var cls = (<any>global).requirejs('myno/server/controllers/'+controller)[parts[parts.length-1]];
                     // this.apicontrollers[controller] = new cls();
                     // console.log('initializating '+ controller);
@@ -100,7 +94,7 @@ export class API
                     // console.log('initializated '+ controller);
                 }
                 catch (error) {
-                    console.log('after error');
+                    console.log(colors.red('API ERROR'));
                     if (error) {
                         console.error(error);
                     }

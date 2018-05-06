@@ -6,9 +6,10 @@ import { Hardware } from "../../common/env/Hardware";
 import { Window } from "../electron/Window";
 import path from "path";
 import electron from "../../common/electron/Electron";
+import { Model } from "../../common/mvc/Model";
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["configuration", "server","window"];
+    _steps=["model","configuration", "database", "server","window"];
     constructor()
     {
         super();
@@ -18,12 +19,20 @@ export class Application extends StepHandler(CoreObject)
        await super.boot();
        this.booted();
     }
+    model()
+    {
+        //Model.ID_NAME = "_id";
+    }
     configuration()
     {
         return configurationLoader.boot().then(()=>
         {
                 console.log("Environment: "+Configuration.env());
         })
+    }
+    database()
+    {
+
     }
     booted()
     {

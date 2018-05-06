@@ -87,7 +87,6 @@ export class Express extends StepHandler(CoreObject)
         });
 
        // result.status(404).send("Sorry can't find that!")
-        console.log('ON REQUEST', request.path);
     }
     // use(middleware)
     // {   
