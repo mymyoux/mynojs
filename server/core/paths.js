@@ -33,6 +33,9 @@ global.public_path = function (folder) {
 global.source_path = function (folder) {
     return base_path(path.join('src', folder ? folder : ""));
 };
-
+global.data_path = function(folder)
+{
+    return base_path(path.join("data", folder?folder:""));
+}
 console.log('app_path:'+app_path());
 console.log('config_path:'+config_path());
