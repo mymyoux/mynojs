@@ -1,8 +1,15 @@
 <template>
   <li>
-      <div class="item" :class="{children:model.children && model.children.length, open:model.open}" @click="onClick">{{model.label}}</div>
+     <template v-if="model.children && model.children.length">
+            <div v-if="!folderComponent" class="item children" :class="{open:model.open}" @click="onClick">{{model.label}}</div>
+            <component :is="folderComponent" v-else class="item children" :class="{open:model.open}"  :value="model" @click="onClick">{{model.label}}</component>
+    </template>
+    <template v-else>
+        <div v-if="!itemComponent" class="item">{{model.label}}</div>
+        <component v-else :is="itemComponent" class="item" :value="model"></component>
+    </template>
       <ul v-if="model.children && model.children.length && model.open">
-          <tree-item v-for="item, i in model.children" :model="item" :key="i"></tree-item>
+          <tree-item v-for="item, i in model.children" :model="item" :key="i"  :item-component="itemComponent"  :folder-component="folderComponent"></tree-item>
       </ul>
   </li>
 </template>
@@ -14,7 +21,9 @@ import {VueComponent, Event, Component} from "../../mvc/VueComponent";
 @Component({
     props:
     {
-        model:{required:true}   
+        model:{required:true},
+        itemComponent:{required:false},
+        folderComponent:{required:false},   
     }
 })
 export default class TreeItem extends VueComponent
