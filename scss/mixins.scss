@@ -1,0 +1,318 @@
+$S:     330px;   //mobile
+$M:     768px;   //tablet
+$L:     1170px;  //desktop
+$XL:    1370px;  //wide
+$XXL:   1371px;  //HD
+$XXXL:  1600px;  //option
+
+$sizes:(S:$S,M:$M, L:$L, XL:$XL, XXL:$XXL, XXXL:$XXXL);
+
+// media queries
+/*
+@mixin MQ($canvas) {
+  @if $canvas == S {
+   @media only screen and (max-width: $S) { @content; }
+  }
+  @else if $canvas == M {
+   @media only screen and (max-width: $M) { @content; }
+  }
+  @else if $canvas == L {
+   @media only screen and (max-width: $L) { @content; }
+  }
+  @else if $canvas == XL {
+    @media only screen and (max-width: $XL) { @content; }
+  }
+  @else if $canvas == XXL {
+   @media only screen and (min-width: $XXL) { @content; }
+  }
+  @else if $canvas == XXXL {
+   @media only screen and (min-width: $XXXL) { @content; }
+  }
+}
+*/
+@mixin MQ($canvas)
+{
+  @if $canvas == S
+  {
+    @media only screen and (max-width: $S) and (max-device-width: $S), only screen and (max-width: $S) { @content;  }
+  }
+  @else if $canvas == M {
+    @media only screen and (max-width: $M) and (max-device-width: $M), only screen and (max-width: $M)  { @content; }
+  }
+  @else if $canvas == L {
+    @media only screen and (max-width: $L) and (max-device-width: $L), only screen and (max-width: $L) { @content; }
+  }
+  @else if $canvas == XL {
+    @media only screen and (max-width: $XL) and (max-device-width: $XL), only screen and (max-width: $XL) { @content; }
+  }
+  @else if $canvas == XXL {
+    @media only screen and (min-width: $XXL) and (min-device-width: $XXL), only screen and (min-width: $XXL) { @content; }
+  }
+  @else if $canvas == XXXL {
+    @media only screen and (min-width: $XXXL) and (min-device-width: $XXXL), only screen and (min-width: $XXXL) { @content; }
+  }
+}
+@mixin AMQ($canvas) {
+  @if $canvas == S {
+   @media only screen and (min-width: $S) { @content; }
+  }
+  @else if $canvas == M {
+   @media only screen and (min-width: $M) { @content; }
+  }
+  @else if $canvas == L {
+   @media only screen and (min-width: $L) { @content; }
+  }
+  @else if $canvas == XL {
+   @media only screen and (min-width: $XL) { @content; }
+  }
+  @else if $canvas == XXL {
+   @media only screen and (min-width: $XXL) { @content; }
+  }
+  @else if $canvas == XXXL {
+   @media only screen and (min-width: $XXXL) { @content; }
+  }
+}
+
+// Function
+@function get-vw($target, $breakpoint) {
+  $bk: map-get($sizes, $breakpoint);
+  // 1 vw is equal to 1% of the viewport width
+  $vw-context: ($bk * .01); // 1% viewport width
+  @return ($target/$vw-context) * 1vw;
+}
+
+// Mixin
+@mixin vw($size, $breakpoint) {
+  font-size: $size;
+  font-size: get-vw($size, $breakpoint);
+  // Prevent font-size from getting too big
+  @include AMQ($breakpoint) {
+    font-size: $size;
+  }
+}
+
+
+// BACKGROUND COLOR
+
+@mixin back_black($opacity_black){
+  background: rgba(0,0,0, $opacity_black);
+}
+@mixin back_white($opacity_white){
+  background: rgba(255,255,255, $opacity_white);
+}
+@mixin txt_black($opacity_black){
+  color: rgba(0,0,0, $opacity_black);
+}
+@mixin txt_white($opacity_white){
+  color: rgba(255,255,255, $opacity_white);
+}
+
+// CLASSES
+@mixin pre
+{
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+@mixin uppercase{
+  text-transform: uppercase;
+}
+@mixin underline{
+  text-decoration: underline;
+}
+@mixin bold{
+  font-weight:bold;
+}
+@mixin full{
+  width: 100%;
+  height: 100%;
+}
+@mixin overflow_txt($max-width){
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: $max-width;
+}
+@mixin overflow_no_txt{
+  text-overflow: clip;
+  white-space: nowrap;
+  overflow: visible;
+}
+@mixin overflow_slide($max-width){
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  max-width: $max-width;
+}
+@mixin arial{
+  font-family: 'Helvetica', 'Arial', sans-serif;
+}
+
+@mixin proxima-nova{
+  font-family:'ProximaNovaA-Regular', 'Helvetica', 'Arial', sans-serif;
+}
+@mixin proxima-nova-semibold{
+  font-family:'ProximaNovaA-SemiBold', 'Helvetica', 'Arial', sans-serif;
+}
+@mixin proxima-nova-light{
+  font-family:'ProximaNovaA-Light', 'Helvetica', 'Arial', sans-serif;
+}
+
+
+// POSITION
+
+@mixin absolute-top-right($x, $y){
+  position: absolute;
+  top: $y;
+  right: $x;
+}
+
+@mixin absolute-top-left($x, $y){
+  position: absolute;
+  top: $y;
+  left: $x;
+}
+
+@mixin absolute-bottom-right($x, $y){
+  position: absolute;
+  bottom: $y;
+  right: $x;
+}
+@mixin absolute-bottom-left($x, $y){
+  position: absolute;
+  bottom: $y;
+  left: $x;
+}
+@mixin fixed-top-right($x, $y){
+  position: fixed;
+  top: $y;
+  right: $x;
+}
+@mixin fixed-top-left($x, $y){
+  position: fixed;
+  top: $y;
+  left: $x;
+}
+
+@mixin fixed-bottom-right($x, $y){
+  position: fixed;
+  bottom: $y;
+  right: $x;
+}
+@mixin fixed-bottom-left($x, $y){
+  position: fixed;
+  bottom: $y;
+  left: $x;
+}
+@mixin vertical-center($vertical-position){
+  display: inline-block;
+  vertical-align: $vertical-position;
+}
+
+@mixin vertical-align
+{
+  position:relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@mixin txt-center($vertical-position){
+    display: table-cell;
+    vertical-align: $vertical-position;
+  }
+  @mixin relative-z-index($z-index){
+    position: relative;
+    z-index: $z-index;
+  }
+  @mixin notransition{
+    @include transition(all 0s linear);
+  }
+
+$width-iphone :  320px;
+$height-iphone :  480px;
+
+$width-nexus :  384px;
+$height-nexus :  598px;
+
+$width-galaxy :  360px;
+$height-galaxy :  640px;
+
+$width-ipad : 768px;
+$height-ipad : 1024px;
+
+
+@mixin mobile-resolution($phone-resolution, $orientation : portrait) {
+
+  @if($orientation == portrait or $orientation == all){
+    @media screen and (orientation:portrait){
+      @if $phone-resolution == iphone or $phone-resolution == all {
+        @media only screen and (max-width: $width-galaxy - 1 )  { @content; }
+      }
+      @if $phone-resolution == galaxy or $phone-resolution == all {
+        @media only screen and (min-width: $width-galaxy) and (max-width: $width-nexus - 1 ) { @content; }
+      }
+      @if $phone-resolution == nexus or $phone-resolution == all {
+        @media only screen and (min-width: $width-nexus) and (max-width: $width-ipad - 1 ) { @content; }
+      }
+      @if $phone-resolution == ipad or $phone-resolution == all {
+        @media only screen and (min-width: $width-ipad) and (max-width: $max-with-all ) { @content; }
+      }
+    }
+  }
+
+  @if($orientation == landscape or $orientation == all){
+    @media screen and (orientation:landscape){
+      @if $phone-resolution == iphone or $phone-resolution == all {
+        @media only screen and (max-width: $height-nexus - 1 ) { @content; }
+      }
+      @if $phone-resolution == nexus or $phone-resolution == all {
+        @media only screen and (min-width: $height-nexus) and (max-width: $height-galaxy - 1 ) { @content; }
+      }
+      @if $phone-resolution == galaxy or $phone-resolution == all {
+        @media only screen and (min-width: $height-galaxy) and (max-width: $height-ipad - 1 ) { @content; }
+      }
+      @if $phone-resolution == ipad or $phone-resolution == all {
+        @media only screen and (min-width: $height-ipad) { @content; }
+      }
+    }
+  }
+}
+
+
+@mixin screen-resolution($resolution-min, $resolution-max : none){
+
+  @if $resolution-max == 0 {
+    @media only screen and (max-width: $resolution-min) { @content; }
+  }
+  @else {
+    @media only screen and (min-width: $resolution-min) and (max-width: $resolution-max) { @content; }
+  }
+}
+
+@mixin litransparentize($colour)
+{
+  @for $i from 0 through 10 {
+    &:nth-child(11n+#{$i}){
+      background: transparentize($colour, (($i)%11)/10);
+    }
+  }
+}
+
+
+@mixin stripes($rotation, $background_color, $stripes...)
+{
+
+  $line:($rotation);
+  $x:0px;
+  @for $i from 1 through length($stripes)
+ {
+  $stripe:nth($stripes, $i);
+    $line:append($line, (nth($stripe,1) $x), comma);
+    $x:$x+nth($stripe, 2);
+    $line:append($line, (nth($stripe,1) $x), comma);
+ }
+  background-color: $background_color;
+  background-image: repeating-linear-gradient($line)
+}
