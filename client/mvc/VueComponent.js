@@ -41,6 +41,10 @@ export class VueComponent extends Vue
         }
         return this.getComponent(element.parentNode);
     }
+    data()
+    {
+        return {};
+    }
     beforeMount()
     {
         VueComponent.onBeforeMounted(this);
@@ -125,7 +129,7 @@ export function Event(event)
             { 
                 target.___events.forEach((event)=>
                 {
-                    bus.on(event, descriptor.value, target);
+                    bus.on(event, descriptor.value, this);
                 });
 
                 if( target.____beforeMount)
@@ -137,7 +141,7 @@ export function Event(event)
             {
                 target.___events.forEach((event)=>
                 {
-                    bus.off(event, descriptor.value, target);
+                    bus.off(event, descriptor.value, this);
                 });
                 if( target.____destroyed)
                 {
@@ -145,6 +149,7 @@ export function Event(event)
                 }
             }
         }else{
+            //TODO:maybe this instead of target
             bus.on(event, descriptor.value, target);
         }
         return descriptor;

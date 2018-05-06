@@ -13,6 +13,8 @@ import FRadioList  from "myno/client/components/form/FRadioList";
 import List  from "myno/client/components/List";
 import FColor  from "myno/client/components/form/FColor";
 import FInput  from "myno/client/components/form/FInput";
+import Tree  from "myno/client/components/Tree";
+import TreeItem  from "myno/client/components/tree/TreeItem";
 import VeeValidate from 'vee-validate';
 import { make, register } from "../../common/maker/make";
 import { User } from "../models/User";
@@ -96,6 +98,8 @@ export class Application extends StepHandler(CoreObject)
         Vue.component('f-file', FFile);
         Vue.component('f-color', FColor);
         Vue.component('f-input', FInput);
+        Vue.component('tree', Tree);
+        Vue.component('tree-item', TreeItem);
     }
     routes()
     {
