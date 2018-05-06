@@ -1,0 +1,67 @@
+import { Configuration } from "../env/Configuration";
+import { CoreObject } from "../core/CoreObject";
+import { Arrays } from "../utils/Arrays";
+import { Strings } from "../utils/Strings";
+import { Classes } from "../utils/Classes";
+export class Model extends CoreObject {
+    static ID_NAME = "id";
+    constructor() {
+        super();
+    }
+    getClassName()
+    {
+        return Classes.getName(this);
+    }
+   
+    getID()
+    {
+        return this[this.getIDName()];
+    }
+    getIDName()
+    {
+        return this.constructor.ID_NAME;
+    }
+    getModelName() {
+        if (!this._modelName) {
+            var name = this.getClassName();
+            name = name.replace('Model', '').toLowerCase();
+            if (typeof this == "function")
+                return name;
+            this._modelName = name;
+        }
+        return this._modelName;
+    }
+    readExternal(input, path = null) {
+        for (var p in input) {
+            if (typeof this[p] == "function") {
+                 console.warn("you overwrite function: "+p);
+            }
+            this[p] = input[p];
+        }
+    }
+    /**
+    * Returns model's data
+    * @returns {any}
+    */
+    writeExternal() {
+        var external = {};
+        for (var p in this) {
+            //TODO:check this not sure if needed
+            // if(!this.hasOwnProperty(p))
+            //     continue;
+            if (typeof this[p] == "function") {
+                continue;
+            }
+            if (Strings.startsWith(p, "_")) {
+                continue;
+            }
+            if (this[p] && typeof this[p] == "object" && typeof this[p]['writeExternal'] === 'function') {
+                external[p] = this[p]['writeExternal']();
+            }
+            else {
+                external[p] = this[p];
+            }
+        }
+        return external;
+    }
+}
