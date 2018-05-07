@@ -62,6 +62,7 @@ export class Model extends CoreObject {
                 external[p] = this[p];
             }
         }
+        external[this.getIDName()] = this.getID();
         return external;
     }
 }
