@@ -7,6 +7,8 @@ import fs from "fs";
 import https from "https";
 import { api } from "../API";
 import bodyParser from "body-parser";
+import { S_IFIFO } from "constants";
+import { Strings } from "../../../common/utils/Strings";
 export class Express extends StepHandler(CoreObject)
 {
     _steps = ["configuration"]
@@ -58,6 +60,24 @@ export class Express extends StepHandler(CoreObject)
     }
     async onRequest(request, result) {
         let params = Object.assign(request.query, request.body);
+        if(params.__type == "json")
+        Object.keys(params).forEach((item)=>
+        {
+            if(typeof params[item] == "string")
+            {
+                // if(Strings.startsWith(params[item],"{") || Strings.startsWith(params[item],"{"))
+                // {
+                    try
+                    {
+                        params[item] = JSON.parse(params[item]);
+                    }catch(error)
+                    {
+                        //ignore
+                    }
+                //}
+            }
+        });
+        console.log(params);
 
         let path = request.path.substring(1);
         api().path(path).sender(request).params(params).execute().then((data)=>

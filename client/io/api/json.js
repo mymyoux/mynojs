@@ -7,11 +7,20 @@ export class json extends adapter
     {
         super();
         this._adapterConfig = Object.assign({
-            paramsSerializer: function(params) {
-                return Qs.stringify(params, {arrayFormat: 'indices'})
-              }
+            // paramsSerializer: function(params) {
+            //     return Qs.stringify(params, {arrayFormat: 'indices'})
+            //   }
         }, config?config:{});
+
+        if(this._adapterConfig.indices)
+        {
+            this._adapterConfig.paramsSerializer =this.paramsSerializer;
+        }
     }
+    paramsSerializer(params)
+   {
+        return Qs.stringify(params, {arrayFormat: 'indices'})
+   } 
     load(request)
     {
         let req = request._request;
@@ -21,7 +30,7 @@ export class json extends adapter
         config.method = "post";
 
 
-        let fullurl = config.url+"?"+config.paramsSerializer(req.params);
+        let fullurl = config.url+"?"+this.paramsSerializer(req.params);
         if(fullurl.length<2000)
         {
             config.method = "get";
@@ -31,6 +40,22 @@ export class json extends adapter
             config.method= "post";
             config.data = req.params;
         }
+        if(config.data)
+            if(this._adapterConfig.indices)
+            {
+                config.data.__type = "indices";
+            }else
+            {
+                config.data.__type = "json"
+            }
+        if(config.params)
+            if(this._adapterConfig.indices)
+            {
+                config.params.__type = "indices";
+            }else
+            {
+                config.params.__type = "json"
+            }
         return axios(config).then((response)=>
         {
             request.setapidata(response.data.api_data);
