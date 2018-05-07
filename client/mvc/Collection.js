@@ -200,11 +200,19 @@ export function Collection(A) {
                 if(!this._request)
                 {
                     this._request = this.request(config);
+                }else
+                {
+                    if(config.removePreviousModels)
+                    {
+                        this._request.reset();
+                    }
                 }
                 if(config.removePreviousModels)
                 {
                     this.clearModels();
                 }
+                if(params)
+                    this._request.params(params);
                 return this._request.then((data)=>
                 {
                     this._computePaginate();
@@ -238,7 +246,6 @@ export function Collection(A) {
                 if (current.next && current.next.length) {
                     this._request.next = current.next;
                     let isNextAll = true;
-                    debugger;
 						for (let i = 0; i < current.next.length; i++) {
 							if (!((this._request.__paginate.nextAll[i] < current.next[i] && current.directions[i] > 0) || (this._request.__paginate.nextAll[i] > current.next[i] && current.directions[i] < 0))) {
 								if (this._request.__paginate.nextAll[i] == current.next[i]) {
@@ -301,7 +308,8 @@ export function Collection(A) {
                 }
                 let params = Objects.clone(this._request._request.params);
                 this._request.reset();
-                this._request._request.params.paginate = paginate;
+                params.paginate = paginate;
+                this._request._request.params = params;
 
                 return this._request.then((data)=>
                 {
