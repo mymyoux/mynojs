@@ -31,6 +31,14 @@ import FElement from "./FElement";
         }},
         custom:{default:true, type:Boolean},
         none:{default:false,type:Boolean}
+    },
+    watch:{
+        value(newVal, oldVal)
+        {
+             if (newVal !== oldVal) {
+                this.selected = newVal?newVal.toLowerCase():null;
+            }
+        }
     }
 })
 export default class FColor extends FElement
