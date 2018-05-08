@@ -1,9 +1,19 @@
 <template>
     <div class="contextmenu" v-if="value"  :style="{left:x+'px',top:y+'px'}" v-click-outside="onOutside">
-        <tree  :value="value" :item-component="itemComponent" :folder-component="folderComponent" @item-select="onItemSelect"></tree>
+        <tree  :value="value" :item-component="itemComponent" :folder-component="folderComponent" @item-select="onItemSelect">
+           <template slot="item" slot-scope="_">
+                    <div v-if="_.item.type == 'separator'">
+                        ------
+                    </div>
+                    <div v-else>
+                        {{_.item.label}}
+                    </div>
+           </template>
+            
+        </tree>
     </div>
 </template>
-
+ 
 <script>
 
 
@@ -26,6 +36,7 @@ export default class ContextMenu extends VueComponent
     }
     onOutside()
     {
+        console.log('outside');
         this.close();
     }
     close()

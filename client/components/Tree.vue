@@ -1,6 +1,17 @@
 <template>
   <ul class="tree" v-if="model">
-    <tree-item v-for="item,i in model" :model="item" :key="i" @click="onClick" :item-component="itemComponent" :folder-component="folderComponent"></tree-item>
+    <tree-item v-for="item,i in model" :model="item" :key="i" @click="onClick" :item-component="itemComponent" :folder-component="folderComponent">
+         <template slot="item" slot-scope="_" >
+              <slot name="item" v-bind:item="_.item">
+                    {{_.item.label}}
+                </slot>
+        </template>
+         <template slot="folder" slot-scope="_" >
+             <slot name="item" v-bind:item="_.item">
+                    {{_.item.label}}
+            </slot>
+        </template>
+    </tree-item>
   </ul>
 </template>
 

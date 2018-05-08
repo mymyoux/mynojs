@@ -1,15 +1,35 @@
 <template>
   <li>
      <template v-if="model.children && model.children.length">
-            <div v-if="!folderComponent" class="item children" :class="{open:model.open}" @click="onClickFolder">{{model.label}}</div>
+            <div v-if="!folderComponent" class="item children" :class="{open:model.open}" @click="onClickFolder">
+                <slot name="folder" v-bind:item="model">
+                    {{model.label}}
+                </slot>
+            </div>
             <component :is="folderComponent" v-else class="item children" :class="{open:model.open}"  :value="model" @click="onClick">{{model.label}}</component>
     </template>
     <template v-else>
-        <div v-if="!itemComponent" class="item" @click="onClickItem">{{model.label}}</div>
+        
+        <div v-if="!itemComponent" class="item" @click="onClickItem" >
+            <slot name="item" v-bind:item="model">
+                    {{model.label}}
+            </slot>
+        </div>
         <component v-else :is="itemComponent" class="item" :value="model"></component>
     </template>
       <ul v-if="model.children && model.children.length && model.open">
-          <tree-item v-for="item, i in model.children" :model="item" :key="i"  :item-component="itemComponent"  :folder-component="folderComponent"></tree-item>
+          <tree-item v-for="item, i in model.children" :model="item" :key="i"  :item-component="itemComponent"  :folder-component="folderComponent">
+            <template slot="item" slot-scope="_">
+                <slot name="item" v-bind:item="_.item">
+                    {{model.label}}
+                </slot>
+            </template>
+            <template slot="folder" slot-scope="_">
+                <slot name="folder" v-bind:item="_.item">
+                    [{{model.label}}]
+                </slot>
+            </template>
+          </tree-item>
       </ul>
   </li>
 </template>
