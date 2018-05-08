@@ -15,3 +15,5 @@ if(Hardware.isElectron())
     electron = fake;
 }
 export default electron; 
+let remote = electron.remote;
+export {remote};

@@ -101,6 +101,10 @@ export class Hardware {
     static getLanguage() {
         return root && root.navigator && root.navigator.language ? root.navigator.language : "en";
     }
+    static hasTouch()
+    {
+        return 'ontouchstart' in root || (root.navigator && root.navigator.msMaxTouchPoints > 0);
+    }
     /**
      * Get the device's Universally Unique Identifier (UUID).
      * @returns {string}
