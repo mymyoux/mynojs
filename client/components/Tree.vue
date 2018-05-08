@@ -8,12 +8,22 @@
 
 
 import {VueComponent, Event, Component} from "../mvc/VueComponent";
+import { Objects } from "../../common/utils/Objects";
 @Component({
     props:
     {
         value:{required:true},
         itemComponent:{required:false},
         folderComponent:{required:false},
+    },
+    watch:{
+        value:
+        {
+            handler()
+            {
+                this.model = this.prepare(this.value);
+            }
+        }
     }
 })
 export default class Tree extends VueComponent

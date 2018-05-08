@@ -1,11 +1,11 @@
 <template>
   <li>
      <template v-if="model.children && model.children.length">
-            <div v-if="!folderComponent" class="item children" :class="{open:model.open}" @click="onClick">{{model.label}}</div>
+            <div v-if="!folderComponent" class="item children" :class="{open:model.open}" @click="onClickFolder">{{model.label}}</div>
             <component :is="folderComponent" v-else class="item children" :class="{open:model.open}"  :value="model" @click="onClick">{{model.label}}</component>
     </template>
     <template v-else>
-        <div v-if="!itemComponent" class="item">{{model.label}}</div>
+        <div v-if="!itemComponent" class="item" @click="onClickItem">{{model.label}}</div>
         <component v-else :is="itemComponent" class="item" :value="model"></component>
     </template>
       <ul v-if="model.children && model.children.length && model.open">
@@ -31,11 +31,13 @@ export default class TreeItem extends VueComponent
     mounted()
     {
     }
-    onClick(event)
+    onClickFolder(event)
     {
-        //this.$emit('click',event)`
         this.model.open = !this.model.open;
-        console.log(this.model.open);
+    }
+    onClickItem(event)
+    {
+        this.emit("item-select", this.model);
     }
 }
 
