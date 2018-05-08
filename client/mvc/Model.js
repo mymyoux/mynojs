@@ -85,7 +85,7 @@ export class Model extends BaseModel {
         return this.load(this.constructor["PATH_UPDATE"], params, config);
     }
     loadDelete(params, config) {
-        return this.load(this.constructor["PATH_DELETE"], params, config);
+        return this.load(this.constructor["PATH_DELETE"], params, config)
     }
     getLoadPath(path) {
         if (typeof path == "function") {
@@ -210,7 +210,7 @@ export class Model extends BaseModel {
 Model.PATH_CREATE = () => new ModelLoadRequest("%root-path%/create", null, { replaceDynamicParams: true, ignorePathLoadState: true, marksPathAsLoaded: false });
 Model.PATH_GET = () => new ModelLoadRequest("%root-path%/get", { '%id-name%': '%id%' }, { replaceDynamicParams: true });
 Model.PATH_DELETE = () => new ModelLoadRequest("%root-path%/delete", { '%id-name%': '%id%' }, { replaceDynamicParams: true, ignorePathLoadState: true, marksPathAsLoaded: false });
-Model.PATH_UPDATE = () => new ModelLoadRequest("%root-path%/update", { '%id-name%': '%id%' }, { replaceDynamicParams: true, ignorePathLoadState: true, marksPathAsLoaded: false });
+Model.PATH_UPDATE = () => new ModelLoadRequest("%root-path%/update", { '%id-name%': '%id%','%getModelName%':'%writeExternal%' }, { replaceDynamicParams: true, ignorePathLoadState: true, marksPathAsLoaded: false });
 Model.regexp = /%([^%]+)%/g;
 export class ModelLoadRequest {
     constructor(path, params = null, config = null) {
