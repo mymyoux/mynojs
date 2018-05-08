@@ -91,7 +91,11 @@ export class Nedb
         {
             return this.update({_id:record._id},record).then((data)=>
             {
-                console.log(data);
+                if(data.upsert)
+                {
+                    return data.upsert;
+                }
+                return record;
             })
         }
         return this.insert(record);
@@ -140,6 +144,7 @@ export class Nedb
     {
         return new Promise((resolve, reject)=>
         {
+            options = Object.assign({},options);
             this._db.remove(query, options, (errors, numRemoved)=>
             {
                 if(errors)
