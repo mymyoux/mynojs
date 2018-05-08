@@ -191,8 +191,6 @@ export class Model extends BaseModel {
                 if (config.readExternal !== false) {
                     this.readExternal(data, { ...config, path: path });
                 }
-                if (config.readExternal !== false || config.callback)
-                    this.validate();
                 return data;
             }, (error) => {
                 console.error(error);

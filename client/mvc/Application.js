@@ -15,6 +15,8 @@ import FColor  from "myno/client/components/form/FColor";
 import FInput  from "myno/client/components/form/FInput";
 import Tree  from "myno/client/components/Tree";
 import TreeItem  from "myno/client/components/tree/TreeItem";
+import ContextMenu  from "myno/client/components/ContextMenu";
+import vClickOutside from 'v-click-outside'
 import VeeValidate from 'vee-validate';
 import { make, register } from "../../common/maker/make";
 import { User } from "../models/User";
@@ -88,8 +90,8 @@ export class Application extends StepHandler(CoreObject)
      
 
         Vue.use(VeeValidate);
+        Vue.use(vClickOutside)
         
-
         Validator.extend('file_exists', file_exists);
         Validator.extend('host', host);
         Validator.extend('path', path);
@@ -100,6 +102,7 @@ export class Application extends StepHandler(CoreObject)
         Vue.component('f-input', FInput);
         Vue.component('tree', Tree);
         Vue.component('tree-item', TreeItem);
+        Vue.component('context-menu', ContextMenu);
     }
     routes()
     {
