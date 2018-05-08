@@ -20,9 +20,9 @@ export class ipc extends adapter
             ipcRenderer.send('api', req);
         })).then((response)=>
         {
-            request.api_data = response.api_data;
-            request.data = response.data;
-            request.exception = response.exception;
+            request.setapidata(response.api_data);
+            request.data(response.data);
+            request.exception(response.exception);
             //needed for not being called as promise
             return [request];
         });
