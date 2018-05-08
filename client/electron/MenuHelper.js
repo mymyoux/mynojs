@@ -199,7 +199,7 @@ export class MenuHelper {
         let e = event;
         if(options.generic)
         {
-            if (Configuration.isDebug() && event) {
+            if (Configuration.isDebug() && Hardware.isElectron() && event) {
                 if(template.length)
                 {
                     template.push({type:"separator"});
