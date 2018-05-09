@@ -185,7 +185,6 @@ export class Nedb
             then(r, f)
             {
                 cursor.then = promise.then;
-                console.log(instance);
 
                 if(object === instance._db)
                 {
@@ -201,7 +200,6 @@ export class Nedb
                     });
                 }else
                 {
-                    console.log(object);
                     object.exec((errors, docs)=>
                     {
                         if(errors)

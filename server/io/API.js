@@ -74,6 +74,9 @@ export class API
     execute()
     {
         console.log("API["+colors.red(this._path)+"]");
+        console.log(colors.cyan("Parameters"));
+        console.log(this._params);
+        
         return new Promise(async (resolve, reject)=>
         {
             let path = this._path;
@@ -121,6 +124,8 @@ export class API
                 if (data && typeof data == "object" && data.writeExternal) {
                     data = data.writeExternal(user);
                 }
+                console.log(colors.cyan("Result"));
+                console.log(data);
                 return data;
             }).then(resolve).catch((error)=>
             {
