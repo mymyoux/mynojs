@@ -18,6 +18,7 @@ import Vue from 'vue';
 import {Hardware} from "../../../common/env/Hardware";
 import FElement from "./FElement";
 import electron from "../../../common/electron/Electron";
+const {remote} = electron;
 
 @Component({
     $_veeValidate: {
@@ -29,6 +30,8 @@ import electron from "../../../common/electron/Electron";
     props:
     {
         value:{},
+        content:{type:Boolean, default:true},
+        method:{type:String, default:"Text"},
         dialogMessage:{default:'choose file',type:String},
         dialogProperties:{default:()=>['openFile', 'showHiddenFiles']}
     }
@@ -44,8 +47,17 @@ export default class FFile extends FElement
         let result = electron.remote.dialog.showOpenDialog({properties:this.dialogProperties,message:this.dialogMessage});
         if(result)
         {
-            console.log( {path:result[0]});
             this.file =  {path:result[0]}
+            if(this.content)
+            {
+                const fs = remote.require("fs");
+                let options = {};
+                if(this.method.toLowerCase() == "text")
+                {
+                    options.encoding = "utf-8";
+                }
+                this.file.content = fs.readFileSync(this.file.path, options);
+            }
             this.showPrevious = false;
             this.$emit('input', this.file)
         }else
@@ -67,14 +79,15 @@ export default class FFile extends FElement
         var reader = new FileReader();
         reader.onload = ()=>
         {
-            console.log({path:file.name, text:reader.result});
-            this.file = {path:file.name, text:reader.result}
+            this.file = {path:file.name}
+            if(this.content)
+            {
+                this.file.content = reader.result
+            }
             this.showPrevious = false;
-            debugger;
             this.$emit('input', this.file)
         }
-        
-        reader.readAsText(file);
+        reader["readAs"+this.method](file);
     }
     mounted()
     {
