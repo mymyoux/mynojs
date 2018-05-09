@@ -65,4 +65,8 @@ export class Model extends CoreObject {
         external[this.getIDName()] = this.getID();
         return external;
     }
+    toJSON()
+    {
+        return this.writeExternal();
+    }
 }
