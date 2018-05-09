@@ -63,6 +63,12 @@ export class json extends adapter
             request.exception(response.data.exception);
             //needed for not being called as promise
             return [request];
+        },(error)=>
+        {
+            request.setapidata(null);
+                request.data(null);
+                request.exception(error);
+            return [request];
         });
     }  
     config(config)
