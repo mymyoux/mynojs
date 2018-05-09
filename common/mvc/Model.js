@@ -65,6 +65,19 @@ export class Model extends CoreObject {
         external[this.getIDName()] = this.getID();
         return external;
     }
+    [Symbol.toPrimitive](type)
+    {
+        if(type == "string")
+            return JSON.stringify(this, null, 2);
+        else 
+        {
+            if(type == "default")
+            {
+                return JSON.stringify(this, null, 2);
+            } 
+        }
+        return JSON.stringify(this, null, 2);
+    }
     toJSON()
     {
         return this.writeExternal();
