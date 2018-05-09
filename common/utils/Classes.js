@@ -4,6 +4,10 @@ import { root as Root} from "../env/Root";
 import { Strings } from "./Strings";
 export class Classes {
     static getName(cls) {
+        if (cls && cls.constructor && cls.constructor.name) {
+            return cls.constructor.name;
+        }
+        
         //es6
         var clsText = cls + "";
         var funcNameRegex = /function ([^\(]{1,})\(/;
