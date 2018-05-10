@@ -14,6 +14,7 @@ import List  from "myno/client/components/List";
 import FColor  from "myno/client/components/form/FColor";
 import FInput  from "myno/client/components/form/FInput";
 import Tree  from "myno/client/components/Tree";
+import DragBar  from "myno/client/components/DragBar";
 import TreeItem  from "myno/client/components/tree/TreeItem";
 import ContextMenu  from "myno/client/components/ContextMenu";
 import vClickOutside from 'v-click-outside'
@@ -103,6 +104,7 @@ export class Application extends StepHandler(CoreObject)
         Vue.component('tree', Tree);
         Vue.component('tree-item', TreeItem);
         Vue.component('context-menu', ContextMenu);
+        Vue.component('drag-bar', DragBar);
     }
     routes()
     {
