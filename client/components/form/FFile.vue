@@ -9,6 +9,9 @@
             <input type="file" @change="onFile" ref="file" :placeholder="file && file.path">
             <span v-if="showPrevious && value">{{typeof value == "string"?value:value.path}}</span>
         </template>
+        <span class="error" v-if="error">
+            {{error}}
+        </span> 
    </p> 
 </template>
 
@@ -40,10 +43,11 @@ export default class FFile extends FElement
 {
     data()
     {
-        return {electron:Hardware.isElectron(), file:null,showPrevious:null };
+        return {error:null,electron:Hardware.isElectron(), file:null,showPrevious:null };
     }
     loadFile()
     {
+        this.error = null;
         let result = electron.remote.dialog.showOpenDialog({properties:this.dialogProperties,message:this.dialogMessage});
         if(result)
         {
@@ -56,7 +60,16 @@ export default class FFile extends FElement
                 {
                     options.encoding = "utf-8";
                 }
-                this.file.content = fs.readFileSync(this.file.path, options);
+                try
+                {
+
+                    this.file.content = fs.readFileSync(this.file.path, options);
+                }catch(error)
+                {
+                    this.showPrevious = false;
+                    this.error = error.message;
+                    return;
+                }
             }
             this.showPrevious = false;
             this.$emit('input', this.file)
@@ -68,6 +81,7 @@ export default class FFile extends FElement
     }
     onFile()
     {
+        this.error = null;
         let file = this.$refs.file.files[0];
 
         if(!file)
@@ -86,6 +100,11 @@ export default class FFile extends FElement
             }
             this.showPrevious = false;
             this.$emit('input', this.file)
+        }
+        reader.onerror = (error)=>
+        {
+            this.error = "file unreadable";
+            this.showPrevious = false;
         }
         reader["readAs"+this.method](file);
     }
