@@ -50,7 +50,7 @@ export class VueComponent extends Vue
     {
         VueComponent.onBeforeMounted(this);
         
-        console.log('beforeMount');
+        // console.log('beforeMount');
     }
     emit(name, ...data)
     {
@@ -70,12 +70,12 @@ export class VueComponent extends Vue
     }
     mounted()
     {
-        console.log('mounted');
+        // console.log('mounted');
     }
     destroyed()
     {
         VueComponent.onDestroyed(this);
-        console.log('destroyed');
+        // console.log('destroyed');
     }
     contains(element, recursive = true)
     {
