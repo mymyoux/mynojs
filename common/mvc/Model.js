@@ -82,4 +82,11 @@ export class Model extends CoreObject {
     {
         return this.writeExternal();
     }
+    clone()
+    {
+        let cls = this.constructor;
+        let instance = new cls();
+        instance.readExternal(this.writeExternal());
+        return instance;
+    }
 }
