@@ -213,6 +213,10 @@ export function Collection(A) {
                 }
                 if(params)
                     this._request.params(params);
+                if(this._request._executed)
+                {
+                    return this._request;
+                }
                 return this._request.then((data)=>
                 {
                     this._computePaginate();

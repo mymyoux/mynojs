@@ -50,8 +50,30 @@ export class Model extends BaseModel {
                     value = value.replace('%id%', "" + this.getID());
                 }
                 else {
-                    if (this[key]) {
-                        var v = this[key];
+                    let parts = key.split(".");
+                    let current = this;
+                    let i = 0;
+                    while(i<parts.length)
+                    {
+                        if(!current)
+                        {
+                            break;
+                        }
+                        try{
+
+                            current = current[parts[i]]
+                        }catch(error)
+                        {
+                            current = null;
+                            break;
+                        }
+                        i++;
+                    }
+
+
+
+                    if (current != null) {
+                        var v = current;
                         if (typeof v == "function")
                             v = v.call(this);
                         if (value == '%' + key + '%') {
