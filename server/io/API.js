@@ -3,6 +3,7 @@ import { Strings } from "../../common/utils/Strings";
 import path from "path";
 import fs from "fs";
 import colors from "colors";
+import { Functions } from "../../common/utils/Functions";
 export class API
 {
 
@@ -108,7 +109,30 @@ export class API
                 return reject({ lineNumber: 0, fileName: "main", message: 'no action:' + controller + '#' + action + '()' }, true);
             }
             try {
-                var resultAPI = this._controllers[controller][action](user, this._params, this._sender);
+                let method = this._controllers[controller][action];
+                if(!method.parameters)
+                {
+                    method.parameters = Functions.getParameters(method);
+                }
+                let parameters = method.parameters.map((item)=>
+                {
+                    if(item == "user")
+                    {
+                        return user;
+                    }
+                    if(item == "params")
+                    {
+                        return this._params;
+                    }
+                    if(item == "sender")
+                    {
+                        return this._sender;
+                    }
+                    return undefined;
+
+                })
+
+                var resultAPI = this._controllers[controller][action](...parameters);
             }
             catch (error) {
                 return reject(error, true);
