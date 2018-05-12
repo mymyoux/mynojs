@@ -1,24 +1,25 @@
 import { Maths } from "../../common/utils/Maths";
 import { EventDispatcher } from "../../common/events/EventDispatcher";
 import {Stream as StreamClass} from "../../common/io/Stream";
+import { wrap } from "../../common/annotations/wrap";
 
-
-export function Stream()
+export function Stream(name, onInstance)
 {
-    return function(target, key, descriptor)
+    let wrapped 
+    let modifier =  function(target, key, descriptor)
     {
-        let original = descriptor.value;
-        descriptor.value = function(user, params, sender)
-        {   
+        
+        wrapped = wrap(descriptor ,function(parameters, next)
+        {
+            let sender = parameters.get("sender");
             let stream = new StreamClass((type, data, answerID)=>
             {
                 sender.send("stream-data", {type,data,streamID:stream.id, answerID});
             });
-
+            parameters.replace("stream", stream);
             let result;
             try{
-
-                result = original(user, params, stream);
+               result = next();
             }catch(error)
             {
                 result = Promise.reject(error);
@@ -28,7 +29,17 @@ export function Stream()
                 result = Promise.resolve(result);
             }
             return result.then(()=>stream);
-        };
-        return descriptor;
+        });
+        
     }
-} 
+    if(arguments.length == 3)
+    {
+        let result =  modifier(...arguments);
+        wrapped.parameters.push('sender');
+        return result;
+    }
+
+    return modifier;
+}
+
+  

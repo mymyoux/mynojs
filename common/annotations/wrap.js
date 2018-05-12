@@ -55,4 +55,5 @@ export function wrap(descriptor, method)
         descriptor.value = wrapped;
     }
     descriptor.value.methods.push(method);
+    return descriptor.value;
 }

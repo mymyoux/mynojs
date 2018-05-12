@@ -275,7 +275,7 @@ class Request
     stream(resolve, reject)
     {
         console.log("request then");
-       return this._api.stream(this).then(resolve, reject);
+       return this._api.stream(this).then;//(resolve, reject);
     }
 
     setapidata(value)
