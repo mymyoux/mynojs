@@ -6,7 +6,7 @@
                     {{model.label}}
                 </slot>
             </div>
-            <component :is="folderComponent" v-else class="item children" :class="{open:model.open}"  :value="model" @click="onClick">{{model.label}}</component>
+            <component :is="folderComponent" v-else class="item children" :class="{open:model.open}"  :value="model" @click="onClick" @dblclick="onDoubleClickItem">{{model.label}}</component>
     </template>
     <template v-else>
         
@@ -58,6 +58,10 @@ export default class TreeItem extends VueComponent
     onClickItem(event)
     {
         this.emit("item-select", this.model);
+    }
+    onDoubleClickItem(event)
+    {
+        this.emit("item-double-select", this.model);
     }
 }
 

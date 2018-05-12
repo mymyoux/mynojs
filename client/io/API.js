@@ -285,6 +285,7 @@ class Request
     }
     data(value)
     {
+        console.log(value);
         this._data = value;
         this._loaded = true;
     }   
