@@ -80,6 +80,13 @@ export class Express extends StepHandler(CoreObject)
         console.log(params);
 
         let path = request.path.substring(1);
+
+
+        request.send = function(type, data, stream)
+        {
+            stream._buffer.push({type:type, data:data});
+        };
+
         api().path(path).sender(request).params(params).execute().then((data)=>
         {
             result.setHeader('Content-Type', 'application/json');

@@ -1,6 +1,10 @@
 export class adapter
 {
 
+    api(api)
+    {
+        this._api = api;
+    }
     load(request, config)
     {
         return Promise.reject("abstract class");
@@ -9,6 +13,14 @@ export class adapter
     {
         this._config = Object.assign({}, config);
         this._config.adapter = null;
+    }
+    addStream(stream)
+    {
+    }
+
+    sendStream(stream, type, data, answerID)
+    {
+        
     }
 
 }

@@ -68,6 +68,7 @@ export class API extends CoreObject
         }, this._config);
 
         this._config.adapter.config(this._config);
+        this._config.adapter.api(this);
 
     }
     _getBufferKey(request)
@@ -142,6 +143,7 @@ export class API extends CoreObject
                 {
                     this._config.adapter.sendStream(stream, type, data, answerID);
                 }, request._data.streamID);
+                this._config.adapter.addStream(stream);
                 return stream;
             }   
             return request._data;

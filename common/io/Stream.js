@@ -1,5 +1,6 @@
 import { Maths } from "../utils/Maths";
 import { EventDispatcher } from "../events/EventDispatcher";
+import { ENGINE_METHOD_DIGESTS } from "constants";
 export var streamStats = {
     count:0
 }
@@ -15,6 +16,7 @@ export class Stream extends EventDispatcher
     _closed = false;
     _sender = false;
     _asks = {};
+    _buffer = [];
     constructor(sender, id)
     {
         super();
@@ -79,10 +81,32 @@ export class Stream extends EventDispatcher
         {
             this.send("close");
         }
-        delete Stream._streams[this._id];
+        if(!this._buffer.length)
+        {
+            this.dispose();
+        }
         //Stream._count--;
-        streamStats.count--;
         this._closed = true;
+    }
+    get closed()
+    {
+        return this._closed;
+    }
+    flush()
+    {
+        let buffer = this._buffer;
+        this._buffer = [];
+        if(this._closed)
+        {
+            this.dispose();
+        }
+        return buffer;
+    }
+    dispose()
+    {   
+        delete Stream._streams[this._id];
+        streamStats.count--;
+        super.dispose();
     }
     writeExternal(user)
     {

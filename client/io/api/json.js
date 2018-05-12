@@ -84,4 +84,72 @@ export class json extends adapter
             this._config.baseUrl+="/";
         }
     }
+    addStream(stream)
+    {
+        this.retrieveStream(stream);
+    }
+    retrieveStream(stream)
+    {
+        this._api.request().path('stream/get').param("stream_id", stream.id).then((result)=>
+        {
+            let {data:results, end} = result;
+            results.forEach((item)=>
+            {
+                if(item.type == "stream-data")
+                {
+                    this.onStreamData(stream, item.data);
+                    //stream.onData(item.type, item.data);
+                }else if(item.type == 'stream-answer')
+                {
+                    this.onStreamAnswer(stream, item.data);
+                }
+            });
+            if(end)
+            {
+                stream.close();
+            }else
+            {
+                setTimeout(()=>
+                {
+                    this.retrieveStream(stream);
+                }, results.length==0?500:100);
+            }
+        },(error)=>
+        {
+            stream.on('error', error); 
+            stream.end();
+        });
+    }
+    answer(params)
+    {
+        this._api.request().path('stream/answer').params(params).then((result)=>
+        {
+            //ignore
+        },(error)=>
+        {   
+            debugger;
+        });
+    }
+    onStreamData(stream, request)
+    {
+        let callback;
+        if(request.answerID !== undefined)
+        {
+            let executed = false;
+            callback = (data)=>
+            {
+                if(executed)
+                {
+                    return console.log('ALREADY ANSWERED ANSWER ID '+request.answerID+' STREAM ID '+stream.id);
+                }
+                executed = true;
+               this.answer({answerID:request.answerID,streamID:stream.id, data});
+            };
+        }
+        stream.onData(request.type, request.data, callback);
+    }
+    onStreamAnswer(stream, request)
+    {
+        stream.onAnswerData(request.data, request.answerID);
+    }
 }
