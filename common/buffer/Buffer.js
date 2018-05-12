@@ -60,4 +60,52 @@ export class Buffer
         let buffer = this._buffer.shift();
         buffer.reject(data);
     }
+    static throttle (func, limit){
+        let inThrottle
+        let throttledData;
+        let throttledContext;
+        let throttled = false;
+
+        function execute(context, args)
+        {
+            inThrottle = true
+            func.apply(context, args);
+            setTimeout(() => 
+            {
+                inThrottle = false;
+                if(throttled)
+                {
+                    throttled = false;
+                    let data = throttledData;
+                    let ctxt = throttledContext;
+                    throttledContext = null;
+                    throttledData = null
+                    execute(ctxt, data);
+                }
+            }, limit)
+        }
+
+        return function() {
+          const args = arguments
+          const context = this
+          if (!inThrottle) {
+            execute(context, args)
+          }else
+          {
+            throttledData = arguments;
+            throttledContext = context;
+            throttled = true;
+          }
+        }
+      }
+      static  debounce(func, delay){
+        let inDebounce
+        return function() {
+          const context = this
+          const args = arguments
+          clearTimeout(inDebounce)
+          inDebounce = setTimeout(() => func.apply(context, args), delay)
+        }
+      }
+    
 }

@@ -28,7 +28,7 @@ import { file_exists } from "../components/form/validators/file_exists";
 import { Model } from "../../common/mvc/Model";
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["debug","model","preconfig","maker","api", "configuration", "router", "initVue","user", "selector", "app", "vue"];
+    _steps=["debug","model","preconfig","maker","api", "configuration", "router", "initVue","user", "selector", "app", "events","vue"];
     _router =  null;
     _selector =  null;
     _app =  null;
@@ -158,6 +158,13 @@ export class Application extends StepHandler(CoreObject)
           }).$mount(this._selector) 
     //     console.log(this._vue);
     //     console.log(this);
+    }
+    events()
+    {
+        window.addEventListener('resize',()=>
+        {
+            bus.trigger('window:resize')
+        })
     }
     booted()
     {

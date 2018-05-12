@@ -5,6 +5,7 @@ import { Strings } from '../../common/utils/Strings';
 import { Global } from '../../common/annotations/Global';
 import { log } from '../../common/annotations/Global';
 import { root } from '../../common/env/Root';
+import { Buffer } from '../../common/buffer/Buffer';
 
 
 
@@ -117,13 +118,26 @@ export class VueComponent extends Vue
  * Link a method to an event from bus
  * @param event {string} event name
  */
-export function Event(event)
+export function Event(event, options)
 {
+    options = Object.assign({debounce:false, throttle:false}, options);
     return function(target, key, descriptor)
     {
         if(!event)
         { 
             event = Strings.uncamel(key);
+        }
+        let listener;
+        if(options.debounce)
+        {
+            listener = Buffer.debounce(descriptor.value, options.debounce === true?100:options.debounce);
+        }else
+        if(options.throttle)
+        {
+            listener = Buffer.throttle(descriptor.value, options.throttle === true?100:options.throttle);
+        }else
+        {
+            listener = descriptor.value;
         }
         if(target instanceof VueComponent)
         {
@@ -146,7 +160,7 @@ export function Event(event)
             { 
                 target.___events.forEach((event)=>
                 {
-                    bus.on(event, descriptor.value, this);
+                    bus.on(event, listener, this);
                 });
 
                 if( target.____beforeMount)
@@ -158,7 +172,7 @@ export function Event(event)
             {
                 target.___events.forEach((event)=>
                 {
-                    bus.off(event, descriptor.value, this);
+                    bus.off(event, listener, this);
                 });
                 if( target.____destroyed)
                 {
@@ -167,7 +181,7 @@ export function Event(event)
             }
         }else{
             //TODO:maybe this instead of target
-            bus.on(event, descriptor.value, target);
+            bus.on(event, listener, target);
         }
         return descriptor;
     }

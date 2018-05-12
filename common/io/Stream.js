@@ -68,6 +68,7 @@ export class Stream extends EventDispatcher
             throw new Error("steam already closed");
         }
         this._sender(type, data);
+        return this._buffer.length;
     }
     close(fromClient = false)
     {
@@ -94,6 +95,7 @@ export class Stream extends EventDispatcher
     }
     flush()
     {
+        this.trigger("_internal:flushed");
         let buffer = this._buffer;
         this._buffer = [];
         if(this._closed)
