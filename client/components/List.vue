@@ -1,8 +1,10 @@
 <template>
     <ul>
-            <slot  v-for="item,i in items" name="item" :item="item" :index="i">
-                    {{item}}
-            </slot>
+            <div v-for="item,i in items" :key="i" @click="onClick($event, item)" @dblclick="onDoubleClick($event, item)">
+                <slot  name="item" :item="item" :index="i">
+                            {{item.name}}
+                </slot>
+            </div>
     </ul>
 </template>
 
@@ -24,23 +26,29 @@ export default class List extends VueComponent
 
         };
     }
+    onClick(event, item)
+    {
+        this.$emit('item-click', event, item);
+    }
+    onDoubleClick(event, item)
+    {
+        this.$emit('item-dblclick', event, item);
+    }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+ul
+{
+    display:flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    height:100%;
+    div
+    {
+        padding:5px;
+        cursor:pointer;
+    }
 }
 </style>

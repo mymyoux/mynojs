@@ -83,6 +83,8 @@ export class API
             let path = this._path;
             var parts = path.split('/');
             var action = parts.pop();
+
+            action = Strings.camel(action);
             parts = parts.map(function (item) {
                 return Strings.camel(item);// item.substring(0, 1).toUpperCase() + item.substring(1);
             });
@@ -105,6 +107,9 @@ export class API
                     return reject({ lineNumber: error.lineNumber, fileName: error.fileName, message: 'no controller:' + controller }, true);
                 }
             }
+
+
+
             if (typeof this._controllers[controller][action] != "function") {
                 return reject({ lineNumber: 0, fileName: "main", message: 'no action:' + controller + '#' + action + '()' }, true);
             }

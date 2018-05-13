@@ -116,8 +116,8 @@ export class json extends adapter
             }
         },(error)=>
         {
-            stream.on('error', error); 
-            stream.end();
+            stream.trigger('error', error); 
+            stream.close();
         });
     }
     answer(params)

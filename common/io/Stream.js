@@ -77,17 +77,17 @@ export class Stream extends EventDispatcher
             //ignore
             return;
         }
-        this.trigger("close");
         if(!fromClient)
         {
             this.send("close");
         }
+        this._closed = true;
+        this.trigger("close");
         if(!this._buffer.length)
         {
             this.dispose();
         }
         //Stream._count--;
-        this._closed = true;
     }
     get closed()
     {

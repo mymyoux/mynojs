@@ -123,8 +123,6 @@ export function Event(event, options)
     options = Object.assign({debounce:false, throttle:false}, options);
     return function(target, key, descriptor)
     {
-        if(event == "window:resize")
-        debugger;
         if(!event)
         { 
             event = Strings.uncamel(key);

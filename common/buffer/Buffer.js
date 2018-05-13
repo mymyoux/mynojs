@@ -92,10 +92,6 @@ export class Buffer
         }
 
         return function(event) {
-            if(!event.papou)
-            {
-                event.papou = Maths.getUniqueID();
-            }
             const args = arguments
             const context = this
             if(throttledContext && throttledContext!==context)
