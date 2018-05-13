@@ -26,6 +26,7 @@ import { host } from "../components/form/validators/host";
 import { path } from "../components/form/validators/path";
 import { file_exists } from "../components/form/validators/file_exists";
 import { Model } from "../../common/mvc/Model";
+import { WindowBusMiddleware } from "../events/WindowBusMiddleware";
 export class Application extends StepHandler(CoreObject)
 {
     _steps=["debug","model","preconfig","maker","api", "configuration", "router", "initVue","user", "selector", "app", "events","vue"];
@@ -161,10 +162,11 @@ export class Application extends StepHandler(CoreObject)
     }
     events()
     {
-        window.addEventListener('resize',()=>
-        {
-            bus.trigger('window:resize')
-        })
+        WindowBusMiddleware.register();
+        // window.addEventListener('resize',()=>
+        // {
+        //     bus.trigger('window:resize')
+        // })
     }
     booted()
     {

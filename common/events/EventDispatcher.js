@@ -94,7 +94,9 @@ export class EventDispatcher extends CoreObject {
         len = this._listeners.length;
         while (i < len) {
             if (this._listeners[i].disposed === true) {
+                listener = this._listeners[i];
                 this._listeners.splice(i, 1);
+                this.removed(listener);
                 len--;
                 continue;
             }
@@ -148,6 +150,14 @@ export class EventDispatcher extends CoreObject {
         //console.log("TT___on["+once+"]=>"+name +"      |    "+key1+":"+key2);
         var listener = new Listener(key1, key2, once, callback, scope, parameters);
         this._listeners.push(listener);
+        this.added(listener);
+    }
+    added(listener)
+    {
+    }
+    removed(listener)
+    {
+        
     }
     once(name, callback, scope, ...parameters) {
         return this.__on(true, name, callback, scope, parameters);
@@ -188,7 +198,7 @@ export class EventDispatcher extends CoreObject {
         }
         if (!name) {
             while (this._listeners.length) {
-                this._listeners.shift(); //.dispose();
+                this.removed(this._listeners.shift()); //.dispose();
             }
             return;
         }
@@ -199,6 +209,7 @@ export class EventDispatcher extends CoreObject {
             listener = this._listeners[i];
             if ((!callback || callback === listener.callback) && (!scope || scope === listener.scope) && (listener.key1 == key1 || key1 == EventDispatcher.EVENTS.ALL) && (listener.key2 == key2 || key2 == EventDispatcher.EVENTS.ALL)) {
                 this._listeners.splice(i, 1);
+                this.removed(listener);
                 //listener.dispose();
                 len--;
                 continue;
@@ -219,6 +230,10 @@ export class EventDispatcher extends CoreObject {
         this.destroy();
     }
     destroy() {
+        while(this._listeners.length)
+        {
+            this.removed(this._listeners.shift());
+        }
         this._listeners = null;
     }
 }
