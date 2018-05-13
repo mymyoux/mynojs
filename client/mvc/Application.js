@@ -15,6 +15,7 @@ import FColor  from "myno/client/components/form/FColor";
 import FInput  from "myno/client/components/form/FInput";
 import Tree  from "myno/client/components/Tree";
 import DragBar  from "myno/client/components/DragBar";
+import Search  from "myno/client/components/Search";
 import TreeItem  from "myno/client/components/tree/TreeItem";
 import ContextMenu  from "myno/client/components/ContextMenu";
 import VerticalResizer  from "myno/client/components/VerticalResizer";
@@ -100,6 +101,7 @@ export class Application extends StepHandler(CoreObject)
         Validator.extend('file_exists', file_exists);
         Validator.extend('host', host);
         Validator.extend('path', path);
+        Vue.component('search',Search);
         Vue.component('vertical-resizer',VerticalResizer);
         Vue.component('horizontal-resizer',HorizontalResizer);
         Vue.component('list',List);
