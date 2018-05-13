@@ -178,11 +178,27 @@ export function Collection(A) {
                 return this.splice();
             }
 
+
             async loadGet(params, config)
             {
                 if(!config)
                 {
                     config = {};
+                }
+                let path = this.constructor["PATH_GET"];
+                if (typeof path == "function") {
+                    path = path.call(this);
+                }
+                if (typeof params == "function") {
+                    params = params.call(this);
+                }
+                if (path instanceof ModelLoadRequest) {
+                    if (path.config) {
+                        for (var p in path.config) {
+                            if (config[p] == undefined)
+                                config[p] = path.config[p];
+                        }
+                    }
                 }
                 config = Object.assign({
                     removePreviousModels:false,
@@ -205,6 +221,8 @@ export function Collection(A) {
                     if(config.removePreviousModels)
                     {
                         this._request.reset();
+                        let tmp = this.request(config);
+                        this._request._request.params = tmp._request.params;
                     }
                 }
                 if(config.removePreviousModels)

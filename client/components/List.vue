@@ -1,7 +1,6 @@
 <template>
-    <ul>
-        <li>{{selected.length}}</li>
-            <div v-for="item,i in items" :key="i" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @click="onClick($event, item)" @dblclick="onDoubleClick($event, item)" v-if="!filter || filter.test(item)"
+    <ul v-on:selectall.prevent.stop="onSelectAll">
+            <div v-for="item,i in items" :key="i" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)" v-if="!filter || filter.test(item)"
             :class="{selected:item.selected}"
             >
                 <slot  name="item" :item="item" :index="i">
@@ -62,6 +61,12 @@ export default class List extends VueComponent
     {
         this.filter = this.search;
     }
+    onSelection(event)
+    {
+        this.$emit('item-selection', event, this.selected.slice());
+        this.onClick(event, this.selected[this.selected.length-1])
+    }
+   
     onClick(event, item)
     {
         this.$emit('item-click', event, item);
@@ -71,7 +76,22 @@ export default class List extends VueComponent
         this.$emit('item-dblclick', event, item);
     }
    
-
+    onSelectAll(event)
+    {
+        let current = this.selected[this.selected.length-1];
+        this.items.forEach((item)=>item.selected = true);
+        this.selected = this.items.slice();
+        if(current)
+        {
+            let index = this.selected.indexOf(current);
+            if(~index)
+            {
+                this.selected.splice(index, 1);
+                this.selected.push(current);
+            }
+        }
+        this.onSelection(event);
+    }
     onMouseDown(event, model, index)
     {
         event.preventDefault();
@@ -281,7 +301,8 @@ export default class List extends VueComponent
             }
         }
         this._mouseStart = null;
-        
+
+            this.onSelection();
         //this.trigger("selection");
     }
 }
@@ -298,7 +319,6 @@ ul
     div
     {
         text-align: left;
-        padding:5px;
         cursor:pointer;
         &:hover
         {
@@ -308,6 +328,13 @@ ul
         {
             background:#278ffe;
             color:white;
+        }
+        p{
+            padding: 5px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: block;
         }
     }
     .warning
