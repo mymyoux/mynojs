@@ -123,31 +123,20 @@ export function Event(event, options)
     options = Object.assign({debounce:false, throttle:false}, options);
     return function(target, key, descriptor)
     {
+        if(event == "window:resize")
+        debugger;
         if(!event)
         { 
             event = Strings.uncamel(key);
         }
-        let listener;
-        if(options.debounce)
-        {
-            listener = Buffer.debounce(descriptor.value, options.debounce === true?100:options.debounce);
-        }else
-        if(options.throttle)
-        {
-            listener = Buffer.throttle(descriptor.value, options.throttle === true?100:options.throttle);
-        }else
-        {
-            listener = descriptor.value;
-        }
+       
         if(target instanceof VueComponent)
         {
-            if(!target.___events)
+            if(!target.__listeners)
             {
-                target.___events = [];
+                target.__listeners = [];
             }
-            if(!~target.___events.indexOf(event))
-                target.___events.push(event);
-                
+            target.__listeners.push({options:options, descriptor:descriptor, event:event})
             if(target.destroyed && !target.____destroyed)
             {
                 target.____destroyed = target.destroyed
@@ -158,11 +147,23 @@ export function Event(event, options)
             }
             target.beforeMount = function()
             { 
-                target.___events.forEach((event)=>
+                target.__listeners.forEach((config)=>
                 {
-                    bus.on(event, listener, this);
+                    let listener ;
+                    if(config.options.debounce)
+                    {
+                        listener = Buffer.debounce(config.descriptor.value, config.options.debounce === true?100:config.options.debounce);
+                    }else
+                    if(options.throttle)
+                    {
+                        listener = Buffer.throttle(config.descriptor.value, config.options.throttle === true?100:config.options.throttle);
+                    }else
+                    {
+                        listener = config.descriptor.value;
+                    }
+                    config.listener = listener;
+                    bus.on(config.event, listener, this);
                 });
-
                 if( target.____beforeMount)
                 {
                     target.____beforeMount();
@@ -170,9 +171,9 @@ export function Event(event, options)
             }
             target.destroyed = function()
             {
-                target.___events.forEach((event)=>
+                target.__listeners.forEach((config)=>
                 {
-                    bus.off(event, listener, this);
+                    bus.off(config.event, config.listener, this);
                 });
                 if( target.____destroyed)
                 {
@@ -180,6 +181,20 @@ export function Event(event, options)
                 }
             }
         }else{
+            let listener;
+            if(options.debounce)
+            {
+                listener = Buffer.debounce(descriptor.value, options.debounce === true?100:options.debounce);
+            }else
+            if(options.throttle)
+            {
+                listener = Buffer.throttle(descriptor.value, options.throttle === true?100:options.throttle);
+            }else
+            {
+                listener = descriptor.value;
+            }
+            //TODO:override metthod  to get this with wrap
+            debugger;
             //TODO:maybe this instead of target
             bus.on(event, listener, target);
         }

@@ -1,3 +1,5 @@
+import { Maths } from "../utils/Maths";
+
 export class Buffer
 {
     _buffer = [];
@@ -77,6 +79,10 @@ export class Buffer
                 {
                     throttled = false;
                     let data = throttledData;
+                    if(context !== throttledContext)
+                    {
+                        debugger;
+                    }
                     let ctxt = throttledContext;
                     throttledContext = null;
                     throttledData = null
@@ -85,17 +91,25 @@ export class Buffer
             }, limit)
         }
 
-        return function() {
-          const args = arguments
-          const context = this
-          if (!inThrottle) {
-            execute(context, args)
-          }else
-          {
-            throttledData = arguments;
-            throttledContext = context;
-            throttled = true;
-          }
+        return function(event) {
+            if(!event.papou)
+            {
+                event.papou = Maths.getUniqueID();
+            }
+            const args = arguments
+            const context = this
+            if(throttledContext && throttledContext!==context)
+            {
+                debugger;
+            }
+            if (!inThrottle) {
+                execute(context, args)
+            }else
+            {
+                throttledData = args;
+                throttledContext = context;
+                throttled = true;
+            }
         }
       }
       static  debounce(func, delay){

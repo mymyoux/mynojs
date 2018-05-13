@@ -17,6 +17,8 @@ import Tree  from "myno/client/components/Tree";
 import DragBar  from "myno/client/components/DragBar";
 import TreeItem  from "myno/client/components/tree/TreeItem";
 import ContextMenu  from "myno/client/components/ContextMenu";
+import VerticalResizer  from "myno/client/components/VerticalResizer";
+import HorizontalResizer  from "myno/client/components/HorizontalResizer";
 import vClickOutside from 'v-click-outside'
 import VeeValidate from 'vee-validate';
 import { make, register } from "../../common/maker/make";
@@ -98,6 +100,8 @@ export class Application extends StepHandler(CoreObject)
         Validator.extend('file_exists', file_exists);
         Validator.extend('host', host);
         Validator.extend('path', path);
+        Vue.component('vertical-resizer',VerticalResizer);
+        Vue.component('horizontal-resizer',HorizontalResizer);
         Vue.component('list',List);
         Vue.component('f-radiolist', FRadioList);
         Vue.component('f-file', FFile);
