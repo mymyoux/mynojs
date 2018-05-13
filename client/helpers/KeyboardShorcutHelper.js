@@ -1,27 +1,21 @@
 import { BusMiddleware, bus } from "../../common/events/Bus";
-import hotkeys from 'hotkeys-js';
+import mousetrap from 'mousetrap';
 
 export class KeyboardShorcutHelper
 {
     static _last;
+    static _lastEvent;
+    static _lasts = [];
     static register()
     {
-
-        hotkeys('f5,cmd+r,ctrl+r', (event, handler)=>{
-            debugger;
-            // event.preventDefault() 
-            // event.stopPropagation();
-            this.trigger("refresh", event, handler);
-        });
-        hotkeys('cmd+a', (event, handler)=>{
-            //event.preventDefault() 
-            //event.stopPropagation();
-            this.trigger("selectall", event, handler);
-        });
-
-
-
-
+        mousetrap.bind(['command+r','ctrl+r','f5'], ()=>
+        {
+                this.trigger("refresh", event);
+        })
+        mousetrap.bind(['command+a','ctrl+a'], ()=>
+        {
+                this.trigger("selectall", event);
+        })
         document.addEventListener("mousedown", this.onClick.bind(this));
     }
     static trigger(name, event, handler)
@@ -30,7 +24,7 @@ export class KeyboardShorcutHelper
         {
             return;
         }
-        var custom = new CustomEvent(name, {  bubbles: true,detail: handler });
+        var custom = new CustomEvent(name, {  bubbles: true,detail: event });
         let stop = custom.stopPropagation;
         custom.stopPropagation = function()
         {
@@ -44,15 +38,40 @@ export class KeyboardShorcutHelper
             event.preventDefault();
         };
         custom.original = event;
-        this._last.dispatchEvent(custom);
+        let triggerable  = this.getTriggerable(this._last.target);
+        if(triggerable)
+        {
+            triggerable.dispatchEvent(custom);
+        }
+        if(!triggerable)
+        {
+            debugger;
+        }
+    }
+    static getTriggerable(item)
+    {
+        if(!item)
+            return item;
+
+        let current = item;
+        while(current)
+        {
+            current._parent = current.parentNode;
+            current = current.parentNode;
+            if(current === document)
+            {
+                return item;
+            }
+        }
+        return document.elementFromPoint(this._last.pageX, this._last.pageY);
     }
     static onClick(event)
     {
-        console.log('click');
         if(!event.target)
         {
             debugger;
         }
-        this._last = event.target;
+        //TODO:try to listen for dom removed 
+        this._last = event;
     }
 }

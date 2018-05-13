@@ -1,6 +1,7 @@
 <template>
     <ul v-on:selectall.prevent.stop="onSelectAll">
-            <div v-for="item,i in items" :key="i" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)" v-if="!filter || filter.test(item)"
+            <div>{{selected.length}}</div>
+            <div v-for="item,i in filtered" :key="i" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
             :class="{selected:item.selected}"
             >
                 <slot  name="item" :item="item" :index="i">
@@ -75,12 +76,21 @@ export default class List extends VueComponent
     {
         this.$emit('item-dblclick', event, item);
     }
+    get filtered()
+    {
+        if(!this.search)    
+            return this.items;
+        return this.items.filter((item)=>
+        {
+            return item.selected || this.search.test(item)
+        });
+    }
    
     onSelectAll(event)
     {
         let current = this.selected[this.selected.length-1];
-        this.items.forEach((item)=>item.selected = true);
-        this.selected = this.items.slice();
+        this.filtered.forEach((item)=>item.selected = true);
+        this.selected = this.filtered.slice();
         if(current)
         {
             let index = this.selected.indexOf(current);
@@ -92,9 +102,14 @@ export default class List extends VueComponent
         }
         this.onSelection(event);
     }
-    onMouseDown(event, model, index)
+    onMouseDown(event, model)
     {
         event.preventDefault();
+        let index = this.filtered.indexOf(model);
+        if(!~index)
+        {
+            return;
+        }
         this._mouseStart = null;
         
         // var offset = this.start?this.start:0;
@@ -153,7 +168,7 @@ export default class List extends VueComponent
                 this.selected.push(model);
             }
             else if(!model.selected) {
-                var index = this.selected.indexOf(model);
+                let index = this.selected.indexOf(model);
                 if (index != -1)
                     this.selected.splice(index, 1);
             }
@@ -179,8 +194,13 @@ export default class List extends VueComponent
         //     }
         // }
     }
-    onMouseMove(event, model, index) {
+    onMouseMove(event, model) {
         if (this._mouseStart == null) {
+            return;
+        }
+        let index = this.filtered.indexOf(model);
+        if(!~index)
+        {
             return;
         }
         //no button
@@ -199,21 +219,21 @@ export default class List extends VueComponent
         console.log(index1 +" -> "+index2);
         var model;
         for (var p of this._itemChanged) {
-            model = this.items[p];
+            model = this.filtered[p];
             model.selected = model._previousSelected;
             if (model.selected && this.selected.indexOf(model) == -1) {
                 this.selected.push(model);
             }
             else
             if(!model.selected) {
-                var index = this.selected.indexOf(model);
+                let index = this.selected.indexOf(model);
                 if (index != -1)
                     this.selected.splice(index, 1);
             }
         }
         this._itemChanged = [];
         for (var i = index1; i <= index2; i++) {
-            model = this.items[i];
+            model = this.filtered[i];
             if (!model)
                 continue;
             if (this._itemChanged.indexOf(i) == -1) {
@@ -230,7 +250,7 @@ export default class List extends VueComponent
                     this.selected.push(model);
                 }
                 else {
-                    var index = this.selected.indexOf(model);
+                    let index = this.selected.indexOf(model);
                     if (index != -1)
                         this.selected.splice(index, 1);
                 }
@@ -242,12 +262,17 @@ export default class List extends VueComponent
             }
         }
     }
-    onMouseUp(event, item, index) {
+    onMouseUp(event, model) {
         // if(this.template.draggable)
         // { 
         //     return;
         // }
         if (this._mouseStart == null) {
+            return;
+        }
+        let index = this.filtered.indexOf(model);
+        if(!~index)
+        {
             return;
         }
         this._mouseLast = index;
@@ -259,14 +284,14 @@ export default class List extends VueComponent
         
         var model;
         for (var p of this._itemChanged) {
-            model = this.items[p];
+            model = this.filtered[p];
             model.selected = model._previousSelected;
             if (model.selected && this.selected.indexOf(model) == -1) {
                 this.selected.push(model);
             }
             else 
             if(!model.selected){
-                var index = this.selected.indexOf(model);
+                let index = this.selected.indexOf(model);
                 if (index != -1)
                     this.selected.splice(index, 1);
             }
@@ -276,7 +301,7 @@ export default class List extends VueComponent
         this._itemChanged = [];
         
         for (var i = index1; i <= index2; i++) {
-            model = this.items[i];
+            model = this.filtered[i];
             if (!model)
                 continue;
             if (event.metaKey || event.ctrlKey) {
@@ -289,7 +314,7 @@ export default class List extends VueComponent
                     this.selected.push(model);
                 }
                 else if(!model.selected){
-                    var index = this.selected.indexOf(model);
+                    let index = this.selected.indexOf(model);
                     if (index != -1)
                         this.selected.splice(index, 1);
                 }

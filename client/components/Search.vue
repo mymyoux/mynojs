@@ -1,5 +1,5 @@
 <template>
-  <input type="search" v-model="search" @search="onChange" @keyup="onKeyDown">
+  <input type="search" v-model="search" @search="onChange" @keyup="onKeyDown" class="mousetrap">
 </template>
 
 <script>
