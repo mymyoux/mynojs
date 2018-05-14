@@ -67,7 +67,7 @@ export class Application extends StepHandler(CoreObject)
     }
     configuration()
     {
-        return api.request().path('configuration/get').then((data)=>
+        return api("configuration").path('configuration/get').then((data)=>
         {
             Configuration.merge(data);
         })

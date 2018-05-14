@@ -29,7 +29,15 @@ export class API extends CoreObject
         {
             return API._instances['default'];
         }
+        if(! API._instances[name])
+        {
+            return API._instances['default'];
+        }
         return API._instances[name];
+    }
+    static scope(name, instance = "default")
+    {
+        API._instances[name] =  API._instances[instance];
     }
     _config = {};
     _buffer = {};
@@ -301,6 +309,8 @@ class Request
         return this._request.path;
     }
 }
+
+
 let ___api = API.register({});
 export const api = new Proxy(function(name)
 {
