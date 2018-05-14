@@ -1,6 +1,5 @@
 <template>
     <ul v-on:selectall.prevent.stop="onSelectAll">
-            <div>{{selected.length}}</div>
             <div v-for="item,i in filtered" :key="i" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
             :class="{selected:item.selected}"
             >
@@ -28,7 +27,9 @@ import { Objects } from "../../common/utils/Objects";
     props: 
     {
         items:{required:true},
-        search:{required:false}
+        value:{required:false},
+        search:{required:false},
+        multiOnSelect:{required:false, default:false}
     },
     watch:{
         search:
@@ -36,6 +37,13 @@ import { Objects } from "../../common/utils/Objects";
             handler()
             {
                 this.filter = this.search;
+            }
+        },
+        value:
+        {
+            handler()
+            {
+                this.selected = this.value?this.value:[];
             }
         }
     }
@@ -64,7 +72,9 @@ export default class List extends VueComponent
     }
     onSelection(event)
     {
-        this.$emit('item-selection', event, this.selected.slice());
+        let selected = this.selected.slice();
+        this.$emit('item-selection', event, selected);
+        this.emit('input',selected);
         this.onClick(event, this.selected[this.selected.length-1])
     }
    
@@ -142,13 +152,6 @@ export default class List extends VueComponent
             }
             //handle like mouseup
         }
-        // if (this._itemChanged.length || this.template.list.models.filter((item) => item.selected || item._previousSelected != undefined).length || this.template.selected.length) {
-        //     console.log('item:' + this._itemChanged.length);
-        //     console.log('s:' + this.template.list.models.filter((item) => item.selected || item._previousSelected != undefined).length);
-        //     console.log('se:' + this.template.selected.length);
-        // }
-        // console.log('[Mouse] Mousedown');
-       // this._mouseStart = index;
         model._previousSelected = model.selected;
         if (!event.metaKey && !event.ctrlKey) {
             this.selected.forEach((item) => {
@@ -159,10 +162,6 @@ export default class List extends VueComponent
         }else{
             
         }
-            // this.$getProp('list').models.forEach((item)=>
-            // {
-            //     item.selected = false;
-            // });
             model.selected = !model.selected;
             if (model.selected && !~this.selected.indexOf(model)) {
                 this.selected.push(model);
@@ -172,27 +171,6 @@ export default class List extends VueComponent
                 if (index != -1)
                     this.selected.splice(index, 1);
             }
-        // }
-        // else {
-        //     if(event.shiftKey)
-        //     {
-        //         if (!model.selected && !~this.selected.indexOf(model))
-        //             this.selected.push(model);
-        //         model.selected = true;
-
-        //     }else
-        //     {
-        //          model.selected = !model.selected;
-        //         if (model.selected && !~this.selected.indexOf(model)) {
-        //             this.selected.push(model);
-        //         }
-        //         else if(!model.selected) {
-        //             var index = this.selected.indexOf(model);
-        //             if (index != -1)
-        //                 this.selected.splice(index, 1);
-        //         }
-        //     }
-        // }
     }
     onMouseMove(event, model) {
         if (this._mouseStart == null) {
@@ -209,13 +187,13 @@ export default class List extends VueComponent
             return;
         }
         event.preventDefault();
-        //   if(this.template.draggable &&  !event.metaKey && !event.ctrlKey && !event.shiftKey)
-        // {
-        //     return this._onDraggableMouseMove(event, index);
-        // }
-        //console.log('[Mouse] MouseMove');
         var index1 = Math.min(index, this._mouseStart);
         var index2 = Math.max(index, this._mouseStart);
+
+         if(!this.multiOnSelect && !event.ctrlKey && !event.metaKey && !event.shiftKey)
+        {
+            index1 = index2 = this._mouseStart;
+        }
         console.log(index1 +" -> "+index2);
         var model;
         for (var p of this._itemChanged) {
@@ -263,10 +241,6 @@ export default class List extends VueComponent
         }
     }
     onMouseUp(event, model) {
-        // if(this.template.draggable)
-        // { 
-        //     return;
-        // }
         if (this._mouseStart == null) {
             return;
         }
@@ -281,7 +255,10 @@ export default class List extends VueComponent
         var index1 = Math.min(index, this._mouseStart);
         var index2 = Math.max(index, this._mouseStart);
 
-        
+        if(!this.multiOnSelect && !event.ctrlKey && !event.metaKey && !event.shiftKey)
+        {
+            index1 = index2 = this._mouseStart;
+        }
         var model;
         for (var p of this._itemChanged) {
             model = this.filtered[p];
@@ -328,7 +305,6 @@ export default class List extends VueComponent
         this._mouseStart = null;
 
             this.onSelection();
-        //this.trigger("selection");
     }
 }
 </script>
