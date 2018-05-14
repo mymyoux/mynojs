@@ -23,39 +23,47 @@ export class json extends adapter
    } 
     load(request)
     {
-        let req = request._request;
-        let config =  Object.assign(this._adapterConfig,{
-        });
-        config.url = this._config.baseUrl + req.path;
-        config.method = "post";
+        let req         = request._request;
+        let config      = Object.assign(this._config, {});
+        config          = Object.assign(this._adapterConfig, config);
+        config.url      = this._config.baseUrl + req.path;
+        config.method   = "post";
 
+        if (!config.params)
+            config.params = {};
 
         let fullurl = config.url+"?"+this.paramsSerializer(req.params);
+
         if(fullurl.length<2000)
         {
             config.method = "get";
-            config.params = req.params;
+            config.params = Object.assign(config.params, req.params);
         }else
         {
             config.method= "post";
-            config.data = req.params;
+            config.data = Object.assign(config.data, req.params);
         }
         if(config.data)
+        {
             if(this._adapterConfig.indices)
             {
                 config.data.__type = "indices";
             }else
             {
-                config.data.__type = "json"
+                config.data.__type = "json";
             }
+        }
         if(config.params)
+        {
             if(this._adapterConfig.indices)
             {
                 config.params.__type = "indices";
             }else
             {
-                config.params.__type = "json"
+                config.params.__type = "json";
             }
+        }
+            
         return axios(config).then((response)=>
         {
             request.setapidata(response.data.api_data);

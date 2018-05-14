@@ -1,6 +1,7 @@
 import { LocalForage } from "../data/Forage";
 import { event } from "../../common/events/Bus";
 import { make } from "../../common/maker/make";
+import { API, api } from "../io/API";
 
 export class Auth
 {
@@ -16,6 +17,13 @@ export class Auth
             let model = new cls();
             model.readExternal(user);
             Auth.setUser(model);
+
+            API.instance().config({
+                params: {
+                    api_token : user.token
+                }
+            });
+            api.boot();
         });
     }
     static check()
