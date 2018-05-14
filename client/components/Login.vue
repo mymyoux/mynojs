@@ -4,10 +4,21 @@
     <h2 v-if="message">
         {{message}}
     </h2>
-           <form>
-                <input type="email">
-                <input type="password">
-                <input type="submit" value="login">
+           <form method="POST" action="https://local.yborder.com/login">
+                <f-input type="email" name="email" />
+                <f-input type="password" name="password" />
+
+                <div class="form-group">
+                    <div class="col-md-6 col-md-offset-4">
+                        <div class="checkbox">
+                            <label>
+                                <f-input type="checkbox" name="remember" label="Remember Me : " />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <f-input type="submit" value="login" />
            </form>
             <connectors></connectors>
   </div>

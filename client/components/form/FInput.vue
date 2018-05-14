@@ -1,7 +1,7 @@
 <template>
     <div>
         <label v-if="localLabel">{{localLabel}}</label>
-        <input :type="type" @change="onChange" :disabled="disabled" v-model="val" :min="min" :max="max">
+        <input :type="type" @change="onChange" :disabled="disabled" v-model="val" :min="min" :max="max" :name="name">
         <span v-if="name && errors.has(name)">{{errors.first(name)}}</span>
    </div> 
 </template>
