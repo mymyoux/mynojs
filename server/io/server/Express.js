@@ -9,6 +9,7 @@ import { api } from "../API";
 import bodyParser from "body-parser";
 import { S_IFIFO } from "constants";
 import { Strings } from "../../../common/utils/Strings";
+import { Objects } from "../../../common/utils/Objects";
 export class Express extends StepHandler(CoreObject)
 {
     _steps = ["configuration"]
@@ -59,7 +60,7 @@ export class Express extends StepHandler(CoreObject)
         });
     }
     async onRequest(request, result) {
-        let params = Object.assign(request.query, request.body);
+        let params = Objects.assign(request.query, request.body);
         if(params.__type == "json")
         Object.keys(params).forEach((item)=>
         {

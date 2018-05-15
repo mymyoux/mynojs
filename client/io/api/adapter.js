@@ -1,3 +1,5 @@
+import { Objects } from "../../../common/utils/Objects";
+
 export class adapter
 {
 
@@ -11,7 +13,7 @@ export class adapter
     }   
     config(config)
     {
-        this._config = Object.assign({}, config);
+        this._config = Objects.assign({}, config);
         this._config.adapter = null;
     }
     addStream(stream)

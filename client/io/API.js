@@ -62,7 +62,7 @@ export class API extends CoreObject
         {
             this._config = {};
         }
-        this._config = Object.assign(this._config, config);
+        this._config = Objects.assign(this._config, config);
         return this;
     }
     boot()
@@ -71,7 +71,7 @@ export class API extends CoreObject
         {
             this._config = {};
         }
-        this._config = Object.assign({
+        this._config = Objects.assign({
             adapter:new json
         }, this._config);
 
@@ -150,6 +150,7 @@ export class API extends CoreObject
                 let stream = new Stream((type, data, answerID)=>
                 {
                     this._config.adapter.sendStream(stream, type, data, answerID);
+
                 }, request._data.streamID);
                 this._config.adapter.addStream(stream);
                 return stream;
@@ -181,7 +182,7 @@ class Request
     constructor(api)
     {
         this._api = api;
-        this._config = Object.assign({requestInstance:true}, this._api._config);
+        this._config = Objects.assign({requestInstance:true}, this._api._config);
         this._promise = null;
     }
     reset()
@@ -231,7 +232,7 @@ class Request
     }
     config(config)
     {
-        this._config = Object.assign(this._config, config);
+        this._config = Objects.assign(this._config, config);
         return this;
     }
     getPath()

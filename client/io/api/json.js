@@ -1,12 +1,14 @@
 import { adapter } from "./adapter";
 import axios from "axios";
 import Qs from "qs"
+import { Objects } from "../../../common/utils/Objects";
 export class json extends adapter
 {
     constructor(config)
     {
         super();
-        this._adapterConfig = Object.assign({
+        debugger;
+        this._adapterConfig = Objects.assign({
             // paramsSerializer: function(params) {
             //     return Qs.stringify(params, {arrayFormat: 'indices'})
             //   }
@@ -24,8 +26,9 @@ export class json extends adapter
     load(request)
     {
         let req         = request._request;
-        let config      = Object.assign(this._config, {});
-        config          = Object.assign(this._adapterConfig, config);
+        debugger;
+        let config      = Objects.assign(this._config, {});
+        config          = Objects.assign(this._adapterConfig, config);
         config.url      = this._config.baseUrl + req.path;
         config.method   = "post";
 
@@ -33,15 +36,14 @@ export class json extends adapter
             config.params = {};
 
         let fullurl = config.url+"?"+this.paramsSerializer(req.params);
-
         if(fullurl.length<2000)
         {
             config.method = "get";
-            config.params = Object.assign(config.params, req.params);
+            config.params = Objects.assign(config.params, req.params);
         }else
         {
             config.method= "post";
-            config.data = Object.assign(config.data, req.params);
+            config.data = Objects.assign(config.params, req.params);
         }
         if(config.data)
         {
@@ -83,7 +85,7 @@ export class json extends adapter
     {
         super.config(config);
         
-        this._config = Object.assign({
+        this._config = Objects.assign({
             baseUrl:window.origin
         }, this._config);
 
@@ -120,12 +122,19 @@ export class json extends adapter
                 setTimeout(()=>
                 {
                     this.retrieveStream(stream);
-                }, results.length==0?500:100);
+                }, results.length==0?1000:100);
             }
         },(error)=>
         {
             stream.trigger('error', error); 
             stream.close();
+        });
+    }
+    sendStream(stream, type, data, answerID)
+    {
+        this._api.request().path('stream/send').param("stream_id", stream.id).params({type,data,answerID}).then((result)=>
+        {
+
         });
     }
     answer(params)

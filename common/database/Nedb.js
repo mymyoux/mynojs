@@ -1,5 +1,6 @@
 import  Datastore from "nedb";
 import { Promise } from "bluebird";
+import { Objects } from "../utils/Objects";
 
 export class Nedb
 {
@@ -17,7 +18,7 @@ export class Nedb
     constructor(name, options)
     {
         this._name = name;
-        this._options = Object.assign({timestampData:true}, options?options:{});
+        this._options = Objects.assign({timestampData:true}, options?options:{});
         
     }
     boot()
@@ -144,7 +145,7 @@ export class Nedb
     {
         return new Promise((resolve, reject)=>
         {
-            options = Object.assign({},options);
+            options = Objects.assign({},options);
             this._db.remove(query, options, (errors, numRemoved)=>
             {
                 if(errors)

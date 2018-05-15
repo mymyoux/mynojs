@@ -21,6 +21,8 @@ import Vue from 'vue';
 import {Hardware} from "../../../common/env/Hardware";
 import FElement from "./FElement";
 import electron from "../../../common/electron/Electron";
+import { Objects } from "../../../common/utils/Objects";
+
 const {remote} = electron;
 
 @Component({
@@ -112,7 +114,7 @@ export default class FFile extends FElement
     {
         if(this.value)
         {
-            this.file = typeof this.value == "string"?{path:this.value}:Object.assign({},this.value);
+            this.file = typeof this.value == "string"?{path:this.value}:Objects.assign({},this.value);
         }
         this.showPrevious = true;
         super.mounted();

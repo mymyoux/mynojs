@@ -6,6 +6,7 @@ import { Global } from '../../common/annotations/Global';
 import { log } from '../../common/annotations/Global';
 import { root } from '../../common/env/Root';
 import { Buffer } from '../../common/buffer/Buffer';
+import { Objects } from '../../common/utils/Objects';
 
 
 
@@ -120,7 +121,7 @@ export class VueComponent extends Vue
  */
 export function Event(event, options)
 {
-    options = Object.assign({debounce:false, throttle:false}, options);
+    options = Objects.assign({debounce:false, throttle:false}, options);
     return function(target, key, descriptor)
     {
         if(!event)

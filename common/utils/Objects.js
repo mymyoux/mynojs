@@ -138,4 +138,8 @@
         }
         return properties;
     }
+    static assign(previous, ...newValues)
+    {
+        return Object.assign({}, previous, ...newValues);
+    }
 }

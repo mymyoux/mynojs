@@ -200,7 +200,7 @@ export function Collection(A) {
                         }
                     }
                 }
-                config = Object.assign({
+                config = Objects.assign({
                     removePreviousModels:false,
                     readExternal:true
                 }, config);

@@ -3,6 +3,8 @@ const { Menu, MenuItem, app,dialog } = remote;
 import { Configuration } from "../../common/env/Configuration";
 import { Hardware } from "../../common/env/Hardware";
 import { bus } from "../../common/events/Bus";
+import { Objects } from "../../common/utils/Objects";
+
 import Vue from 'vue';
 //import { Updater } from "./Updater";
 export class MenuHelper {
@@ -191,7 +193,7 @@ export class MenuHelper {
             options = null;
         }
 
-        options = Object.assign({generic:true},options);
+        options = Objects.assign({generic:true},options);
         if(!template)
         {
             template = [];
@@ -223,7 +225,7 @@ export class MenuHelper {
     }
     static show(menu, options)
     {
-        options = Object.assign({window:remote.getCurrentWindow()},options);
+        options = Objects.assign({window:remote.getCurrentWindow()},options);
         Vue.nextTick(()=>
         {
             menu.popup(options);

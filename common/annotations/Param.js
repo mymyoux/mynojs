@@ -1,11 +1,12 @@
 import { Functions } from "../utils/Functions";
 import { wrap } from "./wrap";
+import { Objects } from "../utils/Objects";
 
 export function Param(name, options)
 {
     if(typeof name == "string")
     {
-        options = Object.assign({name:name}, options);
+        options = Objects.assign({name:name}, options);
     }else{
         options = name;
         if(!name)
@@ -14,7 +15,7 @@ export function Param(name, options)
         }
     }
 
-    options = Object.assign({required:false}, options);
+    options = Objects.assign({required:false}, options);
 
     return function(target, key, descriptor)
     {

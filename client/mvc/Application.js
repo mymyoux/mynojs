@@ -94,7 +94,11 @@ export class Application extends StepHandler(CoreObject)
     }
     initVue()
     {
-     
+        if(Configuration.isDebug())
+        {
+            Vue.config.devtools = true
+            Vue.config.performance = true
+        }
 
         Vue.use(VeeValidate);
         Vue.use(vClickOutside)
@@ -114,6 +118,7 @@ export class Application extends StepHandler(CoreObject)
         Vue.component('tree-item', TreeItem);
         Vue.component('context-menu', ContextMenu);
         Vue.component('drag-bar', DragBar);
+
     }
     routes()
     {
