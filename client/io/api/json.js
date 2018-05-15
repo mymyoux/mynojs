@@ -7,7 +7,6 @@ export class json extends adapter
     constructor(config)
     {
         super();
-        debugger;
         this._adapterConfig = Objects.assign({
             // paramsSerializer: function(params) {
             //     return Qs.stringify(params, {arrayFormat: 'indices'})
@@ -26,7 +25,6 @@ export class json extends adapter
     load(request)
     {
         let req         = request._request;
-        debugger;
         let config      = Objects.assign(this._config, {});
         config          = Objects.assign(this._adapterConfig, config);
         config.url      = this._config.baseUrl + req.path;
