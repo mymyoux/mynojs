@@ -189,12 +189,11 @@ export default class List extends VueComponent
         event.preventDefault();
         var index1 = Math.min(index, this._mouseStart);
         var index2 = Math.max(index, this._mouseStart);
-
-         if(!this.multiOnSelect && !event.ctrlKey && !event.metaKey && !event.shiftKey)
+        if(!this.multiOnSelect && !event.ctrlKey && !event.metaKey && !event.shiftKey)
         {
             index1 = index2 = this._mouseStart;
         }
-        console.log(index1 +" -> "+index2);
+  
         var model;
         for (var p of this._itemChanged) {
             model = this.filtered[p];
@@ -209,6 +208,10 @@ export default class List extends VueComponent
                     this.selected.splice(index, 1);
             }
         }
+
+
+     
+
         this._itemChanged = [];
         for (var i = index1; i <= index2; i++) {
             model = this.filtered[i];
@@ -257,6 +260,8 @@ export default class List extends VueComponent
 
         if(!this.multiOnSelect && !event.ctrlKey && !event.metaKey && !event.shiftKey)
         {
+            this.selected.forEach((item)=>item.selected = false);
+            this.selected = [];
             index1 = index2 = this._mouseStart;
         }
         var model;
@@ -303,8 +308,7 @@ export default class List extends VueComponent
             }
         }
         this._mouseStart = null;
-
-            this.onSelection();
+        this.onSelection();
     }
 }
 </script>
