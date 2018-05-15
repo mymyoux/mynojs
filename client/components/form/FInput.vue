@@ -92,6 +92,8 @@ export default class FInput extends FElement
         {
             this.localLabel = this.name+":";
         }
+        if (null === this.label)
+            this.localLabel = null;
         super.mounted();
     }
 }
