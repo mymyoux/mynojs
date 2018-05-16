@@ -1,6 +1,6 @@
 <template>
-    <ul v-on:selectall.prevent.stop="onSelectAll">
-            <div v-for="item,i in filtered" :key="i" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
+    <ul ref="root" v-on:selectall.prevent.stop="onSelectAll" @scroll.passive="onScroll">
+            <div ref="items" v-for="item,i in filtered" :key="i" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
             :class="{selected:item.selected}"
             >
                 <slot  name="item" :item="item" :index="i">
@@ -9,12 +9,16 @@
                 </slot>
             </div>
             <div class="warning">
-                    <p v-if="filter">
-                            no match
-                    </p>
-                    <p v-else>
-                            empty list
-                    </p>
+                    <slot v-if="filter" name="no_match">
+                        <p>
+                                no match
+                        </p>
+                    </slot>
+                    <slot v-else name="empty">
+                        <p>
+                                no match
+                        </p>
+                    </slot>
             </div>
     </ul>
 </template>
@@ -29,7 +33,8 @@ import { Objects } from "../../common/utils/Objects";
         items:{required:true},
         value:{required:false},
         search:{required:false},
-        multiOnSelect:{required:false, default:false}
+        multiOnSelect:{required:false, default:false},
+        scrollBottom:{required:false, default:50}
     },
     watch:{
         search:
@@ -53,6 +58,7 @@ export default class List extends VueComponent
      _mouseStart = null;
     _mouseLast = null;
     _itemChanged = [];
+    _lastScroll = 0;
     data()
     {
         return {
@@ -62,9 +68,11 @@ export default class List extends VueComponent
     }
     created()
     {
+        
         this._mouseStart = null;
         this._mouseLast = null;
         this._itemChanged = [];
+        this._lastScroll = 0;
     }
     mounted()
     {
@@ -85,6 +93,60 @@ export default class List extends VueComponent
     onDoubleClick(event, item)
     {
         this.$emit('item-dblclick', event, item);
+    }
+    onScroll(event)
+    {
+        const scroll = this.$refs.root.scrollTop;
+        const scrollTotal = this.$refs.root.scrollHeight;
+        const height = this.$refs.root.clientHeight;
+        const direction = this._lastScroll - scroll>0?'up':'down';
+        
+        if(direction == "up" && scroll == 0)
+        {
+            this.$emit('top', event);
+            console.log('top');
+        }
+        
+        if(direction == "down" && scrollTotal-scroll <= height)
+        {
+            this.$emit('bottom', event);
+        }
+
+        this._lastScroll = scroll;
+    }
+    scrollTo(item)
+    {
+        let index;
+        if(typeof item == "number")
+        {
+            index = item;
+        }else{
+            item = this.items.indexOf(item);
+        }
+        if(!~index)
+        {
+            console.warn('item not found');
+            return;
+        }
+        if(index<0)
+        {
+            index = 0;
+        }
+        let child = this.$refs.items[index];
+        if(!child)
+        {
+            if(index>=this.$refs.items.length)
+            {
+                child = this.$refs.items[this.$refs.items.length-1];
+            }else
+            {
+                return;
+            }
+        }
+        if(child)
+        {
+            this.$refs.root.scrollTop = child.offsetTop - this.$refs.root.offsetTop
+        }
     }
     get filtered()
     {
