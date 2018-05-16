@@ -120,7 +120,7 @@ export class json extends adapter
                 setTimeout(()=>
                 {
                     this.retrieveStream(stream);
-                }, results.length==0?1000:100);
+                }, results.length==0?200:100);
             }
         },(error)=>
         {
