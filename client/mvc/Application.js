@@ -31,7 +31,9 @@ import { file_exists } from "../components/form/validators/file_exists";
 import { Model } from "../../common/mvc/Model";
 import { WindowBusMiddleware } from "../events/WindowBusMiddleware";
 import { DocumentBusMiddleware } from "../events/DocumentBusMiddleware";
-import { KeyboardShorcutHelper } from "../helpers/KeyboardShorcutHelper";
+import { KeyboardShortcutHelper } from "../helpers/KeyboardShortcutHelper";
+import VueHistory from "../vue/History";
+import vuewheel from 'vuewheel'
 export class Application extends StepHandler(CoreObject)
 {
     _steps=["debug","model","preconfig","maker","api", "configuration", "router", "initVue","user", "selector", "app", "events","vue"];
@@ -77,7 +79,149 @@ export class Application extends StepHandler(CoreObject)
         console.log('router');
         Vue.use(VueRouter)
         this._router = new VueRouter({routes:this.routes()});
-        this._router.beforeEach((to, from, next)=>
+        Vue.use(VueHistory, {router:this._router});/*
+            Vue.use({
+                install(Vue, options)
+                {
+                    if (this.isSetup) {
+                        console.log('[router-storage]:has been installed')
+                        return;
+                    }
+                    this.isSetup = true;
+                    if(!options || !options.router)
+                    {
+                        throw new Error('router is required');
+                    }
+                    var first = null;
+
+
+                    let handler  =  function(to, from ,next)
+                    {
+                        next(false);
+                        const count = to.params.count | 1;
+                        if(count > 0 && history.count - count + 1 <= 0)
+                        {
+                            router.push(first);
+                        }
+                        return router.back(count);
+                    };
+                    var router = options.router;
+                    router.addRoutes([{
+                        'path':'/back/:count',
+                        'name':'back',
+                        beforeEnter:handler
+                    },
+                    {
+                        'path':'/back',
+                        'name':'_back',
+                        beforeEnter:handler
+                    }])
+                    var history = {
+                        hasPrevious:false,
+                        count:-1,
+                        _go:router.go.bind(router),
+                        url()
+                        {
+
+                        },
+                        back(count = 1, fallback = null)
+                        {
+                            if(count != null && typeof count != "number")
+                            {
+                                fallback = count;
+                                count = 1;
+                            }
+                            if(count > 0 && history.count - count + 1 <= 0)
+                            {
+                                if(fallback)
+                                {
+                                    return fallback;
+                                }
+                                if(!first)
+                                {
+                                    //should not occur
+                                    console.warn("no first");
+                                    return {name:"back", count:count}
+                                }
+                                if(first.meta.back)
+                                {
+                                    return first.meta.back;
+                                }
+                            }
+                            return {name:"back", count:count}
+                        },
+                        go(count = 1, fallback = null)
+                        {
+                            if(count != null && typeof count != "number")
+                            {
+                                fallback = count;
+                                count = 1;
+                            }
+                            if(count < 0 && history.count == 0)
+                            {
+                                if(fallback)
+                                {
+                                    return router.push(fallback);
+                                }
+                                if(!first)
+                                {
+                                    //should not occur
+                                    console.warn("no first");
+                                    return history._go(count);
+                                }
+                                if(first.meta.back)
+                                {
+                                    return router.push(first.meta.back);
+                                }
+
+                            }else
+                            {
+                                return history._go(count);
+                            }
+                        },
+                    };
+                    router.go = history.go
+                    Vue.mixin({
+                        beforeCreate () {
+                            var vm = this.$root;
+                            this._history = history;
+                        }
+                    });
+                    router.afterEach((to, next)=>
+                    {
+                       history.count++;
+                       if(!history.count)
+                       {
+                            first = to;
+                       }
+                    });
+    
+    
+                    Object.defineProperty(Vue.prototype, '$history', {
+                        get () { return this._history }
+                      })
+                    window.addEventListener('popstate', ()=>
+                    {
+                        history.count-=2;
+                    })
+                }
+            
+            },{router:this._router})*/
+        // this._router.beforeEach((to, from, next)=>
+        // {
+        //     if(to.meta.requiresAuth && !Auth.check())
+        //     {
+        //         next({name:"login", params:{message:"restricted page"}});
+        //     }else
+        //     if(to.meta.requiresUnauth && Auth.check())
+        //     {
+        //         next({name:"home"});
+        //     }else
+        //     {
+        //         next(); 
+        //     }
+        // })
+        this._router.beforeResolve((to, from, next)=>
         {
             if(to.meta.requiresAuth && !Auth.check())
             {
@@ -90,7 +234,7 @@ export class Application extends StepHandler(CoreObject)
             {
                 next(); 
             }
-        })
+        });
     }
     initVue()
     {
@@ -102,6 +246,7 @@ export class Application extends StepHandler(CoreObject)
 
         Vue.use(VeeValidate);
         Vue.use(vClickOutside)
+        Vue.use(vuewheel)
         
         Validator.extend('file_exists', file_exists);
         Validator.extend('host', host);
@@ -177,7 +322,7 @@ export class Application extends StepHandler(CoreObject)
     {
         WindowBusMiddleware.register();
         DocumentBusMiddleware.register();
-        KeyboardShorcutHelper.register();
+        KeyboardShortcutHelper.register();
         // window.addEventListener('resize',()=>
         // {
         //     bus.trigger('window:resize')

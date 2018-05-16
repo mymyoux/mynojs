@@ -1,7 +1,7 @@
 import { BusMiddleware, bus } from "../../common/events/Bus";
 import mousetrap from 'mousetrap';
 
-export class KeyboardShorcutHelper
+export class KeyboardShortcutHelper
 {
     static _last;
     static _lastEvent;
