@@ -179,6 +179,9 @@ class Request
     _executing = false;
     _promise = null;
     _config = {};
+    _paginate = null;
+    _nextPaginate = null;
+    _previousPaginate = null;
     constructor(api)
     {
         this._api = api;
@@ -194,6 +197,24 @@ class Request
         this._executed = false;
         this._api_data = null;
         this._request.params = {};
+    }
+    resetForPaginate()
+    {
+        this._data = null;
+        this._exception = null;
+        this._executing = null;
+        this._promise = null;
+        this._executed = false;
+        this._api_data = null;
+        if(this._request.params)
+        {
+            delete this._request.params.paginate;
+        }
+    }
+    resetPaginate(){
+        this._paginate = null;
+        this._nextPaginate = null;
+        this._previousPaginate = null;
     }
     clone()
     {
@@ -223,7 +244,76 @@ class Request
                 return value;
             }
         }
+        
         return value;
+    }
+    _computePaginate()
+    {
+        // save next and previous 
+        //why ? => if no data no next/previou
+        let paginate = this.apidata("paginate");
+        if(!paginate)
+        {
+            //no paginate
+            return;
+        }
+        if(!this._paginate)
+        {
+            this._paginate = {};
+        }
+        //set local paginate
+        this._paginate.keys = paginate.keys;
+        this._paginate.directions = paginate.directions;
+        this._paginate.limit = paginate.limit;
+
+        if(!this._paginate.nextAll && paginate.next)
+        {
+            this._paginate.nextAll = paginate.next;
+        }
+        if(!this._paginate.previousAll && paginate.previous)
+        {
+            this._paginate.previousAll = paginate.previous;
+        }
+
+        if ( paginate.next &&  paginate.next.length) {
+            this._paginate.next = paginate.next;
+            let isNextAll = true;
+                for (let i = 0; i < paginate.next.length; i++) {
+                    if (!((this._paginate.nextAll[i] < paginate.next[i] && paginate.directions[i] > 0) || (this._paginate.nextAll[i] > paginate.next[i] && paginate.directions[i] < 0))) {
+                        if (this._paginate.nextAll[i] == paginate.next[i]) {
+                            continue;
+                        }
+                        isNextAll = false;
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+            if(isNextAll)
+            {
+                this._paginate.nextAll = paginate.next;
+            }
+        }
+        if ( paginate.previous &&  paginate.previous.length) {
+            let isPreviousAll = true;
+            this._paginate.previous = paginate.previous;
+                for (let i = 0; i <  paginate.previous.length; i++) {
+                    if (!((this._paginate.previousAll[i] <  paginate.previous[i] &&  paginate.directions[i] < 0) || (this._paginate.previousAll[i] >  paginate.previous[i] &&  paginate.directions[i] > 0))) {
+                        if (this._paginate.previousAll[i] ==  paginate.previous[i]) {
+                            continue;
+                        }
+                        isPreviousAll = false;
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+            if(isPreviousAll)
+            {
+                this._paginate.previousAll =  paginate.previous;
+            }
+        }
+        console.log("computed _paginate: ",this._paginate);
     }
     path(path)
     {
@@ -252,10 +342,7 @@ class Request
     {
         if(params)
         {
-            Object.keys(params).forEach((key)=>
-            {
-                this.param(key, params[key]);
-            });
+            this._request.params = Objects.assign(this._request.params, params);
         }
         return this;
     }
@@ -270,8 +357,27 @@ class Request
         {
             return  this._promise.then(resolve, reject);
         }
+        if(this._paginate)
+        {
+            if(!this._request.params)
+            {
+                this._request.params = {};
+            }
+            this._request.params.paginate = {
+                keys:this._paginate.keys,
+                directions:this._paginate.directions,
+                limit:this._paginate.limit,
+            }
+        }
+        if(this._nextPaginate)
+        {
+            this._request.params.paginate.next = this._nextPaginate;
+        }else
+        if(this._previousPaginate){
+            this._request.params.paginate.previous = this._previousPaginate;
+        }
         this._executing = true;
-       return this._promise = this._api.load(this).then((data)=>
+       this._promise = this._api.load(this).then((data)=>
         {
             this._executing = false;
             this._executed = true;
@@ -281,7 +387,196 @@ class Request
             this._executing = false;
             this._executed = true;
             return Promise.reject(error);
-        }).then(resolve, reject)
+        });
+
+        return  this._promise.then(resolve, reject);
+    }
+    paginate(options)
+    {
+        this.resetForPaginate();
+        if(! this._paginate)
+        {
+            this._paginate = {};
+        }else
+        {
+            delete this._paginate.nextAll;
+            delete this._paginate.previousAll;
+            delete this._paginate.next;
+            delete this._paginate.previous;
+        }
+        this._paginate = Objects.assign(this._paginate, options);
+        return this;
+    }
+    limit(number)
+    {
+        if(typeof number != "number")
+        {
+            throw new Error('limit must be a integer');
+        }
+        number = parseInt(number);
+        if(isNaN(number))
+        {
+            throw new Error('limit must be a integer');
+        }
+        if(number <= 0)
+        {
+            throw new Error('limit can\'t be <= 0');
+        }
+        if(!this._paginate)
+        {
+            this._paginate = {};
+        }
+        this.resetForPaginate();
+        this._paginate.limit = number;
+    }
+    _next(data)
+    {
+        if(!this._paginate)
+        {
+            this._paginate = {};
+        }
+        this.resetForPaginate();
+        this._paginate._previousPaginate = null;
+        this._nextPaginate = data;
+        return this;
+    }
+    _previous(data)
+    {
+        if(!this._paginate)
+        {
+            this._paginate = {};
+        }
+        this.resetForPaginate();
+        this._paginate._nextPaginate = null;
+        this._previousPaginate = data;
+        return this;
+    }
+    sort(options)
+    {
+        return this.order(...arguments);
+    }
+    order(options)
+    {
+        if(!options)
+        {
+            throw new Error('options can\'t be null')
+        }
+       if(Array.isArray(options))
+       {    
+            options = options.reduce(function(order, row)
+            {
+                if(Array.isArray(row))
+                {
+                    order[row[0]] = row[1]
+                    row = row[0];
+                }else{
+                    order[row] = 1;
+                }
+                return order;
+            }, {});
+       }
+       if(!this._paginate)
+       {
+           this._paginate = {};
+        }
+        this.resetForPaginate();
+       this._paginate.keys = [];
+       this._paginate.directions = [];
+       for(var key in options)
+       {
+           let direction = options[key];
+            if(typeof direction != number || isNaN(direction))
+            {
+                throw new Error('direction must be a number')
+            }
+            if(direction == 0)
+            {
+                throw new Error('direction can\'t be 0');
+            }
+            if(direction>0)
+            {
+                direction = 1;
+            }else
+            {
+                direction = -1
+            }
+            this._paginate.keys.push(key);
+            this._paginate.directions.push(direction);
+       }
+       return this;
+    }
+   
+    next(data)
+    {
+        if(data)
+        {
+            return this._next(data);
+        }
+        if(!this._paginate)
+        {
+            throw new Error("you can\'t next a non paginated request");
+        }   
+        this.resetForPaginate();
+        //let paginate = Object.assign(this._paginate,{});
+        this._previousPaginate = null;
+        if(!this._paginate.next)
+        {
+            throw new Error('no next value for paginate');
+        }
+        this._nextPaginate = this._paginate.next;
+        //paginate = {keys:paginate.keys, directions:paginate.directions, limit:paginate.limit, next:paginate.next};
+        //this.params({paginate:paginate});
+        return this;
+    }
+    nextAll()
+    {
+        
+        if(!this._paginate)
+        {
+            throw new Error("you can\'t next a non paginated request");
+        }   
+        this.resetForPaginate();
+        this._previousPaginate = null;
+        if(!this._paginate.nextAll)
+        {
+            throw new Error('no nextAll value for paginate');
+        }
+        this._nextPaginate = this._paginate.nextAll;
+        return this;
+    }
+    previous(data)
+    {
+        if(data)
+        {
+            return this._previous(data);
+        }
+        if(!this._paginate)
+        {
+            throw new Error("you can\'t previous a non paginated request");
+        }   
+        this.resetForPaginate();
+        this._nextPaginate = null;
+        if(!this._paginate.previous)
+        {
+            throw new Error('no previous value for paginate');
+        }
+        this._previousPaginate = this._paginate.previous;
+        return this;
+    }
+    previousAll()
+    {
+        if(!this._paginate)
+        {
+            throw new Error("you can\'t previous-all a non paginated request");
+        }   
+        this.resetForPaginate();
+        this._nextPaginate = null;
+        if(!this._paginate.previousAll)
+        {
+            throw new Error('no previousAll value for paginate');
+        }
+        this._previousPaginate = this._paginate.previousAll;
+        return this;
     }
     stream(resolve, reject)
     {
@@ -293,6 +588,7 @@ class Request
     {
         this._api_data = value;
         this._loaded = true;
+        this._computePaginate();
     }
     data(value)
     {

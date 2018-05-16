@@ -1,42 +1,49 @@
 <template>
-    <ul v-on:selectall.prevent.stop="onSelectAll">
-            <div v-for="item,i in filtered" :key="i" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
+    <ul ref="root" v-on:selectall.prevent.stop="onSelectAll" @scroll.passive="onScroll">
+            <div ref="items" v-for="item,i in filtered" :key="i" v-wheel="onWheel" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
             :class="{selected:item.selected}"
             >
-                <slot  name="item" :item="item" :index="i">
+                <slot  name="item" :item="item" :index="i" :filter="filter">
                             <p v-if="filter" v-html="filter.transform(item)"></p>
                             <p v-else>{{item.name}}</p>
                 </slot>
             </div>
             <div class="warning">
-                    <p v-if="filter">
-                            no match
-                    </p>
-                    <p v-else>
-                            empty list
-                    </p>
+                    <slot v-if="filter" name="no_match">
+                        <p>
+                                no match
+                        </p>
+                    </slot>
+                    <slot v-else name="empty">
+                        <p>
+                                no match
+                        </p>
+                    </slot>
             </div>
     </ul>
 </template>
 
 <script>
-import {VueComponent, Component, Prop, Watch, Emit} from "../mvc/VueComponent";
+import {VueComponent, Component, Event} from "../mvc/VueComponent";
 import Vue from 'vue';
 import { Objects } from "../../common/utils/Objects";
+import { Strings } from "../../common/utils/Strings";
 @Component({
     props: 
     {
         items:{required:true},
         value:{required:false},
         search:{required:false},
-        multiOnSelect:{required:false, default:false}
+        multiOnSelect:{required:false, default:false},
+        scrollBottom:{required:false, default:300}
     },
     watch:{
         search:
         {
             handler()
             {
-                this.filter = this.search;
+                if(typeof this.search != "string")
+                    this.filter = this.search;
             }
         },
         value:
@@ -44,6 +51,21 @@ import { Objects } from "../../common/utils/Objects";
             handler()
             {
                 this.selected = this.value?this.value:[];
+            }
+        },
+        items:
+        {
+            handler()
+            {
+                this._loadMoreEmitted = false;
+                this._updateScrollBottom();
+            }
+        },
+        scrollBottom:
+        {
+            handler()
+            {
+                this._updateScrollBottom();
             }
         }
     }
@@ -53,6 +75,9 @@ export default class List extends VueComponent
      _mouseStart = null;
     _mouseLast = null;
     _itemChanged = [];
+    _lastScroll = -1;
+    _scrollBottom = 0;
+    _loadMoreEmitted = false;
     data()
     {
         return {
@@ -62,13 +87,53 @@ export default class List extends VueComponent
     }
     created()
     {
+        
         this._mouseStart = null;
         this._mouseLast = null;
         this._itemChanged = [];
+        this._lastScroll = -1;
+        this._loadMoreEmitted = false;
+     
+    }
+    _updateScrollBottom()
+    {
+        let options = this.scrollBottom;
+        if(typeof options == "string")
+        {
+            if(Strings.endsWith(options, "vp"))
+            {
+                //percent of viewport
+                options = parseFloat(options);
+                options = this.$refs.root.clientHeight*options;
+            }else
+            if(Strings.endsWith(options, "px"))
+            {
+                //percent of viewport
+                options = parseFloat(options);
+            }else
+            if(Strings.endsWith(options, "%"))
+            {
+                //percent of viewport
+                options = parseFloat(options);
+                options = this.$refs.root.clientHeight*options;
+            }
+        }else
+        {
+            options = parseFloat(options);
+        }
+        
+        if(isNaN(options))
+        {
+            console.warn('scrollBottom options is incorrect');
+            options = 0;
+        }
+        this._scrollBottom = options;
     }
     mounted()
     {
-        this.filter = this.search;
+        this._updateScrollBottom();
+        if(typeof this.search != "string")
+            this.filter = this.search;
     }
     onSelection(event)
     {
@@ -77,7 +142,11 @@ export default class List extends VueComponent
         this.emit('input',selected);
         this.onClick(event, this.selected[this.selected.length-1])
     }
-   
+    @Event('window:resize', {debounce:100})
+    onResize(event)
+    {   
+        this._updateScrollBottom();
+    }
     onClick(event, item)
     {
         this.$emit('item-click', event, item);
@@ -86,13 +155,98 @@ export default class List extends VueComponent
     {
         this.$emit('item-dblclick', event, item);
     }
+    onWheel(event)
+    {
+        const height = this.$refs.root.clientHeight;
+        const scrollTotal = this.$refs.root.scrollHeight;
+        const scroll = this.$refs.root.scrollTop;
+        if(scrollTotal<= height && event.deltaY>0 && this._lastScroll != scroll)
+        {
+            this._loadMoreEmitted = true;
+            this.$emit('load-more', event);
+            this.$emit('bottom', event);
+            this._lastScroll = scroll;
+        }
+        if(event.deltaY > 0 && scrollTotal-scroll <= height && !this._loadMoreEmitted)
+        {
+            this._loadMoreEmitted = true;
+            this.$emit('load-more', event);
+        }
+    }
+    onScroll(event)
+    {
+        const scroll = this.$refs.root.scrollTop;
+        const scrollTotal = this.$refs.root.scrollHeight;
+        const height = this.$refs.root.clientHeight;
+        const direction = this._lastScroll - scroll>0?'up':'down';
+        
+        if(direction == "up" && scroll == 0)
+        {
+            this.$emit('top', event);
+            console.log('top');
+        }
+        
+        if(direction == "down")
+        {
+            const bottom = scrollTotal - scroll - height;
+            if(bottom <= this._scrollBottom && !this._loadMoreEmitted)
+            {
+                this._loadMoreEmitted = true;
+                console.log('load-more');
+                this.$emit('load-more', event);
+            }
+            if(scrollTotal-scroll <= height)
+            {
+                console.log('bottom');
+                this.$emit('bottom', event);
+            }
+        }else
+        {
+            this._loadMoreEmitted = false;
+        }
+        this._lastScroll = scroll;
+    }
+    scrollTo(item)
+    {
+        let index;
+        if(typeof item == "number")
+        {
+            index = item;
+        }else{
+            item = this.items.indexOf(item);
+        }
+        if(!~index)
+        {
+            console.warn('item not found');
+            return;
+        }
+        if(index<0)
+        {
+            index = 0;
+        }
+        let child = this.$refs.items[index];
+        if(!child)
+        {
+            if(index>=this.$refs.items.length)
+            {
+                child = this.$refs.items[this.$refs.items.length-1];
+            }else
+            {
+                return;
+            }
+        }
+        if(child)
+        {
+            this.$refs.root.scrollTop = child.offsetTop - this.$refs.root.offsetTop
+        }
+    }
     get filtered()
     {
-        if(!this.search)    
+        if(!this.filter)    
             return this.items;
         return this.items.filter((item)=>
         {
-            return item.selected || this.search.test(item)
+            return item.selected || this.filter.test(item)
         });
     }
    
@@ -114,6 +268,10 @@ export default class List extends VueComponent
     }
     onMouseDown(event, model)
     {
+        if(event.which != 1)
+        {
+            return;
+        }
         event.preventDefault();
         let index = this.filtered.indexOf(model);
         if(!~index)
