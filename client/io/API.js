@@ -198,6 +198,24 @@ class Request
         this._api_data = null;
         this._request.params = {};
     }
+    resetForPaginate()
+    {
+        this._data = null;
+        this._exception = null;
+        this._executing = null;
+        this._promise = null;
+        this._executed = false;
+        this._api_data = null;
+        if(this._request.params)
+        {
+            delete this._request.params.paginate;
+        }
+    }
+    resetPaginate(){
+        this._paginate = null;
+        this._nextPaginate = null;
+        this._previousPaginate = null;
+    }
     clone()
     {
         let cls =  this.constructor;
@@ -487,19 +505,7 @@ class Request
        }
        return this;
     }
-    resetForPaginate()
-    {
-        this._data = null;
-        this._exception = null;
-        this._executing = null;
-        this._promise = null;
-        this._executed = false;
-        this._api_data = null;
-        if(this._request.params)
-        {
-            delete this._request.params.paginate;
-        }
-    }
+   
     next(data)
     {
         if(data)

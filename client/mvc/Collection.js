@@ -51,7 +51,8 @@ export function Collection(A) {
             //     return this._modelClass.name.replace(/Model/,'Collection').kprZ7jGm;
             // }
             hasNext() {
-                return this.request().hasNext();
+                throw new Error('not implemented');
+                //return this.request().hasNext();
 
             }
             createModel() {
@@ -65,11 +66,17 @@ export function Collection(A) {
                 this.clearModels();
             }
             resetPaginate() {
-                this.request().reset();
+                if(this._request)
+                {
+                    this._request.resetForPaginate();
+                    this._request.resetPaginate();
+                }
+                return this;
             }
             reset() {
                 this.clear();
                 this.resetPaginate();
+                return this;
             }
             getRootPath() {
                 return super.getModelName();
@@ -230,10 +237,7 @@ export function Collection(A) {
                         this._request._request.params = tmp._request.params;
                     }
                 }
-                if(config.removePreviousModels)
-                {
-                    this.clearModels();
-                }
+               
                 if(params)
                     this._request.params(params);
                 if(this._request._executed)
@@ -242,6 +246,10 @@ export function Collection(A) {
                 }
                 return this._request.then((data)=>
                 {
+                    if(config.removePreviousModels)
+                    {
+                        this.clearModels();
+                    }
                     if(config.readExternal)
                     {
                         this.readExternal(data);
