@@ -339,7 +339,7 @@ class Request
         {
             return  this._promise.then(resolve, reject);
         }
-        if(this._nextPaginate)
+        if(this._paginate)
         {
             if(!this._request.params)
             {
@@ -349,20 +349,14 @@ class Request
                 keys:this._paginate.keys,
                 directions:this._paginate.directions,
                 limit:this._paginate.limit,
-                next:this._nextPaginate
             }
+        }
+        if(this._nextPaginate)
+        {
+            this._request.params.paginate.next = this._nextPaginate;
         }else
         if(this._previousPaginate){
-            if(!this._request.params)
-            {
-                this._request.params = {};
-            }
-            this._request.params.paginate = {
-                keys:this._paginate.keys,
-                directions:this._paginate.directions,
-                limit:this._paginate.limit,
-                previous:this._previousPaginate
-            }
+            this._request.params.paginate.previous = this._previousPaginate;
         }
         this._executing = true;
        this._promise = this._api.load(this).then((data)=>

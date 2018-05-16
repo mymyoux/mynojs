@@ -29,9 +29,14 @@ export function Collection(A) {
                     enumerable: false,
                     writable:true
                 });
+                Object.defineProperty(this, "_limit", {
+                    enumerable: false,
+                    writable:true
+                });
                 this.models = [];
                 this._modelClass = A; //eval('_super');
                 this._paginate = {};
+                this._limit = null;
             }
             *[Symbol.iterator]()
             {
@@ -244,6 +249,13 @@ export function Collection(A) {
                     return data;
                 });
             }
+            limit(quantity)
+            {
+                this._limit = quantity;
+                if(this._request)
+                    this._request.limit(quantity);
+                return this;
+            }
             async next(quantity)
             {
                 if(!this._request)
@@ -307,6 +319,12 @@ export function Collection(A) {
                     }
                     return data;
                 });
+            }
+            async loading()
+            {
+                if(!this._request)
+                    return null;
+                return await this._request;
             }
             async previousAll(quantity)
             {
@@ -380,6 +398,10 @@ export function Collection(A) {
                 for (var p in params) {
                     if (!request.hasParam(p))
                         request.param(p, params[p]);
+                }
+                if(this._limit)
+                {
+                    request.limit(this._limit);
                 }
                 return request;
             }
