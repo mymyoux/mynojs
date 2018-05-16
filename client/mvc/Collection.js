@@ -237,72 +237,12 @@ export function Collection(A) {
                 }
                 return this._request.then((data)=>
                 {
-                    this._computePaginate();
                     if(config.readExternal)
                     {
                         this.readExternal(data);
                     }
                     return data;
                 });
-            }
-            _computePaginate()
-            {
-                //TODO: change next to nextAll 
-                // save next and previous 
-                //why ? => if no data no next/previou
-                let current = this._request.apidata("paginate")
-                //no paginated request
-                if(!current)
-                    return;
-                if(!this._request.__paginate)
-                {
-                    this._request.__paginate = 
-                    {
-                        nextAll:current.next,
-                        next:current.next,
-                        previousAll:current.previous,
-                        previous:current.previous
-                    }
-                    return;
-                }
-                if (current.next && current.next.length) {
-                    this._request.next = current.next;
-                    let isNextAll = true;
-						for (let i = 0; i < current.next.length; i++) {
-							if (!((this._request.__paginate.nextAll[i] < current.next[i] && current.directions[i] > 0) || (this._request.__paginate.nextAll[i] > current.next[i] && current.directions[i] < 0))) {
-								if (this._request.__paginate.nextAll[i] == current.next[i]) {
-									continue;
-								}
-								isNextAll = false;
-								break;
-							} else {
-								break;
-							}
-						}
-                    if(isNextAll)
-                    {
-                        this._request.__paginate.nextAll = current.next;
-                    }
-                }
-                if (current.previous && current.previous.length) {
-                    let isPreviousAll = true;
-                    this._request.previous = current.previous;
-						for (let i = 0; i < current.previous.length; i++) {
-							if (!((this._request.__paginate.previousAll[i] < current.previous[i] && current.directions[i] < 0) || (this._request.__paginate.previousAll[i] > current.previous[i] && current.directions[i] > 0))) {
-								if (this._request.__paginate.previousAll[i] == current.previous[i]) {
-									continue;
-								}
-								isPreviousAll = false;
-								break;
-							} else {
-								break;
-							}
-						}
-                    if(isPreviousAll)
-                    {
-                        this._request.__paginate.previousAll = current.previous;
-                    }
-				}
             }
             async next(quantity)
             {
@@ -311,31 +251,14 @@ export function Collection(A) {
                     throw new Error('you can\'t next a non initialized collection');
                 }
                 await this._request;
-                let config = this._request["model_config"];
-                let current = this._request.apidata("paginate");
-                if(!current)
-                {
-                    throw new Error('you can\'t next a non paginated collection');
-                }
-          
-                
-                let paginate = {
-                    keys:current.keys,
-                    directions:current.directions,
-                    next:this._request.__paginate.next
-                };
                 if(quantity)
                 {
-                    paginate.limit = quantity;
+                    this._request.limit(quantity);
                 }
-                let params = Objects.clone(this._request._request.params);
-                this._request.reset();
-                params.paginate = paginate;
-                this._request._request.params = params;
 
-                return this._request.then((data)=>
+
+                return this._request.next().then((data)=>
                 {
-                    this._computePaginate();
                     if(config.readExternal)
                     {
                         this.readExternal(data);
@@ -347,32 +270,16 @@ export function Collection(A) {
             {
                 if(!this._request)
                 {
-                    throw new Error('you can\'t next a non initialized collection');
+                    throw new Error('you can\'t next-all a non initialized collection');
                 }
                 await this._request;
-                let config = this._request["model_config"];
-                let current = this._request.apidata("paginate");
-                if(!current)
-                {
-                    throw new Error('you can\'t next a non paginated collection');
-                }
-
-                let paginate = {
-                    keys:current.keys,
-                    directions:current.directions,
-                    next:this._request.__paginate.nextAll
-                };
                 if(quantity)
                 {
-                    paginate.limit = quantity;
+                    this._request.limit(quantity);
                 }
-                let params = Objects.clone(this._request._request.params);
-                this._request.reset();
-                this._request._request.params.paginate = paginate;
 
-                return this._request.then((data)=>
+                return this._request.nextAll().then((data)=>
                 {
-                    this._computePaginate();
                     if(config.readExternal)
                     {
                         this.readExternal(data);
@@ -384,32 +291,16 @@ export function Collection(A) {
             {
                 if(!this._request)
                 {
-                    throw new Error('you can\'t next a non initialized collection');
+                    throw new Error('you can\'t previous a non initialized collection');
                 }
                 await this._request;
-                let config = this._request["model_config"];
-                let current = this._request.apidata("paginate");
-                if(!current)
-                {
-                    throw new Error('you can\'t next a non paginated collection');
-                }
-               
-                let paginate = {
-                    keys:current.keys,
-                    directions:current.directions,
-                    previous:this._request.__paginate.previous
-                };
                 if(quantity)
                 {
-                    paginate.limit = quantity;
+                    this._request.limit(quantity);
                 }
-                let params = Objects.clone(this._request._request.params);
-                this._request.reset();
-                this._request._request.params.paginate = paginate;
 
-                return this._request.then((data)=>
+                return this._request.previous().then((data)=>
                 {
-                    this._computePaginate();
                     if(config.readExternal)
                     {
                         this.readExternal(data);
@@ -421,32 +312,16 @@ export function Collection(A) {
             {
                 if(!this._request)
                 {
-                    throw new Error('you can\'t next a non initialized collection');
+                    throw new Error('you can\'t previous-all a non initialized collection');
                 }
                 await this._request;
-                let config = this._request["model_config"];
-                let current = this._request.apidata("paginate");
-                if(!current)
-                {
-                    throw new Error('you can\'t next a non paginated collection');
-                }
-               
-                let paginate = {
-                    keys:current.keys,
-                    directions:current.directions,
-                    previous:this._request.__paginate.previousAll
-                };
                 if(quantity)
                 {
-                    paginate.limit = quantity;
+                    this._request.limit(quantity);
                 }
-                let params = Objects.clone(this._request._request.params);
-                this._request.reset();
-                this._request._request.params.paginate = paginate;
 
-                return this._request.then((data)=>
+                return this._request.previousAll().then((data)=>
                 {
-                    this._computePaginate();
                     if(config.readExternal)
                     {
                         this.readExternal(data);
