@@ -16,6 +16,14 @@ export class KeyboardShortcutHelper
         {
                 this.trigger("selectall", event);
         })
+        mousetrap.bind(['up'], ()=>
+        {
+                this.trigger("up", event);
+        })
+        mousetrap.bind(['down'], ()=>
+        {
+                this.trigger("down", event);
+        })
         document.addEventListener("mousedown", this.onClick.bind(this));
     }
     static trigger(name, event, handler)
