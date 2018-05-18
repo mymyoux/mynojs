@@ -12,6 +12,10 @@ export class MenuHelper {
         this.updateMenu(false);
     }
     static updateMenu(server = false) {
+        if(!Hardware.isElectron())
+        {
+            return;
+        }
         console.log("UPDATE MENU:" + server);
         console.log("initialize menu");
         var template = [
@@ -75,7 +79,7 @@ export class MenuHelper {
                     { role: 'zoomout' },
                     { type: 'separator' },
                     { role: 'togglefullscreen' }
-                ]
+                ] 
             },
             {
                 role: 'window',
@@ -96,7 +100,7 @@ export class MenuHelper {
         ];
         if (!Configuration.isDebug())
             template[2].submenu.splice(0, 4);
-        if (process.platform === 'darwin') {
+        if (Hardware.isMacOsX()) {
             template.unshift({
                 label: app.getName(),
                 submenu: [
@@ -106,7 +110,7 @@ export class MenuHelper {
                         } },
                     { type: 'separator' },
                     { label: 'Preferences', click: () => {
-                            //Router.instance().goto('options');
+                            router.push({name:'options'}) 
                         } },
                     { type: 'separator' },
                     { role: 'services', submenu: [] },
@@ -139,7 +143,8 @@ export class MenuHelper {
             template[0].submenu.push({ type: 'separator' }, { label: 'Check for updates...', click: () => {
                     Updater.check();
                 } }, { label: 'Preferences', click: () => {
-                    Router.instance().goto('options');
+                    router.push({name:'options'});
+                    //Router.instance().goto('options');
                 } });
         }
         const menu = Menu.buildFromTemplate(template);

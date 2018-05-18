@@ -1,7 +1,7 @@
 import { Functions } from "../utils/Functions";
 
   
-export function wrap(descriptor, method)
+export function wrap(descriptor, method, scope)
 {
 
     if(!descriptor.value.overrided)
@@ -40,6 +40,10 @@ export function wrap(descriptor, method)
                 index++;
                 if(wrapped.methods.length <= index)
                 {
+                    if(wrapped.scope)
+                    {
+                        return original.apply(wrapped.scope, parameters);
+                    }
                     return original(...parameters);
                 }else
                 {
@@ -53,6 +57,10 @@ export function wrap(descriptor, method)
         wrapped.original = original;
         wrapped.parameters = Functions.getParameters(original);
         descriptor.value = wrapped;
+    }
+    if(!descriptor.value.scope && scope)
+    {
+        descriptor.value.scope = scope;
     }
     descriptor.value.methods.push(method);
     return descriptor.value;

@@ -34,9 +34,10 @@ import { DocumentBusMiddleware } from "../events/DocumentBusMiddleware";
 import { KeyboardShortcutHelper } from "../helpers/KeyboardShortcutHelper";
 import VueHistory from "../vue/History";
 import vuewheel from 'vuewheel'
+import { preferences } from "../env/Preferences";
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["debug","model","preconfig","maker","api", "configuration", "router", "initVue","user", "selector", "app", "events","vue"];
+    _steps=["debug","model","preconfig","maker","api", "configuration","preferences", "router", "initVue","user", "selector", "app", "events","vue"];
     _router =  null;
     _selector =  null;
     _app =  null;
@@ -74,11 +75,16 @@ export class Application extends StepHandler(CoreObject)
             Configuration.merge(data);
         })
     }
+    preferences()
+    {
+        return preferences.boot();
+    }
     router()
     {
         console.log('router');
         Vue.use(VueRouter)
         this._router = new VueRouter({routes:this.routes()});
+        window["router"] = this._router;
         Vue.use(VueHistory, {router:this._router});/*
             Vue.use({
                 install(Vue, options)

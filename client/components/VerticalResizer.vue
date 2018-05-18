@@ -76,6 +76,10 @@ export default class VerticalResizer extends VueComponent
 .resizer
 {
     position:relative;
+    height:100%;
+    background:lightgray;
+    width:1px;
+    
     &::after{
         content: " ";
         position:absolute;

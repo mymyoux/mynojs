@@ -9,7 +9,17 @@ import Connectors from 'myno/client/components/Connectors.vue'
 import { bus } from "../../common/events/Bus";
 
 @Component({
-    name:"horizontal-resizer"
+    name:"horizontal-resizer",
+    props:
+    {
+        top:{default:true, type:Boolean},
+        bottom:{default:true, type:Boolean},
+        percent:{default:false, type:Boolean},
+        height:{default:true, type:Boolean},
+        minHeight:{default:true, type:Boolean},
+        maxHeight:{default:false, type:Boolean},
+       
+    }
 })
 export default class VerticalResizer extends VueComponent
 {
@@ -38,29 +48,102 @@ export default class VerticalResizer extends VueComponent
     }
     onMouseMove()
     {
-        let index = Array.from(this.$refs.resizer.parentNode.children).indexOf(this.$refs.resizer);
-        if(index<=0)
-        {
-            console.warn("no left element");
-            debugger;
-        }
-        let target = this.$refs.resizer.parentNode.children[index-1];
-        target.style.height  = (this.resizing.startHeight+event.pageY-this.resizing.y)+"px";
-        target.style.minHeight  = (this.resizing.startHeight+event.pageY-this.resizing.y)+"px";
+        this.computeHeight();
         bus.trigger("window:resize", event);
 
     }
-    onMouseUp()
+    // @Event("window:resize",{debounce:50})
+    // onResize()
+    // {
+    //     debugger;
+    //     this.computeHeight();
+    // }
+    computeHeight()
     {
         let index = Array.from(this.$refs.resizer.parentNode.children).indexOf(this.$refs.resizer);
-        if(index<=0)
+        if(!~index)
         {
-            console.warn("no left element");
-            debugger;
+            return;
         }
-        let target = this.$refs.resizer.parentNode.children[index-1];
-        target.style.height  = (this.resizing.startHeight+event.pageY-this.resizing.y)+"px";
-        target.style.minHeight  = (this.resizing.startHeight+event.pageY-this.resizing.y)+"px";
+        let height = this.$refs.resizer.parentNode.clientHeight - this.$refs.resizer.clientHeight;
+        let percent = (this.resizing.startHeight+event.pageY-this.resizing.y)/height;
+        if(this.top)
+        {
+            let top = this.$refs.resizer.parentNode.children[index-1];
+            if(top)
+            {
+                if(this.percent)
+                {
+                    if(this.height)
+                    {
+                        top.style.height  = Math.round(percent*100)+"%";
+                    }
+                    if(this.minHeight)
+                    {
+                        top.style.minHeight  = Math.round(percent*100)+"%";
+                    }
+                    if(this.maxHeight)
+                    {
+                        top.style.maxHeight  = Math.round(percent*100)+"%";
+                    }
+                }else
+                {
+                    if(this.height)
+                    {
+                        top.style.height  = Math.round(percent*height)+"px";
+                    }
+                    if(this.minHeight)
+                    {
+                        top.style.minHeight  = Math.round(percent*height)+"px";
+                    }
+                    if(this.maxHeight)
+                    {
+                        top.style.maxHeight  = Math.round(percent*height)+"px";
+                    }
+                }
+            }
+        }
+        if(~index && this.bottom)
+        {
+            let bottom = this.$refs.resizer.parentNode.children[index+1];
+            if(bottom)
+            {
+                percent = 1 - percent;
+                if(this.percent)
+                {
+                    if(this.height)
+                    {
+                        bottom.style.height  = Math.round(percent*100)+"%";
+                    }
+                    if(this.minHeight)
+                    {
+                        bottom.style.minHeight  = Math.round(percent*100)+"%";
+                    }
+                    if(this.maxHeight)
+                    {
+                        bottom.style.maxHeight  = Math.round(percent*100)+"%";
+                    }
+                }else
+                {
+                    if(this.height)
+                    {
+                        bottom.style.height  = Math.round(percent*height)+"px";
+                    }
+                    if(this.minHeight)
+                    {
+                        bottom.style.minHeight  = Math.round(percent*height)+"px";
+                    }
+                    if(this.maxHeight)
+                    {
+                        bottom.style.maxHeight  = Math.round(percent*height)+"px";
+                    }
+                }
+            }
+        }
+    }
+    onMouseUp()
+    {
+        this.computeHeight();
         bus.off('window:mouseup', this.onMouseUp, this);
         bus.off('window:mousemove', this.onMouseMove, this);
         bus.trigger("window:resize", event);
@@ -77,6 +160,10 @@ export default class VerticalResizer extends VueComponent
 .resizer
 {
     position:relative;
+    width:100%;
+    background:lightgray;
+    height:1px;
+    
     &::after{
         content: " ";
         position:absolute;
