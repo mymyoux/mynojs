@@ -161,8 +161,30 @@ export default class FRadioList extends FElement
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-    .selected
+@import "../../../../renderer/scss/variables.scss";
+    ul 
     {
-        color:red;
+        display:flex;
+        >li 
+        {
+            background-color: #ececec;
+            color: $grey;
+            min-width: 85px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0.5em;
+            &.selected 
+            {
+                background-color: $blue;
+                color:white;
+            }
+        }
+        li + li 
+        {
+            margin-left:0.5em;
+        }
     }
 </style>
