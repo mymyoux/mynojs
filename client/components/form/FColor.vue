@@ -1,6 +1,6 @@
 <template>
     <div>
-        <label>{{name}}</label>
+        <label></label>
         <ul>
             <li v-for="item,i in items" :key="i" @click="select($event, item, i)" :class="{selected:selected === item}" :style="{backgroundColor:item}">
                 <slot name="item" :item="item" :index="i">

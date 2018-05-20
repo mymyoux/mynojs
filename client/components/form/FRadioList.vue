@@ -2,9 +2,7 @@
     <ul>
         <li v-for="item,i in items" :key="i" @click="select($event, item, i)" :class="{selected:~selected.indexOf(item)}">
             <slot name="item" :item="item" :index="i">
-                <template v-if="!multiple">
-                    {{item}}
-                </template>
+                <div v-if="!multiple">{{item}}</div>
                 <f-input v-else type="checkbox" :name="item"></f-input>
             </slot>
         </li>
@@ -175,22 +173,29 @@ export default class FRadioList extends FElement
     ul 
     {
         display:flex;
-        >li 
+        >li >*
         {
-            background-color: #ececec;
-            color: $grey;
             min-width: 85px;
-            height: 30px;
+            height: 2.5em;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 0.5em;
-            &.selected 
-            {
-                background-color: $blue;
-                color:white;
-            }
+            color: #717e88;
+            background-color: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor:pointer;
+            border-radius: 0.25em;
+            line-height: 2.5;
+            font-weight: bold;
+            margin: 0.25em;
+            padding: 0 1em;
+
+        }
+        li.selected >*
+        {
+            background-color: $blue;
+            color:white;
         }
         li + li 
         {
