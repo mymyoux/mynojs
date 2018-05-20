@@ -75,8 +75,5 @@ export default class Tree extends VueComponent
 </script>
 
 <style scoped lang="scss">
-ul.tree
-{
-    padding-left:30px;
-}
+
 </style>

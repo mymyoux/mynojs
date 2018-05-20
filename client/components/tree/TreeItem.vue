@@ -86,6 +86,6 @@ export default class TreeItem extends VueComponent
 }
 ul
 {
-    padding-left:30px;
+    padding-left:0.85em;
 }
 </style>
