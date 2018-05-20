@@ -35,7 +35,7 @@ import { Objects } from "../../../common/utils/Objects";
     watch:{
         value(newVal, oldVal)
         {
-            if (!Objects.deepEquals(newVal, oldVal))
+            if (true || !Objects.deepEquals(newVal, oldVal))
             {
                 if(newVal == null)
                 {
