@@ -2,7 +2,10 @@
     <ul>
         <li v-for="item,i in items" :key="i" @click="select($event, item, i)" :class="{selected:~selected.indexOf(item)}">
             <slot name="item" :item="item" :index="i">
+                <template v-if="!multiple">
                     {{item}}
+                </template>
+                <f-input v-else type="checkbox" :name="item"></f-input>
             </slot>
         </li>
     </ul>
