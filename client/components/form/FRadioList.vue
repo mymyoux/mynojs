@@ -59,21 +59,22 @@ import { Objects } from "../../../common/utils/Objects";
         {
             if (newVal !== oldVal) {
                 //needs to retrigger due to difference value format
-                this._$emitValue();
+            //    this._$emitValue();
             }
         },
         object(newVal, oldVal)
         {
             if (newVal !== oldVal) {
                 //needs to retrigger due to difference value format
-                this._$emitValue();
+           //     this._$emitValue();
             }
         },
         list(newVal, oldVal)
         {
-            if (newVal !== oldVal && this.objectFull) {
+            if (newVal !== oldVal) {
                 //needs to retrigger due to difference value format
-                this._$emitValue();
+                this.items = this.list.slice()
+            //    this._$emitValue();
             }
         }
     }
@@ -117,7 +118,11 @@ export default class FRadioList extends FElement
                },{}));
 
 
-              this.$emit("change", event);
+              this.$emit("change", this.list.reduce((previous, item)=>
+               {
+                   previous[item] = !!~this.selected.indexOf(item);
+                   return previous;
+               },{}));
            }else
            {
                this.$emit("input", this.selected.reduce((previous, item)=>
@@ -126,18 +131,22 @@ export default class FRadioList extends FElement
                    return previous;
                },{}));
 
-               this.$emit("change", event);
+               this.$emit("change",this.selected.reduce((previous, item)=>
+               {
+                   previous[item] = true;
+                   return previous;
+               },{}));
            }
        }else
        {
            if(this.multiple)
            {
                this.$emit("input", this.selected);
-               this.$emit("change", event);
+               this.$emit("change", this.selected);
            }else
            {
                this.$emit("input", this.selected[0]);
-                this.$emit("change", event);
+                this.$emit("change", this.selected[0]);
            }
        }
    }
@@ -163,7 +172,7 @@ export default class FRadioList extends FElement
             }
             this.selected = value;
         }
-        this.items = this.list;
+        this.items = this.list.slice();
         super.mounted();
     }
 }
