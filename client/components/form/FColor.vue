@@ -1,14 +1,17 @@
 <template>
-    <ul>
-        <li v-for="item,i in items" :key="i" @click="select($event, item, i)" :class="{selected:selected === item}" :style="{backgroundColor:item}">
-            <slot name="item" :item="item" :index="i">
-                    
-            </slot>
-        </li>
-        <li class="custom" v-if="custom">
+    <div>
+        <label>{{name}}</label>
+        <ul>
+            <li v-for="item,i in items" :key="i" @click="select($event, item, i)" :class="{selected:selected === item}" :style="{backgroundColor:item}">
+                <slot name="item" :item="item" :index="i">
+                        
+                </slot>
+            </li>
+        </ul>
+        <div class="custom" v-if="custom">
             <input type="color" v-model="selected" @change="onCustom">
-        </li>
-    </ul>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -25,6 +28,7 @@ import FElement from "./FElement";
     props:
     {
         value:{},
+        name:{type:String},
         list:{default:()=>
         {
             return ["#e0e0e0", "#f44336", "#AB47BC", "#3F51B5", "#03A9F4", "#4CAF50", "#FBC02D", "#FF9800"];
@@ -82,6 +86,10 @@ export default class FColor extends FElement
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+    div 
+    {
+        display:flex;
+    }
     ul
     {
         display:flex;
@@ -89,12 +97,15 @@ export default class FColor extends FElement
         {
             width:20px;
             height:20px;
+            border-radius:20px;
+            margin:2px;
         }
     }
-    .selected
-    {
-        border-color:red;
-        border-width:1px;
-        border-style:solid;
-    }
+    // .selected
+    // {
+    //     border-color:red;
+    //     border-width:1px;
+    //     border-style:solid;
+    // }
+
 </style>

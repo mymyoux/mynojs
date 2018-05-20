@@ -2,7 +2,7 @@
     <div>
         <label v-if="localLabel">{{localLabel}}</label>
         <input :type="type" @change="onChange" :disabled="disabled" v-model="val" :min="min" :max="max" :name="name">
-        <span v-if="name && errors.has(name)">{{errors.first(name)}}</span>
+        <span v-if="name && errors.has(name)" class="f-error">{{errors.first(name)}}</span>
    </div> 
 </template>
 
@@ -49,7 +49,7 @@ import FElement from "./FElement";
                }else
                if(this.name)
                {
-                   this.localLabel = this.name+":";
+                   this.localLabel = this.name;
                }else
                {
                    this.localLabel = null;
@@ -90,7 +90,7 @@ export default class FInput extends FElement
         }else
         if(this.name)
         {
-            this.localLabel = this.name+":";
+            this.localLabel = this.name;
         }
         if (null === this.label)
             this.localLabel = null;
@@ -101,5 +101,4 @@ export default class FInput extends FElement
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
 </style>
