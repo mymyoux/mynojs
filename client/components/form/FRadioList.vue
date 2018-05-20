@@ -52,28 +52,28 @@ import { Objects } from "../../../common/utils/Objects";
                     }
                 }
                 this.selected = newVal;
-                this._emitValue();
+             //   this._$emitValue();
             }
         },
         multiple(newVal, oldVal)
         {
             if (newVal !== oldVal) {
                 //needs to retrigger due to difference value format
-                this._emitValue();
+                this._$emitValue();
             }
         },
         object(newVal, oldVal)
         {
             if (newVal !== oldVal) {
                 //needs to retrigger due to difference value format
-                this._emitValue();
+                this._$emitValue();
             }
         },
         list(newVal, oldVal)
         {
             if (newVal !== oldVal && this.objectFull) {
                 //needs to retrigger due to difference value format
-                this._emitValue();
+                this._$emitValue();
             }
         }
     }
@@ -92,7 +92,7 @@ export default class FRadioList extends FElement
            if(this.none || this.selected.length>1)
            {
                this.selected.splice(idx, 1);
-               this._emitValue();
+               this._$emitValue();
                return;
            }
        }
@@ -102,9 +102,9 @@ export default class FRadioList extends FElement
            this.selected.splice(0, this.selected.length);
        }
        this.selected.push(item);
-       this._emitValue();
+       this._$emitValue();
    }
-   _emitValue()
+   _$emitValue()
    {
        if(this.object || this.objectFull)
        {
@@ -115,6 +115,9 @@ export default class FRadioList extends FElement
                    previous[item] = !!~this.selected.indexOf(item);
                    return previous;
                },{}));
+
+
+              this.$emit("change", event);
            }else
            {
                this.$emit("input", this.selected.reduce((previous, item)=>
@@ -122,15 +125,19 @@ export default class FRadioList extends FElement
                    previous[item] = true;
                    return previous;
                },{}));
+
+               this.$emit("change", event);
            }
        }else
        {
            if(this.multiple)
            {
                this.$emit("input", this.selected);
+               this.$emit("change", event);
            }else
            {
                this.$emit("input", this.selected[0]);
+                this.$emit("change", event);
            }
        }
    }
