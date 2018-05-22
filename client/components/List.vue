@@ -139,7 +139,7 @@ export default class List extends VueComponent
     {
         let selected = this.selected.slice();
         this.$emit('item-selection', event, selected);
-        this.emit('input',selected);
+        this.$emit('input',selected);
         this.onClick(event, this.selected[this.selected.length-1])
     }
     @Event('window:resize', {debounce:100})
