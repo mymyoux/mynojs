@@ -158,6 +158,22 @@ export class Nedb
             });
         });
     }
+    findOne(query, projection)
+    {
+        return new Promise((resolve, reject)=>
+        {
+            projection = Objects.assign({},projection);
+            this._db.findOne(query, projection, (errors, doc)=>
+            {
+                if(errors)
+                {
+                    reject(errors);
+                }else{
+                    resolve(doc);
+                }
+            });
+        });
+    }
     /**
      * db.find({}).sort({ planet: 1 }).skip(1).limit(2).exec(function (err, docs) {
   // docs is [doc3, doc1]

@@ -206,6 +206,10 @@ export default class List extends VueComponent
         }
         this._lastScroll = scroll;
     }
+    select(item)
+    {
+        
+    }
     scrollTo(item)
     {
         let index;

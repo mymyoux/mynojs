@@ -75,7 +75,7 @@ export function Param(name, options)
             params[options.name] = value;
             parameters.replace(options.name, value);
             return next();
-        });
+        }, target);
         return descriptor;
     }
 }

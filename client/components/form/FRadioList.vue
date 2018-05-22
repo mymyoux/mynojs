@@ -2,7 +2,8 @@
     <ul>
         <li v-for="item,i in items" :key="i" @click="select($event, item, i)" :class="{selected:~selected.indexOf(item)}">
             <slot name="item" :item="item" :index="i">
-                    {{item}}
+                <div v-if="!multiple">{{item}}</div>
+                <f-input v-else type="checkbox" :name="item"></f-input>
             </slot>
         </li>
     </ul>
@@ -32,7 +33,7 @@ import { Objects } from "../../../common/utils/Objects";
     watch:{
         value(newVal, oldVal)
         {
-            if (!Objects.deepEquals(newVal, oldVal))
+            if (true || !Objects.deepEquals(newVal, oldVal))
             {
                 if(newVal == null)
                 {
@@ -49,28 +50,29 @@ import { Objects } from "../../../common/utils/Objects";
                     }
                 }
                 this.selected = newVal;
-                this._emitValue();
+             //   this._$emitValue();
             }
         },
         multiple(newVal, oldVal)
         {
             if (newVal !== oldVal) {
                 //needs to retrigger due to difference value format
-                this._emitValue();
+            //    this._$emitValue();
             }
         },
         object(newVal, oldVal)
         {
             if (newVal !== oldVal) {
                 //needs to retrigger due to difference value format
-                this._emitValue();
+           //     this._$emitValue();
             }
         },
         list(newVal, oldVal)
         {
-            if (newVal !== oldVal && this.objectFull) {
+            if (newVal !== oldVal) {
                 //needs to retrigger due to difference value format
-                this._emitValue();
+                this.items = this.list.slice()
+            //    this._$emitValue();
             }
         }
     }
@@ -89,7 +91,7 @@ export default class FRadioList extends FElement
            if(this.none || this.selected.length>1)
            {
                this.selected.splice(idx, 1);
-               this._emitValue();
+               this._$emitValue();
                return;
            }
        }
@@ -99,15 +101,22 @@ export default class FRadioList extends FElement
            this.selected.splice(0, this.selected.length);
        }
        this.selected.push(item);
-       this._emitValue();
+       this._$emitValue();
    }
-   _emitValue()
+   _$emitValue()
    {
        if(this.object || this.objectFull)
        {
            if(this.objectFull)
            {
             this.$emit("input", this.list.reduce((previous, item)=>
+               {
+                   previous[item] = !!~this.selected.indexOf(item);
+                   return previous;
+               },{}));
+
+
+              this.$emit("change", this.list.reduce((previous, item)=>
                {
                    previous[item] = !!~this.selected.indexOf(item);
                    return previous;
@@ -119,15 +128,23 @@ export default class FRadioList extends FElement
                    previous[item] = true;
                    return previous;
                },{}));
+
+               this.$emit("change",this.selected.reduce((previous, item)=>
+               {
+                   previous[item] = true;
+                   return previous;
+               },{}));
            }
        }else
        {
            if(this.multiple)
            {
                this.$emit("input", this.selected);
+               this.$emit("change", this.selected);
            }else
            {
                this.$emit("input", this.selected[0]);
+                this.$emit("change", this.selected[0]);
            }
        }
    }
@@ -153,7 +170,7 @@ export default class FRadioList extends FElement
             }
             this.selected = value;
         }
-        this.items = this.list;
+        this.items = this.list.slice();
         super.mounted();
     }
 }
@@ -161,8 +178,37 @@ export default class FRadioList extends FElement
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-    .selected
+@import "../../../../renderer/scss/variables.scss";
+    ul 
     {
-        color:red;
+        display:flex;
+        >li >*
+        {
+            min-width: 85px;
+            height: 2.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #717e88;
+            background-color: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor:pointer;
+            border-radius: 0.25em;
+            line-height: 2.5;
+            font-weight: bold;
+            margin: 0.25em;
+            padding: 0 1em;
+
+        }
+        li.selected >*
+        {
+            background-color: $blue;
+            color:white;
+        }
+        li + li 
+        {
+            margin-left:0.5em;
+        }
     }
 </style>

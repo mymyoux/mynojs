@@ -7,14 +7,14 @@ export class Dialog
 {
     static confirm(options)
     {
-        options = Objects.assign({message:'are you sure to continue'}, options);
+        options = Objects.assign({message:'are you sure to continue', buttons:['ok','cancel']}, options);
         return Hardware.isElectron()?this.confirmElectron(options):this.confirmBrowser(options);
     }
     static confirmElectron(options)
     {
         return new Promise((resolve, reject)=>
         {
-            options = Objects.assign({buttons:["ok","cancel"],type:'warning',title:'confirm',cancelId:0}, options);
+            options = Objects.assign({buttons:options.buttons,type:'warning',title:'confirm',cancelId:0}, options);
             dialog.showMessageBox(options, (index) => {
                 if(index == 1)
                 {

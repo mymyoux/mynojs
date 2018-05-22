@@ -18,6 +18,13 @@ export class Hardware {
         else
             return Hardware.getOS() === Hardware.OS_WINDOW_DESKTOP;
     }
+    static isMacOsX()
+    {
+        if (root.process)
+            return root.process && root.process.platform && /^darwin/.test(root.process.platform);
+        else
+            return Hardware.getOS() === Hardware.OS_MAC_OS_X;
+    }
     static isCordova()
     {
         return  root.device && root.device.cordova != undefined;
