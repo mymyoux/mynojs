@@ -50,6 +50,12 @@ export class Application extends StepHandler(CoreObject)
     debug()
     {
         window.getAllScroll = getAllScroll;
+        window.onerror = function ( message, filename, lineno, colno, error ){
+            debugger;
+        }
+        window.addEventListener("unhandledrejection", function(err, promise) { 
+            debugger;
+        });
     }
     model()
     {
