@@ -178,7 +178,7 @@ export default class FRadioList extends FElement
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import "../../../../renderer/scss/variables.scss";
+@import "../../../scss/variables.scss";
     ul 
     {
         display:flex;
