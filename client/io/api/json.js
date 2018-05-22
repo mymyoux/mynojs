@@ -18,7 +18,7 @@ export class json extends adapter
 
         if(this._adapterConfig.indices)
         {
-            this._adapterConfig.paramsSerializer =this.paramsSerializer;
+            this._adapterConfig.paramsSerializer =this.paramsSerializer.bind(this);
         }
     }
     paramsSerializer(params, arrayFormat)
