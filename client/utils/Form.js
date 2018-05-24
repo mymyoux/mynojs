@@ -115,22 +115,21 @@ export class Form
         {
             if(typeof data[key]== "object" && data[key] && data[key].formData instanceof File)
             {
-                debugger;
                 formData.set(key, data[key].formData, data[key].name);
             }else
             if(typeof data[key]== "object" && data[key] && data[key].buffer && data[key].buffer.constructor && data[key].buffer.constructor.name == "Buffer")
             {
-                debugger;
+                
                 formData.set(key, data[key].buffer);
             }else
             if(typeof data[key]== "object" && data[key] && data[key].buffer && data[key].buffer.constructor && data[key].buffer.constructor.name == "ReadStream")
             {
-                debugger;
+                
                 formData.set(key, data[key].buffer, data[key].name);
             }else
             if(data[key] instanceof File || (data[key] && data[key].constructor && data[key].constructor.name == "Buffer") || (data[key] && data[key].constructor && data[key].constructor.name == "ReadStream"))
             {
-                debugger;
+                
                 formData.set(key, data[key], data[key].name);
             }else
             if(data[key]  && typeof data[key] == "object")
@@ -141,22 +140,22 @@ export class Form
                     {
                         if(typeof item== "object" && item && item.formData instanceof File)
                         {
-                            debugger;
+                            
                             formData.append(key+'[]',item.formData, item.name);
                         }
                         if(typeof item== "object" && item && item.buffer && item.buffer.constructor && item.buffer.constructor.name == "Buffer")
                         {
-                            debugger;
+                            
                             formData.append(key+'[]',item.buffer, item.name);
                         }else
                         if(typeof item== "object" && item && item.buffer && item.buffer.constructor && item.buffer.constructor.name == "ReadStream")
                         {
-                            debugger;
+                            
                             formData.append(key+'[]',item.buffer, item.name);
                         }else
                         if(item instanceof File || (item && item.constructor && item.constructor.name == "Buffer") || (item && item.constructor && item.constructor.name == "ReadStream"))
                         {
-                            debugger;
+                            
                             formData.append(key+'[]', item, item.name);
                         }else
                         {
