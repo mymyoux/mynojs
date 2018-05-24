@@ -21,6 +21,8 @@
 import {VueComponent, Component} from "../mvc/VueComponent";
 import Vue from 'vue';
 import { SearchHelper } from "myno/client/helpers/SearchHelper";
+import { Buffer } from 'myno/common/buffer/Buffer';
+
 
 @Component({
     props:
@@ -38,6 +40,13 @@ import { SearchHelper } from "myno/client/helpers/SearchHelper";
             this.onVisible(true);
             this.data_list = newVal;
         },
+        search : {
+
+            deep: true,
+            handler: Buffer.debounce(function(search) {
+                    this.$emit('autocompleteLoad', search);
+                }, 300)
+        }
     }
 })
 export default class Autocomplete extends VueComponent

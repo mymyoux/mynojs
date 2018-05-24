@@ -11,7 +11,9 @@
             <slot name="item" v-for="tag in list" :item="tag" slot-scope="_">
                 <span class="item">
                     {{ tag[search_prop] }}
-                    <span class="delete" @click="deleteTag(tag)" v-if="configure">X</span>
+                </span>
+                <span class="delete" @click="deleteTag(tag)" v-if="configure">
+                    <slot name="delete">X</slot>
                 </span>
             </slot>
         </section>
@@ -86,6 +88,7 @@ export default class Tags extends VueComponent
 
     deleteTag( tag )
     {
+        debugger;
         for (var i in this.list)
         {
             if (this.list[i][this.search_prop] === tag[this.search_prop])
