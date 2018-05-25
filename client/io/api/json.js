@@ -73,7 +73,6 @@ export class json extends adapter
             }
         }
         
-        debugger;
         if(needsFormData)
         {
             config.data.__type = "formdata";
@@ -84,7 +83,6 @@ export class json extends adapter
                 config.headers = {};
             }
             config.headers['Content-Type'] = 'multipart/form-data';
-            debugger;
         }else{
             if(!this._adapterConfig.indices)
             {
