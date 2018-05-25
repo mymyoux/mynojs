@@ -487,9 +487,13 @@ ul
     {
         text-align: left;
         cursor:pointer;
+        background: white;
+        border: 1px solid #cecece;
+        border-top: 0;
+
         &:hover
         {
-            background-color: #cdd3d9;
+            background-color: #f9f9f9;
         }
         &.selected
         {
@@ -513,6 +517,7 @@ ul
     {
         display:none;
     }
+
 }
 ul /deep/ b
 {

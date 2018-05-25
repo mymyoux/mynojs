@@ -1,19 +1,19 @@
 <template>
     <div class="component-autocomplete" v-click-outside="onHide">
-        <search v-model="search" :search-prop="search_prop" :realtime="true" placeholder="Search" @change="onSearch" @click="onVisible(true)">
-        </search>
-
-        <div @click="onSearch(search)" class="search-btn">
-            <slot name="input-search">
-                Search
-            </slot>
-        </div>
-
         <list ref="list" :items="data_list" class="list" @load-more="loadMore" scroll-bottom="1vp" :search="search" v-if="visible">
             <li slot="item" class="item" slot-scope="_" @click="onSelected(_.item)">
                 {{ _.item[search_prop] }}
             </li>
         </list>
+
+        <search v-model="search" :search-prop="search_prop" :realtime="true" placeholder="Search" @change="onSearch" @click="onVisible(true)">
+        </search>
+
+        <!--<div @click="onSearch(search)" class="search-btn">
+            <slot name="input-search">
+                Search
+            </slot>
+        </div>-->
    </div> 
 </template>
 
@@ -117,13 +117,21 @@ export default class Autocomplete extends VueComponent
         position: relative;
         display: flex;
         justify-content: space-between;
+        margin-bottom: 10px;
+
+        input
+        {
+            width: 100%;
+            border: 1px solid #cecece;
+            padding: 5px;
+        }
 
         .list
         {
             position: absolute;
             overflow-y: auto;
             width: 100%;
-            top: 30px;
+            top: 36px;
             left: 0;
             background: #e4e4e4;
             z-index: 4;
