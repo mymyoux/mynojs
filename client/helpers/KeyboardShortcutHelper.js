@@ -10,19 +10,28 @@ export class KeyboardShortcutHelper
     {
         mousetrap.bind(['command+r','ctrl+r','f5'], ()=>
         {
+            debugger;
                 this.trigger("refresh", event);
         })
         mousetrap.bind(['command+a','ctrl+a'], ()=>
         {
                 this.trigger("selectall", event);
         })
-        mousetrap.bind(['up'], ()=>
+        mousetrap.bind(['up','shift+up'], ()=>
         {
                 this.trigger("up", event);
         })
-        mousetrap.bind(['down'], ()=>
+        mousetrap.bind(['down','shift+down'], ()=>
         {
                 this.trigger("down", event);
+        })
+        mousetrap.bind(['enter'], ()=>
+        {
+                this.trigger("enter", event);
+        })
+        mousetrap.bind(['escape'], ()=>
+        {
+                this.trigger("escape", event);
         })
         document.addEventListener("mousedown", this.onClick.bind(this));
     }

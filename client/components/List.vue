@@ -1,5 +1,5 @@
 <template>
-    <ul ref="root" v-on:selectall.prevent.stop="onSelectAll" @scroll.passive="onScroll">
+    <ul ref="root" v-on:selectall.prevent.stop="onSelectAll" @scroll.passive="onScroll"  v-on:up="onKeyboardUp" v-on:down="onKeyboardDown">
             <div ref="items" v-for="item,i in filtered" :key="i" v-wheel="onWheel" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
             :class="{selected:item.selected}"
             >
@@ -237,7 +237,7 @@ export default class List extends VueComponent
         {
             index = item;
         }else{
-            item = this.items.indexOf(item);
+            index = this.filtered.indexOf(item);
         }
         if(!~index)
         {
@@ -247,21 +247,26 @@ export default class List extends VueComponent
         if(index<0)
         {
             index = 0;
-        }
-        let child = this.$refs.items[index];
-        if(!child)
+        }else
+         if(index>=this.filtered.length)
         {
-            if(index>=this.$refs.items.length)
-            {
-                child = this.$refs.items[this.$refs.items.length-1];
-            }else
-            {
-                return;
-            }
+            index = this.filtered.length-1
         }
-        if(child)
+
+        let element = this.$refs.items[index];
+        if(!element)
         {
-            this.$refs.root.scrollTop = child.offsetTop - this.$refs.root.offsetTop
+            debugger;
+            return;
+        }
+        let parent = element.parentNode;
+        if(element.offsetTop< parent.scrollTop)
+        {
+            parent.scrollTop = element.offsetTop;
+        }else
+        if(element.offsetTop+element.offsetHeight>parent.scrollTop+parent.offsetHeight)
+        {
+            parent.scrollTop = element.offsetTop+element.offsetHeight - parent.offsetHeight;//parent.scrollLeft + parent.offsetWidth - element.offsetWidth;
         }
     }
     get filtered()
@@ -289,6 +294,119 @@ export default class List extends VueComponent
             }
         }
         this.onSelection(event);
+    }
+    onKeyboardUp()
+    {
+         if(!this.filtered.length)
+            return
+        event.preventDefault();
+        let index;
+        if(this.selected.length)
+        {
+            let current = this.selected[this.selected.length-1];
+            index = this.filtered.indexOf(current);
+        }else
+        {
+            index = this.filtered.length;
+        }
+        index--;
+        if(index<0)
+        {
+            index = this.filtered.length-1;
+        }
+
+        if(event.shiftKey || (event.original && event.original.shiftKey))
+        {
+            let current = index+1;
+            if(current>= this.filtered.length)
+            {
+                current =0;
+            }
+            if(this.selected.length > 1)
+            {
+                if(this.filtered[index].selected )
+                {
+                    let indexselected = this.selected.indexOf(this.filtered[current]);
+                    if(~indexselected)
+                    {
+                        this.selected.splice(indexselected, 1);
+                    }
+                    this.filtered[current].selected  = false;
+                }
+            }
+            if(!this.filtered[index].selected)
+            {
+                this.filtered[index].selected =  true;
+                this.selected.push(this.filtered[index]);
+            }
+        }else
+        {
+            this.selected.forEach((item)=>item.selected = false);
+            this.filtered[index].selected =  true;
+            this.selected = [this.filtered[index]];
+        }
+        
+        this.onSelection();
+
+
+
+        this.scrollTo(index);
+
+    }
+    onKeyboardDown()
+    {
+        if(!this.filtered.length)
+            return
+        event.preventDefault();
+        let index;
+        if(this.selected.length)
+        {
+            let current = this.selected[this.selected.length-1];
+            index = this.filtered.indexOf(current);
+        }else
+        {
+            index = -1;
+        }
+        index++;
+        if(index>=this.filtered.length)
+        {
+            index = 0;
+        }
+
+         if(event.shiftKey || (event.original && event.original.shiftKey))
+        {
+            let current = index-1;
+            if(current< 0)
+            {
+                current = this.filtered.length-1;
+            }
+            if(this.selected.length > 1)
+            {
+                if(this.filtered[index].selected )
+                {
+                    let indexselected = this.selected.indexOf(this.filtered[current]);
+                    if(~indexselected)
+                    {
+                        this.selected.splice(indexselected, 1);
+                    }
+                    this.filtered[current].selected  = false;
+                }
+            }
+            if(!this.filtered[index].selected)
+            {
+                this.filtered[index].selected =  true;
+                this.selected.push(this.filtered[index]);
+            }
+        }else
+        {
+            this.selected.forEach((item)=>item.selected = false);
+            this.filtered[index].selected =  true;
+            this.selected = [this.filtered[index]];
+        }
+        
+        this.onSelection();
+            
+        this.scrollTo(index);
     }
     onMouseDown(event, model)
     {
