@@ -185,9 +185,9 @@ export default class Search extends VueComponent
         this._searchObject.value = this.search;
         if(!this._realtime)
         {
-            this.emit('input', this._asObject?this._searchObject:this.search);
+            this.$emit('input', this._asObject?this._searchObject:this.search);
         }
-        this.emit('change', this._asObject?this._searchObject:this.search);
+        this.$emit('change', this._asObject?this._searchObject:this.search);
     }
     onKeyUp()
     {
@@ -196,7 +196,7 @@ export default class Search extends VueComponent
             return;
         }
         this._searchObject.value = this.search;
-        this.emit('input', this._asObject?this._searchObject:this.search);
+        this.$emit('input', this._asObject?this._searchObject:this.search);
     }
 }
 class SearchObject

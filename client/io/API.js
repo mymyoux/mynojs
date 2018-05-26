@@ -342,7 +342,12 @@ class Request
     {
         if(params)
         {
-            this._request.params = Objects.assign(this._request.params, params);
+            if(params instanceof FormData)
+            {
+                this._request.params = params;
+            }else{
+                this._request.params = Objects.assign(this._request.params, params);
+            }
         }
         return this;
     }

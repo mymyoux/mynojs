@@ -8,7 +8,7 @@ export class Auth
     static _user;
     static retrieveUser()
     {
-        return api().path('user/me').then((user)=>{
+        return api("user").path('user/me').then((user)=>{
             if(!user)
             {
                 return null;

@@ -71,6 +71,7 @@ export class Application extends StepHandler(CoreObject)
     }
     api()
     {
+        debugger;
         API.register({baseUrl:window.location.origin});
         return api.boot();
     }

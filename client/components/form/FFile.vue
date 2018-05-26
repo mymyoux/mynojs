@@ -1,6 +1,6 @@
 <template>
     <p>
-        <template v-if="electron">
+        <template v-if="electron && !formData">
             <input type="button" @click="loadFile" :value="dialogMessage" ref="file">
             <input type="text" :value="file && file.path" disabled>
         </template>
@@ -36,6 +36,7 @@ const {remote} = electron;
     {
         value:{},
         content:{type:Boolean, default:true},
+        formData:{type:Boolean, default:false},
         method:{type:String, default:"Text"},
         dialogMessage:{default:'choose file',type:String},
         dialogProperties:{default:()=>['openFile', 'showHiddenFiles']}
@@ -50,13 +51,21 @@ export default class FFile extends FElement
     loadFile()
     {
         this.error = null;
+        
         let result = electron.remote.dialog.showOpenDialog({properties:this.dialogProperties,message:this.dialogMessage});
         if(result)
         {
-            this.file =  {path:result[0]}
+                const path = remote.require("path");
+            this.file =  {path:result[0], name:path.basename(result[0]), buffer:null, formData:null}
             if(this.content)
             {
                 const fs = remote.require("fs");
+
+
+
+
+
+
                 let options = {};
                 if(this.method.toLowerCase() == "text")
                 {
@@ -64,8 +73,15 @@ export default class FFile extends FElement
                 }
                 try
                 {
+                    if(this.formData)
+                    {
 
-                    this.file.content = fs.readFileSync(this.file.path, options);
+                        this.file.buffer = fs.readFileSync(this.file.path);
+                        //this.file.buffer = fs.createReadStream(this.file.path);
+                    }
+                    else{
+                        this.file.content = fs.readFileSync(this.file.path, options);
+                    }
                 }catch(error)
                 {
                     this.showPrevious = false;
@@ -92,14 +108,22 @@ export default class FFile extends FElement
             this.$emit('input', null);
             return;
         }
+        if(this.formData)
+        {
+            this.showPrevious = false;
+            this.file = {formData:file,path:file.name, buffer:null, name:file.name}
+            this.$emit('input', this.file)
+            return;
+        }
         var reader = new FileReader();
         reader.onload = ()=>
         {
-            this.file = {path:file.name}
+            this.file = {path:file.name,formData:null, buffer:null, name:file.name}
             if(this.content)
             {
                 this.file.content = reader.result
             }
+            debugger;
             this.showPrevious = false;
             this.$emit('input', this.file)
         }
@@ -114,7 +138,7 @@ export default class FFile extends FElement
     {
         if(this.value)
         {
-            this.file = typeof this.value == "string"?{path:this.value}:Objects.assign({},this.value);
+            this.file = typeof this.value == "string"?{path:this.value,formData:null, buffer:null, name:null}:Objects.assign({formData:null, buffer:null, name:null, path:null},this.value);
         }
         this.showPrevious = true;
         super.mounted();

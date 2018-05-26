@@ -2,6 +2,7 @@ import { adapter } from "./adapter";
 import axios from "axios";
 import Qs from "qs"
 import { Objects } from "../../../common/utils/Objects";
+import { Form } from "../../utils/Form";
 export class json extends adapter
 {
     constructor(config)
@@ -9,18 +10,24 @@ export class json extends adapter
         super();
         this._adapterConfig = Objects.assign({
             // paramsSerializer: function(params) {
-            //     return Qs.stringify(params, {arrayFormat: 'indices'})
+                
+                
+            //     return "json="+JSON.stringify(params);
             //   }
         }, config?config:{});
 
         if(this._adapterConfig.indices)
         {
-            this._adapterConfig.paramsSerializer =this.paramsSerializer;
+            this._adapterConfig.paramsSerializer =this.paramsSerializer.bind(this);
         }
     }
-    paramsSerializer(params)
+    paramsSerializer(params, arrayFormat)
    {
-        return Qs.stringify(params, {arrayFormat: 'indices'})
+        if(!arrayFormat)
+        {
+                arrayFormat = this._adapterConfig.arrayFormat ? this._adapterConfig.arrayFormat:'brackets';
+        }
+        return Qs.stringify(params, {arrayFormat: arrayFormat})
    } 
     load(request)
     {
@@ -33,8 +40,10 @@ export class json extends adapter
         if (!config.params)
             config.params = {};
 
-        let fullurl = config.url+"?"+this.paramsSerializer(req.params);
-        if(fullurl.length<2000)
+        const needsFormData = Form.needsFormData(req.params);
+
+        let useGet = !needsFormData && (config.url+"?"+this.paramsSerializer(req.params, 'indices')).length<2000;
+        if(useGet)
         {
             config.method = "get";
             config.params = Objects.assign(config.params, req.params);
@@ -50,7 +59,7 @@ export class json extends adapter
                 config.data.__type = "indices";
             }else
             {
-                config.data.__type = "json";
+                //config.data.__type = "json";
             }
         }
         if(config.params)
@@ -60,10 +69,31 @@ export class json extends adapter
                 config.params.__type = "indices";
             }else
             {
-                config.params.__type = "json";
+                    //config.params.__type = "json";
             }
         }
-            
+        
+        if(needsFormData)
+        {
+            config.data.__type = "formdata";
+            config.old = config.data;
+            config.data = Form.toFormData(config.data);
+            if(!config.headers)
+            {
+                config.headers = {};
+            }
+            config.headers['Content-Type'] = 'multipart/form-data';
+        }else{
+            if(!this._adapterConfig.indices)
+            {
+                // if(config.method == 'post' && Object.keys(config.data).length)
+                //     config.data = {json:config.data, '__type':'json'};
+                // else
+                // if(config.method == "get" && Object.keys(config.params).length)
+                //     config.params = {json:config.params, '__type':'json'};
+            }
+        }
+        //config.paramsSerializer = this.paramsSerializer.bind(this);
         return axios(config).then((response)=>
         {
             request.setapidata(response.data.api_data);

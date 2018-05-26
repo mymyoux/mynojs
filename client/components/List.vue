@@ -157,7 +157,7 @@ export default class List extends VueComponent
     {
         let selected = this.selected.slice();
         this.$emit('item-selection', event, selected);
-        this.emit('input',selected);
+        this.$emit('input',selected);
         this.onClick(event, this.selected[this.selected.length-1])
     }
     select(item)
@@ -628,9 +628,13 @@ ul
     {
         text-align: left;
         cursor:pointer;
+        background: white;
+        border: 1px solid #cecece;
+        border-top: 0;
+
         &:hover
         {
-            background-color: #cdd3d9;
+            background-color: #f9f9f9;
         }
         &.selected
         {
@@ -654,6 +658,7 @@ ul
     {
         display:none;
     }
+
 }
 ul /deep/ b
 {
