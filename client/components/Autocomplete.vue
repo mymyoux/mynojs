@@ -1,6 +1,6 @@
 <template>
     <div class="component-autocomplete" v-click-outside="onHide">
-        <search v-model="search" :search-prop="search_prop" :realtime="true" placeholder="Search" @change="onSearch" @click="onVisible(true)">
+        <search v-model="search" :search-prop="search_prop" :realtime="true" placeholder="Search" v-on:enter="onEnter()" @change="onSearch" @click="onVisible(true)">
         </search>
 
         <div @click="onSearch(search)" class="search-btn">
@@ -22,6 +22,7 @@ import {VueComponent, Component} from "../mvc/VueComponent";
 import Vue from 'vue';
 import { SearchHelper } from "myno/client/helpers/SearchHelper";
 import { Buffer } from 'myno/common/buffer/Buffer';
+import { Objects } from 'myno/common/utils/Objects';
 
 
 @Component({
@@ -33,19 +34,27 @@ import { Buffer } from 'myno/common/buffer/Buffer';
         search_prop:{
             required: true,
             type: String
+        },
+        add : {
+            required: false,
+            type: Boolean,
+            default: false
         }
     },
      watch: {
         list_autocomplete (newVal, oldVal) {
-            this.onVisible(true);
+            if (null === this.visible)
+                this.visible = false;
+            else
+                this.onVisible(true);
+
             this.data_list = newVal;
         },
         search : {
-
             deep: true,
             handler: Buffer.debounce(function(search) {
-                    this.$emit('autocompleteLoad', search);
-                }, 300)
+                this.$emit('autocompleteLoad', search);
+            }, 300)
         }
     }
 })
@@ -88,6 +97,23 @@ export default class Autocomplete extends VueComponent
         this.$emit('autocompleteSelected', item);
     }
 
+    onEnter(search)
+    {
+        if (this.add)
+        {
+            var item = Objects.clone(this.data_list[0]);
+
+            if (item)
+            {
+                delete item.id;
+                item[this.search_prop] = search.value;
+                item.selected = true;
+
+                this.$emit('autocompleteSelected', item);
+            }
+        }
+    }
+
     onSearch(search)
     {
         this.$emit('autocompleteLoad', search);
@@ -104,7 +130,7 @@ export default class Autocomplete extends VueComponent
             search:null,
             loading:false,
             data_list : [],
-            visible: false
+            visible: null
         };
     }
 }
