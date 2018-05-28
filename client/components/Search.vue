@@ -11,7 +11,7 @@ import { Objects } from "../../common/utils/Objects";
 import { SearchHelper } from "../helpers/SearchHelper";
 
 @Component({
-    name:"tables",
+    name:"search",
     props:
     {
         value:{required:false},
