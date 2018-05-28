@@ -4,7 +4,7 @@
     <h2 v-if="message">
         {{message}}
     </h2>
-           <form method="POST" action="https://local.yborder.com/login">
+           <form method="POST" action="/login">
                 <f-input type="email" name="email" />
                 <f-input type="password" name="password" />
 
