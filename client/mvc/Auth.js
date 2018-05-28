@@ -36,6 +36,7 @@ export class Auth
     }
     static async setUser(user)
     {
+        window["user"] = user;
         Auth._user = user;
         if(user && user.token)
         {

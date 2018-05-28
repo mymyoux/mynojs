@@ -5,7 +5,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Register</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" method="POST" action="https://local.yborder.com/register">
+                        <form class="form-horizontal" method="POST" action="/register">
                         
                             <f-input name="email" type="text" label="Email"></f-input>
                             <f-input name="first_name" type="text" label="First Name"></f-input>

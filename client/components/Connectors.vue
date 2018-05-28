@@ -1,7 +1,7 @@
 <template>
   <ul>
     <li v-for="connector in connectors">
-        <a :href="'https://local.yborder.com/login/' + connector.name">{{ connector.name }}</a>
+        <a :href="'/login/' + connector.name">{{ connector.name }}</a>
     </li>
   </ul>
 </template>
