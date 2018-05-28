@@ -238,7 +238,7 @@ export class EventDispatcher extends CoreObject {
     }
 }
 
-class Listener {
+export class Listener {
     constructor(key1, key2, once, callback, scope, parameters) {
         this.key1 = key1;
         this.key2 = key2;
