@@ -10,7 +10,6 @@ export class KeyboardShortcutHelper
     {
         mousetrap.bind(['command+r','ctrl+r','f5'], ()=>
         {
-            debugger;
                 this.trigger("refresh", event);
         })
         mousetrap.bind(['command+a','ctrl+a'], ()=>
