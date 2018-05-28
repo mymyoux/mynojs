@@ -1,6 +1,6 @@
 <template>
-    <ul ref="root" v-on:selectall.prevent.stop="onSelectAll" @scroll.passive="onScroll">
-            <div ref="items" v-for="item,i in filtered" :key="i" v-wheel="onWheel" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item, i)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
+    <ul ref="root" v-on:selectall.prevent.stop="onSelectAll" @scroll.passive="onScroll"  v-on:up="onKeyboardUp" v-on:down="onKeyboardDown">
+            <div ref="items" v-for="item,i in filtered" :key="i" v-wheel="onWheel" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
             :class="{selected:item.selected}"
             >
                 <slot  name="item" :item="item" :index="i" :filter="filter">
@@ -50,7 +50,25 @@ import { Strings } from "../../common/utils/Strings";
         {
             handler()
             {
-                this.selected = this.value?this.value:[];
+                let value = this.value;
+                if(!value)
+                {
+                    value = [];
+                }
+                if(!Array.isArray(value))
+                {
+                    value = [value];
+                }
+                
+                if(this.selected.length != value || !this.selected.every((item, index)=>
+                {
+                    return item === value[index];
+                }))
+                {
+                    this.selected.forEach((item)=>item.selected = false);
+                    this.selected = value;
+                    this.selected.forEach((item)=>item.selected = true);
+                }
             }
         },
         items:
@@ -142,6 +160,12 @@ export default class List extends VueComponent
         this.$emit('input',selected);
         this.onClick(event, this.selected[this.selected.length-1])
     }
+    select(item)
+    {
+        this.selected.forEach((item)=>item.selected = false)
+        item.selected = true;
+        this.selected = [item];
+    }
     @Event('window:resize', {debounce:100})
     onResize(event)
     {   
@@ -206,10 +230,6 @@ export default class List extends VueComponent
         }
         this._lastScroll = scroll;
     }
-    select(item)
-    {
-        
-    }
     scrollTo(item)
     {
         let index;
@@ -217,7 +237,7 @@ export default class List extends VueComponent
         {
             index = item;
         }else{
-            item = this.items.indexOf(item);
+            index = this.filtered.indexOf(item);
         }
         if(!~index)
         {
@@ -227,21 +247,26 @@ export default class List extends VueComponent
         if(index<0)
         {
             index = 0;
-        }
-        let child = this.$refs.items[index];
-        if(!child)
+        }else
+         if(index>=this.filtered.length)
         {
-            if(index>=this.$refs.items.length)
-            {
-                child = this.$refs.items[this.$refs.items.length-1];
-            }else
-            {
-                return;
-            }
+            index = this.filtered.length-1
         }
-        if(child)
+
+        let element = this.$refs.items[index];
+        if(!element)
         {
-            this.$refs.root.scrollTop = child.offsetTop - this.$refs.root.offsetTop
+            debugger;
+            return;
+        }
+        let parent = element.parentNode;
+        if(element.offsetTop< parent.scrollTop)
+        {
+            parent.scrollTop = element.offsetTop;
+        }else
+        if(element.offsetTop+element.offsetHeight>parent.scrollTop+parent.offsetHeight)
+        {
+            parent.scrollTop = element.offsetTop+element.offsetHeight - parent.offsetHeight;//parent.scrollLeft + parent.offsetWidth - element.offsetWidth;
         }
     }
     get filtered()
@@ -270,6 +295,119 @@ export default class List extends VueComponent
         }
         this.onSelection(event);
     }
+    onKeyboardUp()
+    {
+         if(!this.filtered.length)
+            return
+        event.preventDefault();
+        let index;
+        if(this.selected.length)
+        {
+            let current = this.selected[this.selected.length-1];
+            index = this.filtered.indexOf(current);
+        }else
+        {
+            index = this.filtered.length;
+        }
+        index--;
+        if(index<0)
+        {
+            index = this.filtered.length-1;
+        }
+
+        if(event.shiftKey || (event.original && event.original.shiftKey))
+        {
+            let current = index+1;
+            if(current>= this.filtered.length)
+            {
+                current =0;
+            }
+            if(this.selected.length > 1)
+            {
+                if(this.filtered[index].selected )
+                {
+                    let indexselected = this.selected.indexOf(this.filtered[current]);
+                    if(~indexselected)
+                    {
+                        this.selected.splice(indexselected, 1);
+                    }
+                    this.filtered[current].selected  = false;
+                }
+            }
+            if(!this.filtered[index].selected)
+            {
+                this.filtered[index].selected =  true;
+                this.selected.push(this.filtered[index]);
+            }
+        }else
+        {
+            this.selected.forEach((item)=>item.selected = false);
+            this.filtered[index].selected =  true;
+            this.selected = [this.filtered[index]];
+        }
+        
+        this.onSelection();
+
+
+
+        this.scrollTo(index);
+
+    }
+    onKeyboardDown()
+    {
+        if(!this.filtered.length)
+            return
+        event.preventDefault();
+        let index;
+        if(this.selected.length)
+        {
+            let current = this.selected[this.selected.length-1];
+            index = this.filtered.indexOf(current);
+        }else
+        {
+            index = -1;
+        }
+        index++;
+        if(index>=this.filtered.length)
+        {
+            index = 0;
+        }
+
+         if(event.shiftKey || (event.original && event.original.shiftKey))
+        {
+            let current = index-1;
+            if(current< 0)
+            {
+                current = this.filtered.length-1;
+            }
+            if(this.selected.length > 1)
+            {
+                if(this.filtered[index].selected )
+                {
+                    let indexselected = this.selected.indexOf(this.filtered[current]);
+                    if(~indexselected)
+                    {
+                        this.selected.splice(indexselected, 1);
+                    }
+                    this.filtered[current].selected  = false;
+                }
+            }
+            if(!this.filtered[index].selected)
+            {
+                this.filtered[index].selected =  true;
+                this.selected.push(this.filtered[index]);
+            }
+        }else
+        {
+            this.selected.forEach((item)=>item.selected = false);
+            this.filtered[index].selected =  true;
+            this.selected = [this.filtered[index]];
+        }
+        
+        this.onSelection();
+            
+        this.scrollTo(index);
+    }
     onMouseDown(event, model)
     {
         if(event.which != 1)
@@ -286,25 +424,24 @@ export default class List extends VueComponent
         
         // var offset = this.start?this.start:0;
         // index += offset;
-
         if (!model)
             return;
-        if (!event.shiftKey) {
+        if (!event.shiftKey && (this.multiOnSelect || event.metaKey || event.ctrlKey)) {
             this._mouseLast = index;
             this._mouseStart = index;
         }
         else {
-            if (!event.metaKey && !event.ctrlKey) {
+            if (!event.shiftKey  && !event.metaKey && !event.ctrlKey) {
                 this.selected.forEach((item) => {
                     delete item._previousSelected;
-                    item.selected = false;
+                    //item.selected = false;
                 });
-                this.selected = [];
+                //this.selected = [];
                 // this.$getProp('list').models.forEach((item)=>
                 // {
                 //     item.selected = false;
                 // });
-                this._mouseStart = this._mouseLast;
+                this._mouseStart = index;//this._mouseLast;
                 this.onMouseUp(event, model, index);
                 return;
             }else
@@ -338,7 +475,7 @@ export default class List extends VueComponent
         if (this._mouseStart == null) {
             return;
         }
-        let index = this.filtered.indexOf(model);
+       let  index =  this.filtered.indexOf(model);
         if(!~index)
         {
             return;
@@ -405,11 +542,11 @@ export default class List extends VueComponent
             }
         }
     }
-    onMouseUp(event, model) {
+    onMouseUp(event, model, index = null) {
         if (this._mouseStart == null) {
             return;
         }
-        let index = this.filtered.indexOf(model);
+         index = index != null ? index: this.filtered.indexOf(model);
         if(!~index)
         {
             return;
@@ -419,14 +556,18 @@ export default class List extends VueComponent
 
         var index1 = Math.min(index, this._mouseStart);
         var index2 = Math.max(index, this._mouseStart);
-
         if(!this.multiOnSelect && !event.ctrlKey && !event.metaKey && !event.shiftKey)
         {
+            model = this.filtered[index];
             this.selected.forEach((item)=>item.selected = false);
-            this.selected = [];
-            index1 = index2 = this._mouseStart;
+            this.selected = [model];
+            model.selected = true;
+            //index1 = index2 = this._mouseStart;
+            //shortcut
+            this._mouseStart = null;
+            this.onSelection();
+            return;
         }
-        var model;
         for (var p of this._itemChanged) {
             model = this.filtered[p];
             model.selected = model._previousSelected;
@@ -487,9 +628,13 @@ ul
     {
         text-align: left;
         cursor:pointer;
+        background: white;
+        border: 1px solid #cecece;
+        border-top: 0;
+
         &:hover
         {
-            background-color: #cdd3d9;
+            background-color: #f9f9f9;
         }
         &.selected
         {
@@ -513,6 +658,7 @@ ul
     {
         display:none;
     }
+
 }
 ul /deep/ b
 {

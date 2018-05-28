@@ -121,7 +121,7 @@ export class VueComponent extends Vue
  */
 export function Event(event, options)
 {
-    options = Objects.assign({debounce:false, throttle:false}, options);
+    options = Objects.assign({debounce:false, throttle:false, dispatcher:bus}, options);
     return function(target, key, descriptor)
     {
         if(!event)
@@ -135,7 +135,7 @@ export function Event(event, options)
             {
                 target.__listeners = [];
             }
-            target.__listeners.push({options:options, descriptor:descriptor, event:event})
+            target.__listeners.push({options:options, descriptor:descriptor, event:event, dispatcher:options.dispatcher})
             if(target.destroyed && !target.____destroyed)
             {
                 target.____destroyed = target.destroyed
@@ -161,7 +161,7 @@ export function Event(event, options)
                         listener = config.descriptor.value;
                     }
                     config.listener = listener;
-                    bus.on(config.event, listener, this);
+                    config.dispatcher.on(config.event, listener, this);
                 });
                 if( target.____beforeMount)
                 {
@@ -172,7 +172,7 @@ export function Event(event, options)
             {
                 target.__listeners.forEach((config)=>
                 {
-                    bus.off(config.event, config.listener, this);
+                    config.dispatcher.off(config.event, config.listener, this);
                 });
                 if( target.____destroyed)
                 {
@@ -193,9 +193,8 @@ export function Event(event, options)
                 listener = descriptor.value;
             }
             //TODO:override metthod  to get this with wrap
-            debugger;
             //TODO:maybe this instead of target
-            bus.on(event, listener, target);
+            options.dispatcher.on(event, listener, target);
         }
         return descriptor;
     }
