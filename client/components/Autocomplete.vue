@@ -112,6 +112,8 @@ export default class Autocomplete extends VueComponent
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+
+    $light_grey: #d4d4d4;
     .component-autocomplete
     {
         position: relative;
@@ -122,8 +124,9 @@ export default class Autocomplete extends VueComponent
         input
         {
             width: 100%;
-            border: 1px solid #cecece;
-            padding: 5px;
+            border: 1px solid $light_grey;
+            padding: 8px;
+            outline: none;
         }
 
         .list
