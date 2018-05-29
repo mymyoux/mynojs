@@ -1,33 +1,10 @@
 <template>
     <div class="container">
-<<<<<<< HEAD
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Register</div>
-                    <div class="panel-body">
-                        <form class="form-horizontal" method="POST" :action="base_href+'/register'">
-                        
-                            <f-input name="email" type="text" label="Email"></f-input>
-                            <f-input name="first_name" type="text" label="First Name"></f-input>
-                            <f-input name="last_name" type="text" label="Last Name"></f-input>
-                            <f-input name="password" type="password" label="Password"></f-input>
-                            <f-input name="password_confirmation" type="password" label="Confirmation"></f-input>
 
-                            <div class="form-group">
-                                <div class="col-md-6 col-md-offset-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        Register
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-=======
-<<<<<<< HEAD
         <div class="panel panel-default register">
             <h2>S'enregistrer</h2>
             <div class="panel-body">
-                <form class="form-horizontal" method="POST" action="https://local.yborder.com/register">
+                <form class="form-horizontal" method="POST"  :action="base_href+'/register'">
 
                     <connectors></connectors>
 
@@ -63,9 +40,7 @@
                         <button type="submit" class="btn btn-primary">
                             S'enregistrer
                         </button>
->>>>>>> ad27ef29c8c583f24d21659263704c24e24eb3b0
                     </div>
-
                 </form>
             </div>
         </div>
@@ -89,7 +64,7 @@ export default class Login extends VueComponent
     {
         return {
             message:this.$route.params.message,
-            base_href:config('php.url')
+            base_href:config('php.url')?config('php.url'):''
         };
     }
    

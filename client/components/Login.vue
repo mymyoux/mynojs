@@ -59,7 +59,7 @@ export default class Login extends VueComponent
     {
         return {
             message:this.$route.params.message,
-            base_href:config('php.url')
+            base_href:config('php.url')?config('php.url'):''
         };
     }
    
