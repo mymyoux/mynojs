@@ -37,7 +37,6 @@
                </div>
 
                <p>Vous n'avez pas de compte ? <a>Inscription</a></p>
-
            </form>
   </div>
 </template>

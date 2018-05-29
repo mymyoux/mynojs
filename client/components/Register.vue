@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+<<<<<<< HEAD
         <div class="panel panel-default register">
             <h2>S'enregistrer</h2>
             <div class="panel-body">

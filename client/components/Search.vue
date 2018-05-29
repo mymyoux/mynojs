@@ -11,7 +11,7 @@ import { Objects } from "../../common/utils/Objects";
 import { SearchHelper } from "../helpers/SearchHelper";
 
 @Component({
-    name:"tables",
+    name:"search",
     props:
     {
         value:{required:false},
@@ -189,7 +189,7 @@ export default class Search extends VueComponent
         }
         this.$emit('change', this._asObject?this._searchObject:this.search);
     }
-    onKeyUp()
+    onKeyUp(event)
     {
         if(!this._realtime)
         {
@@ -197,6 +197,11 @@ export default class Search extends VueComponent
         }
         this._searchObject.value = this.search;
         this.$emit('input', this._asObject?this._searchObject:this.search);
+        if (event.code === 'Enter')
+        {
+            debugger;
+            this.$emit('enter', this._asObject?this._searchObject:this.search);
+        }
     }
 }
 class SearchObject
