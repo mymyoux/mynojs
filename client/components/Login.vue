@@ -4,7 +4,7 @@
     <h2 v-if="message">
         {{message}}
     </h2>
-           <form method="POST" action="/login">
+           <form method="POST" :action="base_href+'/login'">
                 <f-input type="email" name="email" />
                 <f-input type="password" name="password" />
 
@@ -20,7 +20,7 @@
 
                 <f-input type="submit" value="login" />
            </form>
-            <connectors></connectors>
+            <connectors :base-href="base_href"></connectors>
   </div>
 </template>
 
@@ -28,6 +28,7 @@
 import {VueComponent, Component, Prop, Watch, Emit, Event} from "../mvc/VueComponent";
 import Vue from 'vue';
 import Connectors from 'myno/client/components/Connectors.vue'
+import { config } from "../../common/env/Configuration";
 
 @Component({
   components: {
@@ -39,7 +40,8 @@ export default class Login extends VueComponent
     data()
     {
         return {
-            message:this.$route.params.message
+            message:this.$route.params.message,
+            base_href:config('php.url')
         };
     }
    

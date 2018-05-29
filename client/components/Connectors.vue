@@ -1,7 +1,7 @@
 <template>
   <ul>
     <li v-for="connector in connectors">
-        <a :href="'/login/' + connector.name">{{ connector.name }}</a>
+        <a :href="baseHref+'/login/' + connector.name">{{ connector.name }}</a>
     </li>
   </ul>
 </template>
@@ -10,7 +10,13 @@
 import {VueComponent, Component, Prop, Watch, Emit} from "../../client/mvc/VueComponent";
 import Vue from 'vue';
 import { api } from "myno/client/io/API";
-@Component
+import { config } from "../../common/env/Configuration";
+@Component({
+  props:
+  {
+    baseHref:{required:false, type:String,default:''}
+  }
+})
 export default class Connectors extends VueComponent
 {
     data()

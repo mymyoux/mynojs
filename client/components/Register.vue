@@ -5,7 +5,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Register</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" method="POST" action="/register">
+                        <form class="form-horizontal" method="POST" :action="base_href+'/register'">
                         
                             <f-input name="email" type="text" label="Email"></f-input>
                             <f-input name="first_name" type="text" label="First Name"></f-input>
@@ -32,6 +32,7 @@
 import {VueComponent, Component, Prop, Watch, Emit, Event} from "../mvc/VueComponent";
 import Vue from 'vue';
 import Connectors from 'myno/client/components/Connectors.vue'
+import { config } from "../../common/env/Configuration";
 
 @Component({
   components: {
@@ -43,7 +44,8 @@ export default class Login extends VueComponent
     data()
     {
         return {
-            message:this.$route.params.message
+            message:this.$route.params.message,
+            base_href:config('php.url')
         };
     }
    
