@@ -230,6 +230,8 @@ export class EventDispatcher extends CoreObject {
         this.destroy();
     }
     destroy() {
+        if(!this._listeners)
+            return;
         while(this._listeners.length)
         {
             this.removed(this._listeners.shift());
