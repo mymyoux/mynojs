@@ -1,6 +1,6 @@
 <template>
     <ul ref="root" v-on:selectall.prevent.stop="onSelectAll" @scroll.passive="onScroll"  v-on:up="onKeyboardUp" v-on:down="onKeyboardDown">
-            <div ref="items" v-for="item,i in filtered" :key="i" v-wheel="onWheel" @mousedown="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item)"   @mousemove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
+            <div ref="items" v-for="item,i in filtered" :key="i" v-wheel="onWheel" @mousedown="onMouseDown($event, item, i)" @touchstart="onMouseDown($event, item, i)"  @mouseup="onMouseUp($event, item)"  @touchend="onMouseUp($event, item)"  @mousemove="onMouseMove($event, item, i)"  @touchmove="onMouseMove($event, item, i)"  @dblclick="onDoubleClick($event, item)"
             :class="{selected:item.selected}"
             >
                 <slot  name="item" :item="item" :index="i" :filter="filter">

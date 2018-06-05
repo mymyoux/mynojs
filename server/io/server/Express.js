@@ -61,7 +61,7 @@ export class Express extends StepHandler(CoreObject)
     }
     async onRequest(request, result) {
         let params = Objects.assign(request.query, request.body);
-        if(params.__type == "json")
+        if(true || params.__type == "json")
         Object.keys(params).forEach((item)=>
         {
             if(typeof params[item] == "string")

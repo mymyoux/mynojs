@@ -1,5 +1,5 @@
 <template>
-    <div class="resizer" @mousedown="onMouseDown" ref="resizer">&nbsp;</div>
+    <div class="resizer" @mousedown="onMouseDown" @touchstart="onMouseDown" ref="resizer">&nbsp;</div>
 </template>
 
 <script>
@@ -40,7 +40,9 @@ export default class VerticalResizer extends VueComponent
         let target = this.$refs.resizer.parentNode.children[index-1];
         this.resizing  = { y:event.pageY,  startHeight:target.offsetHeight};
         bus.on('window:mouseup', this.onMouseUp, this);
+        bus.on('window:touchend', this.onMouseUp, this);
         bus.on('window:mousemove', this.onMouseMove, this);
+        bus.on('window:touchmove', this.onMouseMove, this);
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -145,12 +147,16 @@ export default class VerticalResizer extends VueComponent
     {
         this.computeHeight();
         bus.off('window:mouseup', this.onMouseUp, this);
+        bus.off('window:touchend', this.onMouseUp, this);
         bus.off('window:mousemove', this.onMouseMove, this);
+        bus.off('window:touchmove', this.onMouseMove, this);
         bus.trigger("window:resize", event);
     }
     beforeDestroy() {
         bus.off('window:mouseup', this.onMouseUp, this);
+        bus.off('window:touchend', this.onMouseUp, this);
         bus.off('window:mousemove', this.onMouseMove, this);
+        bus.off('window:touchmove', this.onMouseMove, this);
     }
 }
 </script>

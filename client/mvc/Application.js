@@ -51,9 +51,11 @@ export class Application extends StepHandler(CoreObject)
     {
         window.getAllScroll = getAllScroll;
         window.onerror = function ( message, filename, lineno, colno, error ){
+            console.error(error);
             debugger;
         }
-        window.addEventListener("unhandledrejection", function(err, promise) { 
+        window.addEventListener("unhandledrejection", function(error, promise) { 
+            console.error(error);
             debugger;
         });
     }
@@ -326,6 +328,7 @@ export class Application extends StepHandler(CoreObject)
         console.log('vue');
        this._vue = new Vue({
             router:this._router,
+            store:this._store,
             render: h => h(this.app())
           }).$mount(this._selector) 
     //     console.log(this._vue);

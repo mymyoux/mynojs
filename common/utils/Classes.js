@@ -4,7 +4,13 @@ import { root as Root} from "../env/Root";
 import { Strings } from "./Strings";
 export class Classes {
     static getName(cls) {
+        // throw new Error('can\'t use class getName due to minification process');
         if (cls && cls.constructor && cls.constructor.name) {
+            if(cls.constructor.name.indexOf('_'))
+            {
+                let name =  cls.constructor.name.split('_')
+                return name[name.length-1];
+            }
             return cls.constructor.name;
         }
         
