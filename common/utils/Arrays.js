@@ -1,6 +1,14 @@
+import { Maths } from "./Maths";
+
 export class Arrays {
     static isArray(obj) {
         return Array.isArray(obj);
+    }
+    static rand(array)
+    {
+        if(!array.length)
+            return null;
+        return array[Maths.randBetween(0, array.length-1)];
     }
     static binaryFindArray(array, element, properties, orders) {
         var minIndex = 0;
