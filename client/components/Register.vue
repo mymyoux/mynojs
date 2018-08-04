@@ -4,7 +4,7 @@
         <div class="panel panel-default register">
             <h2>S'enregistrer</h2>
             <div class="panel-body">
-                <form class="form-horizontal" method="POST"  :action="base_href+'/register'">
+                <form class="form-horizontal" method="POST"  :action="base_href+'/login/manual/callback'">
 
                     <connectors></connectors>
 

@@ -37,7 +37,7 @@
                    <b-button type="submit" value="login" class="submit" >Se connecter</b-button>
                </div>
 
-               <p>Vous n'avez pas de compte ? <a>Inscription</a></p>
+               <p>Vous n'avez pas de compte ? <router-link to="/register">Inscription</router-link ></p>
            </form>
   </div>
 </template>

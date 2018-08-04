@@ -6,6 +6,7 @@ import VueRouter from "vue-router";
 import Vue from "vue";
 import Debug from "../components/Debug.vue";
 import Login from "../components/Login.vue";
+import Register from "../components/Register.vue";
 import { Configuration } from "../../common/env/Configuration";
 import { getAllScroll } from "../debug/HTML";
 import FFile  from "myno/client/components/form/FFile";
@@ -305,6 +306,15 @@ export class Application extends StepHandler(CoreObject)
             path:"/login",
             name:"login",
             component:Login,
+            meta:
+            {
+                requiresUnauth:true
+            }
+        },
+        {
+            path:"/register",
+            name:"register",
+            component:Register,
             meta:
             {
                 requiresUnauth:true
