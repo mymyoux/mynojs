@@ -36,6 +36,11 @@ import { KeyboardShortcutHelper } from "../helpers/KeyboardShortcutHelper";
 import VueHistory from "../vue/History";
 import vuewheel from 'vuewheel'
 import { preferences } from "../env/Preferences";
+import { Hardware } from "myno/common/env/Hardware";
+import { ipc } from "myno/client/io/api/ipc";
+import { json } from "myno/client/io/api/json";
+
+import preconfig from '../../../config.js';
 export class Application extends StepHandler(CoreObject)
 {
     _steps=["debug","model","preconfig","maker","api", "configuration","preferences", "router", "initVue","user", "selector", "app", "events","vue"];
@@ -70,16 +75,17 @@ export class Application extends StepHandler(CoreObject)
     }
     preconfig()
     {
-        
+        Configuration.merge(preconfig);
     }
     api()
     {
-        debugger;
-        API.register({baseUrl:window.location.origin});
+        API.register({baseUrl:config.has('api.url')?config('api.url'):window.location.origin,adapter:Hardware.isElectron()?new ipc: new json});
+        window["api"] = api;
         return api.boot();
     }
     configuration()
     {
+        
         return api("configuration").path('configuration/get').then((data)=>
         {
             Configuration.merge(data);
