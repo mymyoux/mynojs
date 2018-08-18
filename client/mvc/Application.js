@@ -86,10 +86,10 @@ export class Application extends StepHandler(CoreObject)
     configuration()
     {
         
-        return api("configuration").path('configuration/get').then((data)=>
-        {
-            Configuration.merge(data);
-        })
+        // return api("configuration").path('configuration/get').then((data)=>
+        // {
+        //     Configuration.merge(data);
+        // })
     }
     preferences()
     {
