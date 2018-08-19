@@ -3,9 +3,16 @@ import { event } from "../../common/events/Bus";
 import { make } from "../../common/maker/make";
 import { API, api } from "../io/API";
 
+let binding = 
+{
+    user:null
+}
 export class Auth
 {
-    static _user;
+    static binding()
+    {
+        return binding;
+    }
     static retrieveUser()
     {
         return api("user").path('user/me').then((user)=>{
@@ -37,7 +44,7 @@ export class Auth
     static async setUser(user)
     {
         window["user"] = user;
-        Auth._user = user;
+        binding.user = user;
         if(user && user.token)
         {
             await this.cache().setItem('user', user.writeExternal?user.writeExternal():user);
@@ -48,15 +55,15 @@ export class Auth
     }
     static user()
     {
-        return  Auth._user;
+        return  binding.user;
     }
     static id()
     {
-        return  Auth._user?Auth._user.getID():null;
+        return  binding.user?binding.user.getID():null;
     }
     static type()
     {
-        return  Auth._user?Auth._user.type:null;
+        return  binding.user?binding.user.type:null;
     }
     static getCacheUser()
     {
@@ -64,7 +71,7 @@ export class Auth
     }
     static logout()
     {
-        Auth._user = null;
+        binding.user = null;
         this.cache().removeItem('user').then(()=>
         {
             event('user:logout');
@@ -77,3 +84,5 @@ export class Auth
         return LocalForage.instance().war("auth");
     }
 }
+
+

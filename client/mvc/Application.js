@@ -49,6 +49,7 @@ export class Application extends StepHandler(CoreObject)
     _app =  null;
     async boot()
     {
+        window['Auth'] = Auth;
         console.log('app loading');
        await super.boot();
        this.booted();
@@ -79,7 +80,9 @@ export class Application extends StepHandler(CoreObject)
     }
     api()
     {
-        API.register({baseUrl:config.has('api.url')?config('api.url'):window.location.origin,adapter:Hardware.isElectron()?new ipc: new json});
+        let url = config.has('api.url')?config('api.url'):window.location.origin;
+        let credentials = !~url.indexOf(window.location.origin);
+        API.register({withCredentials:credentials,baseUrl:url,adapter:Hardware.isElectron()?new ipc: new json});
         window["api"] = api;
         return api.boot();
     }

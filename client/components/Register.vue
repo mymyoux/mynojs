@@ -6,7 +6,7 @@
             <div class="panel-body">
                 <form class="form-horizontal" method="POST"  :action="base_href+'/login/manual/callback'">
 
-                    <connectors></connectors>
+                    <connectors type="signup"></connectors>
 
                     <p class="or">ou</p>
 

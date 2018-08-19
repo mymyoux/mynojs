@@ -55,7 +55,10 @@ export class API extends CoreObject
     {
         return new Request(this);
     }
-    
+    getBaseURL()
+    {
+        return this._config.baseUrl;
+    }
     config(config)
     {
         if(!this._config)
@@ -187,6 +190,10 @@ class Request
         this._api = api;
         this._config = Objects.assign({requestInstance:true}, this._api._config);
         this._promise = null;
+    }
+    getBaseURL()
+    {
+        return this._config.baseUrl;
     }
     reset()
     {

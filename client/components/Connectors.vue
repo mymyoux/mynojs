@@ -3,7 +3,7 @@
 
 <div class="section row">
     <div v-for="connector in connectors" class="col-md-6">
-        <a  :href="baseHref+'/login/' + connector.name" class="button btn-social span-left btn-block" :class="connector.name">
+        <a  :href="base+'/'+type+'/' + connector.name" class="button btn-social span-left btn-block" :class="connector.name">
         <span>
             <i :class="'fab fa-' + connector.name"></i>
         </span>{{ connector.name }}</a>
@@ -20,19 +20,25 @@ import { config } from "../../common/env/Configuration";
 @Component({
   props:
   {
-    baseHref:{required:false, type:String,default:''}
+    baseHref:{required:false, type:String,default:null},
+    type:{required:true, type:String}
   }
 })
 export default class Connectors extends VueComponent
 {
+    created()
+    {
+    }
     data()
     {
-        api().path('connector/all').then( (data) => {
+        let a = api();
+        api().path('connector/'+this.type).then( (data) => {
             this.connectors = data;
         });
 
         return {
-          connectors: []
+          connectors: [],
+          base:this.baseHref?this.baseHref:config('api.url')
         };
     }
 }

@@ -7,7 +7,7 @@
 
             <form method="POST" :action="base_href+'/login'">
 
-               <connectors></connectors>
+               <connectors type="login"></connectors>
 
                <b-form-group>
                    <b-form-input id="email"
@@ -47,7 +47,7 @@ import {VueComponent, Component, Prop, Watch, Emit, Event} from "../mvc/VueCompo
 import Vue from 'vue';
 import Connectors from 'myno/client/components/Connectors.vue'
 import { config } from "../../common/env/Configuration";
-
+import { api } from "myno/client/io/API";
 @Component({
   components: {
     Connectors,
@@ -59,7 +59,7 @@ export default class Login extends VueComponent
     {
         return {
             message:this.$route.params.message,
-            base_href:config('php.url')?config('php.url'):''
+            base_href:api().getBaseURL()
         };
     }
    
