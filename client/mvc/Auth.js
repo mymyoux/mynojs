@@ -27,7 +27,8 @@ export class Auth
 
             API.instance().config({
                 params: {
-                    api_token : user.token
+                    api_token : user.token,
+                    user_id:user.id
                 }
             });
             api.boot();
@@ -76,7 +77,7 @@ export class Auth
         {
             event('user:logout');
         });
-        return api().path('logout').then((user)=>{
+        return api().path('user/logout').then((user)=>{
             
         });
     }
