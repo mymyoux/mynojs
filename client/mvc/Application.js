@@ -39,6 +39,7 @@ import { preferences } from "../env/Preferences";
 import { Hardware } from "myno/common/env/Hardware";
 import { ipc } from "myno/client/io/api/ipc";
 import { json } from "myno/client/io/api/json";
+import { event } from "myno/common/events/Bus";
 
 import preconfig from '../../../config.js';
 export class Application extends StepHandler(CoreObject)
@@ -50,6 +51,7 @@ export class Application extends StepHandler(CoreObject)
     async boot()
     {
         window['Auth'] = Auth;
+        window['event'] = event;
         console.log('app loading');
        await super.boot();
        this.booted();
