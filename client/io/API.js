@@ -395,6 +395,7 @@ class Request
             this._executed = true;
             if(data && data.exception)
             {
+                event('toaster', {message:data.message, type:'error'});
                 return Promise.reject(data);
             }
             return data;

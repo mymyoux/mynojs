@@ -46,6 +46,7 @@
 import {VueComponent, Component, Prop, Watch, Emit, Event} from "../mvc/VueComponent";
 import Vue from 'vue';
 import Connectors from 'myno/client/components/Connectors.vue'
+import {event} from 'myno/common/events/Bus';
 import { config } from "../../common/env/Configuration";
 import { api } from "myno/client/io/API";
 @Component({
@@ -74,6 +75,7 @@ export default class Login extends VueComponent
             
         },(error)=>
         {
+            //event('toaster', {message:error.message, type:'error'});
             debugger;
         });
     }

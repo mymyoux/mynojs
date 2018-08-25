@@ -4,9 +4,17 @@ import { Arrays } from "../utils/Arrays";
 import { Strings } from "../utils/Strings";
 import { Classes } from "../utils/Classes";
 export class Model extends CoreObject {
-    static ID_NAME = "id";
+    id_name = 'id';
     constructor() {
         super();
+        Object.defineProperty(this, "id_name", {
+            enumerable: false,
+            writable:true
+        });
+        Object.defineProperty(this, "_modelName", {
+            enumerable: false,
+            writable:true
+        });
     }
     getClassName()
     {
@@ -19,7 +27,11 @@ export class Model extends CoreObject {
     }
     getIDName()
     {
-        return this.constructor.ID_NAME;
+        return this.id_name;
+    }
+    hasID()
+    {
+        return this.getID() !== undefined;
     }
     getModelName() {
         if (!this._modelName) {

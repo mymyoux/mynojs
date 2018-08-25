@@ -80,7 +80,7 @@ export default class Login extends VueComponent
         {
             options = {message:options};
         }
-        let toast = Object.assign({closable:true, delay:2, count:0, start:Date.now(), progress:false, visible:true}, options);
+        let toast = Object.assign({closable:true, delay:5, count:0, start:Date.now(), progress:false, visible:true}, options);
         toast.count = toast.delay;
         if(toast.message && toast.message instanceof Error)
         {

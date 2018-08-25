@@ -3,10 +3,12 @@ import { CoreObject } from "../../common/core/CoreObject";
 import { Arrays } from "../../common/utils/Arrays";
 import { LocalForage } from "../data/Forage";
 import { Strings } from "../../common/utils/Strings";
-import { API } from "../io/API";
+import { API, api } from "../io/API";
 import { Classes } from "../../common/utils/Classes";
 import {Model as BaseModel} from "../../common/mvc/Model";
 export class Model extends BaseModel {
+    id_name = 'id';
+
     constructor() {
         super();
         Object.defineProperty(this, "_pathLoaded", {
@@ -228,6 +230,51 @@ export class Model extends BaseModel {
         path = this._path(path);
         return this.api(path, config.api_name).path(path).params(params);
     }
+
+    //new api
+    save()
+    {
+        let request = new Request();
+        request
+        .path(this.getRootPath()+'/'+(this.hasID()?'update':'create'))
+        .source(this);
+
+        Object.keys(this)
+        .filter((key)=>
+        {
+            return this[key] !== null && key.substring(0, 1)!='_';
+        })
+        .filter((key)=>
+        {
+            if(!this.hidden)
+                return true;
+            return !~this.hidden.indexOf(key);  
+        })
+        .forEach((key)=>
+        {
+            if(key == this.getIDName())
+            {
+                //id => model_id 
+                request.addParam(this.getModelName()+'_id', this[key]);
+            }else
+            {
+                request.addParam(key, this[key]);
+            }
+        });
+
+        return request;
+    }
+    destroy()
+    {
+        //ignore
+        if(!this.hasID())
+            return Promise.resolve();
+
+        let request = new Request();
+        request.path(this.getRootPath()+'/delete');
+        request.addParam(this.getModelName()+'_id', this.getID());
+        return request;
+    }
 }
 Model.PATH_CREATE = () => new ModelLoadRequest("%root-path%/create", null, { replaceDynamicParams: true, ignorePathLoadState: true, marksPathAsLoaded: false });
 Model.PATH_GET = () => new ModelLoadRequest("%root-path%/get", { '%id-name%': '%id%' }, { replaceDynamicParams: true });
@@ -242,3 +289,85 @@ export class ModelLoadRequest {
     }
 }
 ModelLoadRequest.regexp = /%([^%]+)%/g;
+
+
+class Request{
+    _cls = null;
+    _path = null;
+    _mapInto = null;
+    _params = {}
+    params(params)
+    {
+        this._params = params;
+        return this;
+    }
+    addParams(params)
+    {
+        for(var k of params)
+        {
+            this.addParam(k, params[k]);
+        }
+        return this;
+    }
+    source(source)
+    {
+        this._mapInto = function(item)
+        {
+            let instance = source;
+            if(instance.readExternal)
+                instance.readExternal(item);
+            else{
+                for(var k in item)
+                {
+                    instance[k] = item[k];
+                }
+            }
+            return instance;
+        }
+        return this;
+    }
+    param(key, value)
+    {
+        return this.addParam(key, value);
+    }
+    addParam(key, value)
+    {
+        this._params[key] = value;
+        return this;
+    }
+    path(path)
+    {
+        this._path = path;
+        return this;
+    }
+    mapInto(cls)
+    {
+        this._mapInto = function(item)
+        {
+            let instance = new cls();
+            if(instance.readExternal)
+                instance.readExternal(item);
+            else{
+                for(var k in item)
+                {
+                    instance[k] = item[k];
+                }
+            }
+            return instance;
+        }
+        return this;
+    }
+    then(resolve, reject)
+    {
+        return api()
+        .path(this._path)
+        .params(this._params)
+        .then((data)=>
+        {
+            if(data && this._mapInto)
+                data = this._mapInto(data);
+            resolve(data);
+        }, reject);
+
+    }
+}
