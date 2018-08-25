@@ -291,6 +291,16 @@ export class Model extends BaseModel {
         request.addParam(this.getModelName()+'_id', this.getID());
         return request;
     }
+    static find(id)
+    {
+        let cls = this;
+        let instance = new cls;
+        let request = new Request();
+        request.path(instance.getRootPath()+'/get');
+        request.addParam(instance.getModelName()+'_id', id);
+        request.source(instance);
+        return request;
+    }
 }
 Model.PATH_CREATE = () => new ModelLoadRequest("%root-path%/create", null, { replaceDynamicParams: true, ignorePathLoadState: true, marksPathAsLoaded: false });
 Model.PATH_GET = () => new ModelLoadRequest("%root-path%/get", { '%id-name%': '%id%' }, { replaceDynamicParams: true });
