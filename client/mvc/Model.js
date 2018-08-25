@@ -248,7 +248,7 @@ export class Model extends BaseModel {
         {
             if(!this.hidden)
                 return true;
-            return !~this.hidden.indexOf(key);  
+            return key!='hidden' && !~this.hidden.indexOf(key);  
         })
         .forEach((key)=>
         {
