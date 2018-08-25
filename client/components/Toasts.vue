@@ -113,6 +113,7 @@ export default class Login extends VueComponent
     width:50%;
     right:10px;
     bottom:0;
+    z-index:5;
 }
 .fade-enter-active, .fade-leave-active {
   transition: all 1s;
