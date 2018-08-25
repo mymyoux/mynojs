@@ -7,11 +7,21 @@ import { API, api } from "../io/API";
 import { Classes } from "../../common/utils/Classes";
 import {Model as BaseModel} from "../../common/mvc/Model";
 export class Model extends BaseModel {
-    id_name = 'id';
 
+    forbidden = ['pivot','hidden','created_at','updated_at'];
+
+    hidden = [];
     constructor() {
         super();
         Object.defineProperty(this, "_pathLoaded", {
+            enumerable: false,
+            writable:true
+        });
+        Object.defineProperty(this, "forbidden", {
+            enumerable: false,
+            writable:true
+        });
+        Object.defineProperty(this, "hidden", {
             enumerable: false,
             writable:true
         });
@@ -246,9 +256,15 @@ export class Model extends BaseModel {
         })
         .filter((key)=>
         {
-            if(!this.hidden)
-                return true;
-            return key!='hidden' && !~this.hidden.indexOf(key);  
+            return this[key] !== null && key.substring(0, 1)!='_';
+        })
+        .filter((key)=>
+        {
+            return !~this.forbidden.indexOf(key);  
+        })
+        .filter((key)=>
+        {
+            return !~this.hidden.indexOf(key);  
         })
         .forEach((key)=>
         {
