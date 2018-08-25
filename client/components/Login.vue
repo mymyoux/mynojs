@@ -5,16 +5,16 @@
         {{message}}
     </h2>
 
-            <form method="POST" :action="base_href+'/login'">
+            <form method="POST" :action="base_href+'/login'" @submit.prevent.stop="onSubmit">
 
                <connectors type="login"></connectors>
 
                <b-form-group>
                    <b-form-input id="email"
                                  name="email"
-                                 required
                                  v-validate="'required'"
-                                 placeholder="Email">
+                                 placeholder="Email" 
+                                 v-model="email">
                    </b-form-input>
                </b-form-group>
 
@@ -22,9 +22,9 @@
                    <b-form-input id="password"
                                  name="password"
                                  type="password"
-                                 required
                                  v-validate="'required'"
-                                 placeholder="Mot de passe">
+                                 placeholder="Mot de passe"
+                                 v-model="password">
                    </b-form-input>
                </b-form-group>
 
@@ -58,11 +58,25 @@ export default class Login extends VueComponent
     data()
     {
         return {
+            email:null,
+            password:null,
             message:this.$route.params.message,
             base_href:api().getBaseURL()
         };
     }
-   
+    onSubmit()
+    {
+        api().path('auth/login/manual').params({
+            email:this.email,
+            password:this.password
+        }).then((result)=>
+        {
+            
+        },(error)=>
+        {
+            debugger;
+        });
+    }
 }
 
 </script>

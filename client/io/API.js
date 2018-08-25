@@ -393,6 +393,10 @@ class Request
         {
             this._executing = false;
             this._executed = true;
+            if(data && data.exception)
+            {
+                return Promise.reject(data);
+            }
             return data;
         }, (error)=>
         {
