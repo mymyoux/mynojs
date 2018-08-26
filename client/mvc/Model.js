@@ -322,6 +322,7 @@ class Request{
     _path = null;
     _mapInto = null;
     _params = {}
+    _with = null;
     params(params)
     {
         this._params = params;
@@ -366,6 +367,11 @@ class Request{
         this._path = path;
         return this;
     }
+    with(value)
+    {
+        this._with = value;
+        return this;
+    }
     mapInto(cls)
     {
         this._mapInto = function(item)
@@ -385,10 +391,16 @@ class Request{
     }
     then(resolve, reject)
     {
-        return api()
+        let request = api()
         .path(this._path)
-        .params(this._params)
-        .then((data)=>
+        .params(this._params);
+
+        if(this._with)
+        {
+            request.param('with', this._with);
+        }
+
+        return request.then((data)=>
         {
             if(data && this._mapInto)
                 data = this._mapInto(data);
