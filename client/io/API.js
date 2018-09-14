@@ -176,6 +176,7 @@ class Request
 {
     _request = {params:{}};
     _api_data = null;
+    _withapidata = false;
     _data = null;
     _exception = null;
     _executed = false;
@@ -194,6 +195,11 @@ class Request
     getBaseURL()
     {
         return this._config.baseUrl;
+    }
+    withapidata()
+    {
+        this._withapidata = true;
+        return this;
     }
     reset()
     {
@@ -397,6 +403,10 @@ class Request
             {
                 event('toaster', {message:data.message, type:'error'});
                 return Promise.reject(data);
+            }
+            if(this._withapidata)
+            {
+                return {apidata:this._api_data, data:data};
             }
             return data;
         }, (error)=>
