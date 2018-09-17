@@ -59,7 +59,7 @@ export class json extends adapter
                 config.data.__type = "indices";
             }else
             {
-                //config.data.__type = "json";
+                config.data.__type = "json";
             }
         }
         if(config.params)
@@ -69,7 +69,7 @@ export class json extends adapter
                 config.params.__type = "indices";
             }else
             {
-                    //config.params.__type = "json";
+                    config.params.__type = "json";
             }
         }
         
@@ -84,6 +84,21 @@ export class json extends adapter
             }
             config.headers['Content-Type'] = 'multipart/form-data';
         }else{
+            if( config.params.__type  == 'json')
+            {
+                for(let key in config.data )
+                {
+                    if(key == '__type')
+                        continue;
+                    config.data[key] = JSON.stringify(config.data[key]);
+                }
+                for(let key in config.params )
+                {
+                    if(key == '__type')
+                        continue;
+                    config.params[key] = JSON.stringify(config.params[key]);
+                }
+            }
             if(!this._adapterConfig.indices)
             {
                 // if(config.method == 'post' && Object.keys(config.data).length)

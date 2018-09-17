@@ -125,7 +125,8 @@ export default class ResourceItem extends VueComponent
     {
       this.edition = false;
       let suffix = this.item.id?'update':'create';
-      api().path('admin/'+this.$route.params.resource+'/'+suffix).params({item:this.item}).param('id',this.item.id).then((item)=>
+      debugger;
+      api().path('admin/'+this.$route.params.resource+'/'+suffix).params(this.item).param('adminmodelid',this.item.id).then((item)=>
       {
         this.item = item;
         if(this.$route.params.id == 'new')

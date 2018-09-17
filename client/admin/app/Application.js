@@ -9,6 +9,7 @@ import StringField from "../components/item/String";
 import IntegerField from "../components/item/Integer";
 import BooleanField from "../components/item/Boolean";
 import BelongsToField from "../components/item/BelongsTo";
+import PictureField from "../components/item/Picture";
 
 export class Application extends BaseApplication
 {
@@ -26,6 +27,7 @@ export class Application extends BaseApplication
         Vue.component('myno-admin-item-item-string', StringField);
         Vue.component('myno-admin-item-item-integer', IntegerField);
         Vue.component('myno-admin-item-item-boolean', BooleanField);
+        Vue.component('myno-admin-item-item-picture', PictureField);
         Vue.component('myno-admin-item-item-belongsTo', BelongsToField);
     }   
     router()

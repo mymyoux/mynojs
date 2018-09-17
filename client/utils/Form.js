@@ -4,8 +4,13 @@ export class Form
 {
     static needsFormData(data)
     {
+        
         if(typeof data == "object")
         {
+            if(data instanceof File)
+            {
+                return true;
+            }
             if(!data)
             {
                 return false;
@@ -28,10 +33,6 @@ export class Form
                 }
                 return false;
             });
-        }
-        if(data instanceof File)
-        {
-            return true;
         }
         if(data  && data.constructor && data.constructor.name == "Buffer")
         {
@@ -106,6 +107,7 @@ export class Form
     }
     static toFormData(data,formData)
     {   
+        debugger;
         if(!formData)
         {
             formData = new FormData();

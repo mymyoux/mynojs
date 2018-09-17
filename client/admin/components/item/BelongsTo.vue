@@ -1,18 +1,16 @@
 <template>
  <div class="item">
-    <div v-if="edition">
-        <input type="search" v-model="search" @keyup="onKeyPress">
+    <div v-if="edition && !selected">
+        <input type="search" ref="search" v-model="search" @keyup="onKeyPress">
         <ul class="results">
 
 
             <template v-for="item in results">
-              <div v-for="header, i in headers" class="row">
+              <div v-for="header, i in headers" class="row"  @click="onSelect(item)"> 
                   <component :key="'row-'+i" :is="'myno-admin-item-item-'+header.type" :header="header" :edition="false" :name="header.column" v-model="item[header.column]"  v-validate="header.validators" class="row header">
                   </component>
               </div>
             </template>
-          
-
         </ul>
     </div>
     <div v-else>
@@ -21,7 +19,10 @@
           <div v-for="header, i in headers" class="row">
             <component :key="'row-'+i" :is="'myno-admin-item-item-'+header.type" :header="header" :edition="false" :name="header.column" v-model="item[header.column]"  v-validate="header.validators" class="row header">
             </component>
-        </div>
+          </div>
+          <div v-if="edition && selected === item" @click="onRemove()">
+              x
+          </div>
         </template>
         <div v-else>
           &nbsp;
@@ -57,13 +58,11 @@ export default class BelongsTo extends VueComponent
   created()
   {
     this.item = this.value;
-    if(this.item)
+    api().path('admin/'+this.header.resource+'/viewable').then((headers)=>
     {
-      api().path('admin/'+this.header.resource+'/viewable').then((headers)=>
-      {
-        this.headers = headers;
-      });
-    } 
+      this.headers = headers;
+    });
+    this.selected = this.item;
 
   }
     data()
@@ -72,6 +71,7 @@ export default class BelongsTo extends VueComponent
         item:null,
         headers:[],
         search:null,
+        selected:null,
         results:[]
       }
     }  
@@ -92,7 +92,26 @@ export default class BelongsTo extends VueComponent
       api().path('admin/'+this.header.resource+'/search').param('search', this.search).then((results)=>
       {
         this.results = results;
+        console.log(this.results);
       });
+    }
+    onSelect(item)
+    {
+      this.selected = item;
+      this.emit('input', item);
+    }
+    onRemove()
+    {
+      this.selected = null;
+      this.emit('input', null);
+      Vue.nextTick(()=>
+      {
+        if(this.$refs.search)
+        {
+          this.$refs.search.focus();
+          this.$refs.search.select();
+        }
+      })
     }
 }
 
