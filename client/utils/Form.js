@@ -107,7 +107,6 @@ export class Form
     }
     static toFormData(data,formData)
     {   
-        debugger;
         if(!formData)
         {
             formData = new FormData();

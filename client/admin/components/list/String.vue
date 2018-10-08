@@ -1,6 +1,6 @@
 <template>
  <div class="item">
-    {{value}}
+    {{value?value:'&nbsp;'}}
  </div>
 </template>
 

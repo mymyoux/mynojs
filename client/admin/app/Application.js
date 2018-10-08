@@ -9,7 +9,10 @@ import StringField from "../components/item/String";
 import IntegerField from "../components/item/Integer";
 import BooleanField from "../components/item/Boolean";
 import BelongsToField from "../components/item/BelongsTo";
+import HasManyField from "../components/item/HasMany";
 import PictureField from "../components/item/Picture";
+import Search from "../components/item/Search";
+import ResourceItem from "../views/ResourceItem";
 
 export class Application extends BaseApplication
 {
@@ -20,15 +23,19 @@ export class Application extends BaseApplication
     }
     vueValidate()
     {
-    }
+    } 
     preconfig()
     {
         super.preconfig();
+        Vue.use(BootstrapVue);
         Vue.component('myno-admin-item-item-string', StringField);
         Vue.component('myno-admin-item-item-integer', IntegerField);
         Vue.component('myno-admin-item-item-boolean', BooleanField);
         Vue.component('myno-admin-item-item-picture', PictureField);
         Vue.component('myno-admin-item-item-belongsTo', BelongsToField);
+        Vue.component('myno-admin-item-item-hasMany', HasManyField); 
+        Vue.component('myno-admin-item-item-search', Search); 
+        Vue.component('myno-admin-resource-item', ResourceItem);
     }   
     router()
     {

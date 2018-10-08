@@ -24,10 +24,12 @@ import { api } from "myno/client/io/API";
 
 import String from "./list/String";
 import Integer from "./list/Integer";
+import Picture from "./list/Picture";
 @Component({
   components: {
       'myno-admin-item-list-string':String,
-      'myno-admin-item-list-integer':Integer
+      'myno-admin-item-list-integer':Integer,
+      'myno-admin-item-list-picture':Picture,
   },
   props:
   {

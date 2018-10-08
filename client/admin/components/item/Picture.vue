@@ -28,7 +28,7 @@ import Vue from 'vue';
   {
     value()
     {
-      this.computePicture();
+        this.item = this.value;
     }
   }
 })
@@ -36,29 +36,7 @@ export default class Picture extends VueComponent
 {
   created()
   {
-    this.computePicture();
-  }
-  computePicture()
-  {
-     let value = this.value;
-    if(!value)
-    {
-      this.item = value;
-      return;
-    }
-    if(this.value && this.value.substring(0, 7) == 'public/')
-    {
-      value = '/storage/'+this.value.substring(7);
-    }
-    if(value.substring(0, 4) != 'http')
-    {
-      if(value.substring(0, 1) != '/')
-      {
-          value = '/'+value;
-      }
-      value = api().getBaseURL()+value;
-    }
-    this.item = value;
+    this.item = this.value;
   }
     data()
     {

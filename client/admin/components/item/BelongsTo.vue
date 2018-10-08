@@ -1,26 +1,18 @@
 <template>
  <div class="item">
-    <div v-if="edition && !selected">
-        <input type="search" ref="search" v-model="search" @keyup="onKeyPress">
-        <ul class="results">
-
-
-            <template v-for="item in results">
-              <div v-for="header, i in headers" class="row"  @click="onSelect(item)"> 
-                  <component :key="'row-'+i" :is="'myno-admin-item-item-'+header.type" :header="header" :edition="false" :name="header.column" v-model="item[header.column]"  v-validate="header.validators" class="row header">
-                  </component>
-              </div>
-            </template>
-        </ul>
-    </div>
+    <myno-admin-item-item-search v-if="edition && !selected" :value="item" :header="header" @input="onSelect">
+      <div slot="pre" @click="onCreate">
+      create new
+      </div>
+    </myno-admin-item-item-search>
     <div v-else>
-      <div class="item">
+      <div class="item belongs-to">
         <template v-if="item">
-          <div v-for="header, i in headers" class="row">
-            <component :key="'row-'+i" :is="'myno-admin-item-item-'+header.type" :header="header" :edition="false" :name="header.column" v-model="item[header.column]"  v-validate="header.validators" class="row header">
+          <div v-for="header, i in headers" class="row row-belongs-to">
+            <component :key="'row-'+i" :is="'myno-admin-item-item-'+header.type" :header="header" :edition="false" :name="header.column" v-model="item[header.column]"  v-validate="header.validators" class="item-belongs-to">
             </component>
           </div>
-          <div v-if="edition && selected === item" @click="onRemove()">
+          <div v-if="edition && selected === item" @click="onRemove()" class="cross">
               x
           </div>
         </template>
@@ -36,6 +28,7 @@
 import {VueComponent, Component, Prop, Watch, Emit, Event} from "myno/client/mvc/VueComponent";
 import Vue from 'vue';
 import { api } from "myno/client/io/API";
+
 @Component({
   components: {
   },
@@ -113,11 +106,22 @@ export default class BelongsTo extends VueComponent
         }
       })
     }
+    onCreate()
+    {
+      this.emit('create', this.header);
+    }
 }
 
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
+  .belongs-to
+  {
+    display:flex;
+  }
+   .cross
+  {
+    cursor:pointer;
+  }
 </style>
