@@ -199,8 +199,11 @@ export default class hasMany extends VueComponent
         {
           return;
         } 
+
+
         this.relations.splice(index, 1);
         api().path('admin/'+this.parentResource+'/remove-many')
+        .param('old',item)
        .param('adminmodelid', this.parentId)
        .param('admincolumn', this.header.column)
        .param('adminrelationid', item.id)
