@@ -27,7 +27,7 @@ export class Application extends StepHandler(CoreObject)
     {
         return configurationLoader.boot().then(()=>
         {
-                console.log("Environment: "+Configuration.env());
+            console.log("Environment: "+Configuration.env());
         })
     }
     database()
@@ -37,7 +37,7 @@ export class Application extends StepHandler(CoreObject)
     booted()
     {
         console.log('app booted');
-        console.log(Configuration.get());
+      //  console.log(Configuration.get());
     }
     server()
     {

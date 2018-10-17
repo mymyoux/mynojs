@@ -1,49 +1,19 @@
-import { Configuration } from '../../common/env/Configuration';
-import colors from "colors";
-import { JSONLoader } from '../utils/JSONLoader';
+const { Configuration } = require('../env/Configuration');
 const fs = require('fs');
 const path = require('path');
-export class ConfigurationLoader {
+const paths = require('../core/paths')
+class ConfigurationLoader {
     boot() {
         return new Promise(async (resolve, reject)=>
     {
 
         try{
-            let localPath = app_path('env.json');
-            if(!fs.existsSync(localPath))
-            {
-                console.log(colors.red("env.json not found"));
-                reject();
-            }
-            let config = {}
-            //default config
-            let corePath = source_path('myno/config');//(path.join(__dirname,'../../config');
-            await fs.readdirSync(corePath).filter(file => {
-                return path.extname(file) == ".json";
-            }).forEach(async (file) => {
-                let data =  await JSONLoader.asJavascriptFile(path.join(corePath, file));
-                this.mergeWithDefaultOptions(file.substring(0, file.length - path.extname(file).length), config, data);
-            });
 
-            let globalConfigPath = storage_path("config.json");
-            let globalConfig = fs.existsSync(globalConfigPath)?await JSONLoader.asJavascriptFile(globalConfigPath):{};
-            this.mergeWithDefaultOptions(null, config, globalConfig);
-            
-            let globalPath = config_path();
-            await fs.readdirSync(globalPath).filter(file => {
-                return path.extname(file) == ".json";
-            }).forEach(async (file) => {
-                let data =  await JSONLoader.asJavascriptFile(path.join(globalPath, file));
-                this.mergeWithDefaultOptions(file.substring(0, file.length - path.extname(file).length), config, data);
-            });
-
-            
-            this.mergeWithDefaultOptions(null, config,await JSONLoader.asJavascriptFile(localPath));
-
-
-            Configuration.readExternal(config);
-            console.log("CONFIG",config);
-            resolve();
+            Configuration.loadFileSync(base_path('.env'));
+            Configuration.loadFileSync(base_path('storage/config.json'))
+            Configuration.loadFolderSync(source_path('myno/config'));
+            Configuration.loadFolderSync(config_path());
+            resolve(Configuration);
         }catch(error)
         {
             console.log(error);
@@ -99,4 +69,8 @@ export class ConfigurationLoader {
         return config;
     }
 }
-export var configurationLoader = new ConfigurationLoader();
+var configurationLoader = new ConfigurationLoader();
+module.exports = 
+{
+    ConfigurationLoader, configurationLoader
+}

@@ -1,9 +1,10 @@
-import { Objects } from "../utils/Objects";
-import { Hardware } from "./Hardware";
-import { root } from "./Root";
-
-export class Configuration {
-    static data = {};
+import  { Objects }  from  "../utils/Objects";
+import  { Hardware }  from "./Hardware";
+import  { root } from  "./Root";
+// const {Objects} = require("../utils/Objects");
+// const {Hardware} = require("./Hardware");
+// const {root} = require("./Root");
+ class Configuration {
     static env()
     {
         if(!Configuration.has('app.env'))
@@ -34,8 +35,26 @@ export class Configuration {
         }
         return Configuration.get('app.env');
     }
-    static isDebug()
+    static getAllKeys()
     {
+       return this.buildKeys(this.data);
+    }
+    static buildKeys(data, prefix = '')
+    {
+        let keys = Object.keys(data);
+        keys = keys.reduce((previous, key)=>
+        {
+            let item = data[key];
+            if(item && typeof item == 'object')
+            {
+                previous = previous.concat(this.buildKeys(item, prefix+key+'.'))
+            }
+            return previous;
+        }, keys);
+        return keys.map((item)=>prefix+item);
+    }
+    static isDebug()
+    { 
         return Configuration.env() == "DEBUG" || Configuration.isLocal();
     }
     static isLocal()
@@ -158,7 +177,9 @@ export class Configuration {
         Configuration.data = data;
     }
 }
-export const config = function(key, value)
+Configuration.data = {};
+
+  const config = function(key, value)
 {
     if(value != undefined)
     {
@@ -166,6 +187,8 @@ export const config = function(key, value)
     }
     return Configuration.get(key);
 }
+exports.config = config;
+exports.Configuration = Configuration;
 //add Configuration methods to config
 for(let key of Object.getOwnPropertyNames(Configuration))
 {

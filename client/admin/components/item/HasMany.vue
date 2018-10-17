@@ -129,6 +129,7 @@ export default class hasMany extends VueComponent
        .param('adminrelationid', item.id)
        .then((relation)=>
        {
+         debugger;
          if(!item.pivot)
          {
            item.pivot = this.getDefaultPivot();
