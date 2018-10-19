@@ -4,7 +4,7 @@ import  { root } from  "./Root";
 // const {Objects} = require("../utils/Objects");
 // const {Hardware} = require("./Hardware");
 // const {root} = require("./Root");
- class Configuration {
+ export class Configuration {
     static env()
     {
         if(!Configuration.has('app.env'))
@@ -179,7 +179,7 @@ import  { root } from  "./Root";
 }
 Configuration.data = {};
 
-  const config = function(key, value)
+export const config = function(key, value)
 {
     if(value != undefined)
     {
@@ -187,8 +187,6 @@ Configuration.data = {};
     }
     return Configuration.get(key);
 }
-exports.config = config;
-exports.Configuration = Configuration;
 //add Configuration methods to config
 for(let key of Object.getOwnPropertyNames(Configuration))
 {
