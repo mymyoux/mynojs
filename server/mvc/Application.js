@@ -37,7 +37,6 @@ export class Application extends StepHandler(CoreObject)
     booted()
     {
         console.log('app booted');
-        console.log(Configuration.get());
     }
     server()
     {

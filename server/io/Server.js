@@ -17,9 +17,9 @@ export class Server extends StepHandler(CoreObject){
         super();
         this._controllers = {};
     }
-    listener(listener)
+    listener(listener, name)
     {
-        let name = Strings.uncamel(Classes.getName(listener));
+        name = name?name:Strings.uncamel(Classes.getName(listener));
         this._listeners[name] = listener;
     }
     async listeners()
@@ -38,7 +38,6 @@ export class Server extends StepHandler(CoreObject){
     }
     config(options) {
         this._options = options;
-        console.log(this._options);
     }
     get expressApp()
     {
