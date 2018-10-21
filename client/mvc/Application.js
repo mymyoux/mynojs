@@ -7,7 +7,7 @@ import Vue from "vue";
 import Debug from "../components/Debug.vue";
 import Login from "../components/Login.vue";
 import Register from "../components/Register.vue";
-import { Configuration } from "../../common/env/Configuration";
+import { Configuration, config } from "../../common/env/Configuration";
 import { getAllScroll } from "../debug/HTML";
 import FFile  from "myno/client/components/form/FFile";
 import FRadioList  from "myno/client/components/form/FRadioList";
@@ -40,11 +40,13 @@ import { Hardware } from "myno/common/env/Hardware";
 import { ipc } from "myno/client/io/api/ipc";
 import { json } from "myno/client/io/api/json";
 import { event } from "myno/common/events/Bus";
-
+import {BaseWorker} from "myno/client/mvc/workers/BaseWorker";
 import preconfig from '../../../config.js';
+
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["debug","model","preconfig","maker","api", "configuration","preferences", "router", "initVue","user", "selector", "app", "events","vue"];
+    _steps=["debug","model","preconfig","maker","api", "configuration","preferences", "router", "initVue","user", "selector", "app", "events","vue", "workers"];
+    _stepsWorker=["debug","model","preconfig","maker","api", "configuration","preferences", "worker"];
     _router =  null;
     _selector =  null;
     _app =  null;
@@ -53,8 +55,26 @@ export class Application extends StepHandler(CoreObject)
         window['Auth'] = Auth;
         window['event'] = event;
         console.log('app loading');
-       await super.boot();
+        if(BaseWorker.isWorker())
+        {
+            this._steps = this._stepsWorker;
+        }
+        await super.boot();
        this.booted();
+    }
+    insertStepBefore(before, step, worker = true)
+    {
+        super.insertStepBefore(before, step);
+        if(worker)
+        {
+            let index = this._stepsWorker.indexOf(before);
+            if(!~index)
+            {
+                console.warn("step[worker] "+before+" not found");
+                return;
+            }
+            this._stepsWorker.splice(index, 0, step);
+        }
     }
     debug()
     {
@@ -365,9 +385,17 @@ export class Application extends StepHandler(CoreObject)
         //     bus.trigger('window:resize')
         // })
     }
+    worker()
+    {
+        BaseWorker.listen();
+    }
+    workers()
+    {
+
+    }
     booted()
     {
-        console.log('app booted');
+        console.log((BaseWorker.isWorker()?'[worker]':'[main]')+'app booted');
     }
     
 }

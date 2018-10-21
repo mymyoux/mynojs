@@ -353,6 +353,18 @@ class Request{
         }
         return this;
     }
+    without(...params)
+    {
+        if(params.length == 1 && Array.isArray(params[0]))
+        {
+            params = params[0];
+        }
+        params.forEach((key)=>
+        {
+            delete this._params[key];
+        });
+        return this;
+    }
     param(key, value)
     {
         return this.addParam(key, value);

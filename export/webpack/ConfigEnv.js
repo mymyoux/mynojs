@@ -12,6 +12,8 @@ configurationLoader.boot().then((config)=>
 })
 var DefinePlugin = webpack.DefinePlugin;
 
+
+
 class ConfigEnv {
   /**
    * The dotenv-webpack plugin.
@@ -20,6 +22,10 @@ class ConfigEnv {
   constructor ({
   } = {}) {
 
+   
+  }
+  apply(compiler)
+  {
     let vars = Configuration.getAllKeys().reduce((previous, key)=>
     {
       previous[key] = Configuration.get(key);
@@ -30,8 +36,11 @@ class ConfigEnv {
       obj[`config.${key}`] = JSON.stringify(vars[key])
       return obj
     }, {})
+    // formatData['config.hash'] = '"${hash}"';
+    // console.log(compiler);
+    // console.log("${hash}");
 
-    return new DefinePlugin(formatData)
+    return (new DefinePlugin(formatData)).apply(compiler);
   }
 }
 module.exports = ConfigEnv;

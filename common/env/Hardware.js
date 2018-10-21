@@ -1,6 +1,10 @@
 import {root} from "./Root";
 import {config} from "./Configuration";
 export class Hardware {
+    static getCurrentScript()
+    {
+        return this.currentScript.src;
+    }
     static isNode() {
         return typeof window == "undefined";
     }
@@ -352,3 +356,5 @@ Hardware.OS_LINUX = "Linux";
  * @type {string}
  */
 Hardware.OS_WINDOW_DESKTOP = "Windows Desktop";
+
+Hardware.currentScript = typeof document != "undefined"?document.currentScript:null;
