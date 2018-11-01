@@ -56,26 +56,35 @@ export class Model extends CoreObject {
     * @returns {any}
     */
     writeExternal() {
-        var external = {};
-        for (var p in this) {
-            //TODO:check this not sure if needed
-            // if(!this.hasOwnProperty(p))
-            //     continue;
-            if (typeof this[p] == "function") {
-                continue;
+
+        return Object.keys(this)
+        .filter((key)=>
+        {
+            return this[key] !== null && key.substring(0, 1)!='_';
+        })
+        .filter((key)=>
+        {
+            return this[key] !== null && key.substring(0, 1)!='_';
+        })
+        .filter((key)=>
+        {
+            return !~this.forbidden.indexOf(key);  
+        })
+        .filter((key)=>
+        {
+            return !~this.hidden.indexOf(key);  
+        }).reduce((previous, key)=>
+        {
+            if(key == this.getIDName())
+            {
+                //id => model_id 
+                previous[this.getModelName()+'_id'] = typeof this[key] == 'object' && typeof  this[key].writeExternal == 'function'?this[key].writeExternal():this[key];
+            }else
+            {
+                previous[key] = typeof this[key] == 'object' && typeof  this[key].writeExternal == 'function'?this[key].writeExternal():this[key];
             }
-            if (Strings.startsWith(p, "_")) {
-                continue;
-            }
-            if (this[p] && typeof this[p] == "object" && typeof this[p]['writeExternal'] === 'function') {
-                external[p] = this[p]['writeExternal']();
-            }
-            else {
-                external[p] = this[p];
-            }
-        }
-        external[this.getIDName()] = this.getID();
-        return external;
+            return previous;
+        }, {});
     }
     [Symbol.toPrimitive](type)
     {

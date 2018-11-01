@@ -249,37 +249,10 @@ export class Model extends BaseModel {
         .path(this.getRootPath()+'/'+(this.hasID()?'update':'create'))
         .source(this);
 
-        Object.keys(this)
-        .filter((key)=>
-        {
-            return this[key] !== null && key.substring(0, 1)!='_';
-        })
-        .filter((key)=>
-        {
-            return this[key] !== null && key.substring(0, 1)!='_';
-        })
-        .filter((key)=>
-        {
-            return !~this.forbidden.indexOf(key);  
-        })
-        .filter((key)=>
-        {
-            return !~this.hidden.indexOf(key);  
-        })
-        .forEach((key)=>
-        {
-            if(key == this.getIDName())
-            {
-                //id => model_id 
-                request.addParam(this.getModelName()+'_id', this[key]);
-            }else
-            {
-                request.addParam(key, this[key]);
-            }
-        });
-
+        request.params(this.writeExternal());
         return request;
     }
+
     destroy()
     {
         //ignore
@@ -317,7 +290,7 @@ export class ModelLoadRequest {
 ModelLoadRequest.regexp = /%([^%]+)%/g;
 
 
-class Request{
+export class Request{
     _cls = null;
     _path = null;
     _mapInto = null;
@@ -384,7 +357,11 @@ class Request{
         this._with = value;
         return this;
     }
-    mapInto(cls)
+    mapInto(method)
+    {
+        this._mapInto = method;
+    }
+    mapIntoClass(cls)
     {
         this._mapInto = function(item)
         {
