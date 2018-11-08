@@ -53,7 +53,9 @@ export class Application extends StepHandler(CoreObject)
     async boot()
     {
         window['Auth'] = Auth;
-        window['event'] = event;
+        //event is already taken by magic object event
+        window['eventer'] = event;
+        window['preferences'] = preferences;
         console.log('app loading');
         if(BaseWorker.isWorker())
         {

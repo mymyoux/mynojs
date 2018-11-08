@@ -137,7 +137,7 @@ export default class hasMany extends VueComponent
             this.relations.push(item);
        }, (error)=>
        {
-            event('toaster', {message:"can\'t add this element", type:'error'});
+            eventer('toaster', {message:"can\'t add this element", type:'error'});
        });
       //this.selected = item;
       //this.emit('input', item);
@@ -179,7 +179,7 @@ export default class hasMany extends VueComponent
          debugger;
        }, (error)=>
        {
-            event('toaster', {message:"can\'t remove this element", type:'error'});
+            eventer('toaster', {message:"can\'t remove this element", type:'error'});
        });
     }
     onCancel(item)
@@ -212,7 +212,7 @@ export default class hasMany extends VueComponent
        {
        }, (error)=>
        {
-            event('toaster', {message:"can\'t remove this element", type:'error'});
+            eventer('toaster', {message:"can\'t remove this element", type:'error'});
        });
     }
     onCreate()

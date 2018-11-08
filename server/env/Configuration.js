@@ -37,7 +37,7 @@ export class Configuration  extends BaseConfiguration{
         }else
         if(extension == '.js')
         {
-            let result from file);
+            let result = require(file);
             if(prefix)
             {
                 this.merge(path.basename(file, extension), result);            

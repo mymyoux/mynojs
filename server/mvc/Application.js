@@ -55,7 +55,7 @@ export class Application extends StepHandler(CoreObject)
             url = "file://"+app_path('public/renderer/index.html');
         }else
         {
-            url = 'http://localhost:8081/'
+            url = 'http://localhost:8082/'
         }
         return new Promise((resolve, reject)=>
         {

@@ -75,7 +75,7 @@ export default class Login extends VueComponent
             
         },(error)=>
         {
-            //event('toaster', {message:error.message, type:'error'});
+            //eventer('toaster', {message:error.message, type:'error'});
             debugger;
         });
     }

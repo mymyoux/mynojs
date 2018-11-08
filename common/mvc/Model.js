@@ -60,11 +60,8 @@ export class Model extends CoreObject {
         return Object.keys(this)
         .filter((key)=>
         {
-            return this[key] !== null && key.substring(0, 1)!='_';
-        })
-        .filter((key)=>
-        {
-            return this[key] !== null && key.substring(0, 1)!='_';
+            //exception for _id
+            return key == this.getIDName() || this[key] !== null && key.substring(0, 1)!='_';
         })
         .filter((key)=>
         {
