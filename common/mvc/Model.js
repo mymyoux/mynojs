@@ -76,6 +76,7 @@ export class Model extends CoreObject {
             {
                 //id => model_id 
                 previous[this.getModelName()+'_id'] = typeof this[key] == 'object' && typeof  this[key].writeExternal == 'function'?this[key].writeExternal():this[key];
+                previous[this.getIDName()] = typeof this[key] == 'object' && typeof  this[key].writeExternal == 'function'?this[key].writeExternal():this[key];
             }else
             {
                 previous[key] = typeof this[key] == 'object' && typeof  this[key].writeExternal == 'function'?this[key].writeExternal():this[key];

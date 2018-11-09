@@ -7,7 +7,7 @@
                 </slot>
         </template>
          <template slot="folder" slot-scope="_" >
-             <slot name="item" v-bind:item="_.item">
+             <slot name="folder" v-bind:item="_.item">
                     {{_.item.label}}
             </slot>
         </template>
