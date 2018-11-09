@@ -68,7 +68,7 @@ img
 {
     -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
 }
-input[type="text"]:focus, input[type="password"]:focus, textarea:focus
+input[type="text"]:focus,input[type="number"]:focus,input[type="email"]:focus, input[type="password"]:focus, textarea:focus
 {
   outline: none;
 }
