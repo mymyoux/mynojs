@@ -42,10 +42,10 @@ import { json } from "myno/client/io/api/json";
 import { event } from "myno/common/events/Bus";
 import {BaseWorker} from "myno/client/mvc/workers/BaseWorker";
 import preconfig from '../../../config.js';
-
+import {MenuHelper} from "myno/client/electron/MenuHelper";
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["debug","model","preconfig","maker","api", "configuration","preferences", "router", "initVue","user", "selector", "app", "events","vue", "workers"];
+    _steps=["debug","model","preconfig","maker","api", "configuration","preferences", "router", "initVue","user", "selector", "app", "events","electron","vue", "workers"];
     _stepsWorker=["debug","model","preconfig","maker","api", "configuration","preferences", "worker"];
     _router =  null;
     _selector =  null;
@@ -365,6 +365,17 @@ export class Application extends StepHandler(CoreObject)
     app()
     {
         throw new Error('you must override Application#app');
+    }
+    electron()
+    {
+        if(!Hardware.isElectron())
+        {
+            return;
+        }
+        window.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            MenuHelper.open(e);
+        }, false);
     }
     vue()
     {

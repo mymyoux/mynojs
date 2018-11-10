@@ -203,9 +203,12 @@ export class MenuHelper {
         {
             template = [];
         }
-        let e = event;
+        let e = event; 
         if(options.generic)
         {
+         
+            
+
             if (Configuration.isDebug() && Hardware.isElectron() && event) {
                 if(template.length)
                 {
