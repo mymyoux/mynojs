@@ -1,12 +1,12 @@
 <template>
     <div class="contextmenu" v-if="value"  :style="{left:x+'px',top:y+'px'}" v-click-outside="onOutside">
         <tree  :value="value" :item-component="itemComponent" :folder-component="folderComponent" @item-select="onItemSelect">
-           <template slot="item" slot-scope="_">
-                    <div v-if="_.item.type == 'separator'">
+           <template slot="item" slot-scope="{item}">
+                    <div v-if="item.type == 'separator'">
                         ------
                     </div>
-                    <div v-else>
-                        {{_.item.label}}
+                    <div v-else :class="{enabled:item.enabled!==false}">
+                        {{  item.label}}
                     </div>
            </template>
             
@@ -29,7 +29,7 @@ export default class ContextMenu extends VueComponent
     @Event('show-context-menu')
     show(template)
     {
-        console.log(template.template[0].label)
+        console.log(event)
         this.x = event.x;
         this.y = event.y;
         this.value = template.toTree();
@@ -72,5 +72,13 @@ div.contextmenu
     width:100px;
     height:100px;
     background:red;
+    div.enabled
+    {
+        &:hover
+        {
+            background-color:green;
+            cursor:pointer;
+        }
+    }
 }
 </style>

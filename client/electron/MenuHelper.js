@@ -249,8 +249,19 @@ class BrowserMenu
     {
         bus.trigger("show-context-menu", this);
     }
-    toTree()
+    toTree(objects)
     {
-        return this.template;
+        if(!objects)
+        {
+            objects = this.template;
+        }
+        return objects.map((item)=>
+        {
+            if(item.submenu)
+            {
+                item.children = this.toTree(item.submenu);
+            }
+            return item;
+        });
     }
 }
