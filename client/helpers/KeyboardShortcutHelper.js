@@ -10,11 +10,17 @@ export class KeyboardShortcutHelper
     {
         mousetrap.bind(['command+r','ctrl+r','f5'], ()=>
         {
-            debugger;
-                this.trigger("refresh", event);
+            event.preventDefault();
+            this.trigger("refresh", event);
         })
         mousetrap.bind(['command+a','ctrl+a'], ()=>
         {
+            if(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)
+            {
+            }else
+            {
+                event.preventDefault();
+            }
                 this.trigger("selectall", event);
         })
         mousetrap.bind(['up','shift+up'], ()=>

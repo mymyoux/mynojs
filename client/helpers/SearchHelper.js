@@ -1,5 +1,5 @@
 export class SearchHelper {
-    static transform(name, search) {
+    static transform(name, search = '') {
         var tmp = name;
         var reg = new RegExp("(.*)(" + search + ")(.*)", "gi");
         if (reg.test(name)) {
@@ -20,6 +20,10 @@ export class SearchHelper {
     }
     static match(name, search) {
         name = name.toLowerCase();
+        if(!search)
+        {
+            search  = '';
+        }
         search = search.toLowerCase();
         var words = search.split(" ");
         var tokens;
@@ -62,7 +66,7 @@ export class SearchHelper {
         }
         return matches;
     }
-    static test(name, search)
+    static test(name, search = '')
     {
         return !!this.match(name, search);
     }
