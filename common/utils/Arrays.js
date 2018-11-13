@@ -10,6 +10,10 @@ export class Arrays {
             return null;
         return array[Maths.randBetween(0, array.length-1)];
     }
+    static keys(array)
+    {
+        return Array.from(array.keys())
+    }
     static binaryFindArray(array, element, properties, orders) {
         var minIndex = 0;
         var maxIndex = array.length - 1;

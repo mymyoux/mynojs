@@ -19,6 +19,7 @@ export class Clipboard
     }
     static writeBrowser(options)
     {
+        debugger;
         if(options.text)
         {
             const el = document.createElement('textarea');

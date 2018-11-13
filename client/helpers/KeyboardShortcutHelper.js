@@ -15,13 +15,15 @@ export class KeyboardShortcutHelper
         })
         mousetrap.bind(['command+a','ctrl+a'], ()=>
         {
-            if(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)
+            let target = KeyboardShortcutHelper.getTarget();
+            if(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)
             {
             }else
             {
                 event.preventDefault();
             }
-                this.trigger("selectall", event);
+            
+            this.trigger("selectall", event);
         })
         mousetrap.bind(['up','shift+up'], ()=>
         {
@@ -37,9 +39,11 @@ export class KeyboardShortcutHelper
         })
         mousetrap.bind(['escape'], ()=>
         {
-                this.trigger("escape", event);
+            console.log('LAST ',KeyboardShortcutHelper._last.target);
+            this.trigger("escape", event);
         })
         document.addEventListener("mousedown", this.onClick.bind(this));
+        document.addEventListener("keyup", this.onKeyDown.bind(this));
     }
     static trigger(name, event, handler)
     {
@@ -88,13 +92,52 @@ export class KeyboardShortcutHelper
         }
         return document.elementFromPoint(this._last.pageX, this._last.pageY);
     }
+    static getTarget()
+    {
+        let current = this._last?this._last.target:null;
+        let item = null;
+        while(current)
+        {
+            current._parent = current.parentNode;
+            current = current.parentNode;
+            //style parent
+            if(current === document)
+            {
+                item = this._last.target;
+                break;
+            }
+        }
+        if(!item)
+        {
+            item = event.target;
+        }
+        return item;
+    }
     static onClick(event)
     {
         if(!event.target)
         {
             debugger;
         }
-        //TODO:try to listen for dom removed 
         this._last = event;
+        console.log('SET LAST click', this._last.target);
+    }  
+    static onKeyDown(event)
+    {
+        if(!event.target)
+        {
+            debugger;
+        }
+        if(event.metaKey || event.shiftKey || event.ctrlKey || event.key == "Shift" || event.key == "Meta" || event.key == "Ctrl" || event.key == "Escape")
+        {
+            return;
+        }
+        if(event.keyCode == 27)
+        {
+            debugger;
+        }
+        this._last = event;
+        console.log('SET LAST key'+event.keyCode, this._last.target);
     }
+  
 }

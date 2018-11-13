@@ -160,6 +160,11 @@ export class MenuHelper {
             menu = new Menu();
         }
         let node = event.target;
+        if(event.defaultPrevented)
+        {
+            //ignored
+            return;
+        }
         while (node) {
             if (node.nodeName.match(/^(input|textarea)$/i) || node.isContentEditable) {
                 if (menu.items) {
@@ -191,7 +196,10 @@ export class MenuHelper {
     }
     static buildFromTemplate(template, options)
     {
-
+        if( Hardware.isElectron() )
+        {
+            event.preventDefault();
+        }
         if(options instanceof Event)
         {
             event = options;

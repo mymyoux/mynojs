@@ -372,9 +372,10 @@ export class Application extends StepHandler(CoreObject)
         {
             return;
         }
+        MenuHelper.updateMenu();
         window.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
             MenuHelper.open(e);
+            e.preventDefault();
         }, false);
     }
     vue()
