@@ -31,7 +31,6 @@ class ConfigEnv {
       previous[key] = Configuration.get(key);
       return previous;
     }, {});
-
     const formatData = Object.keys(vars).reduce((obj, key) => {
       obj[`config.${key}`] = JSON.stringify(vars[key])
       return obj
@@ -39,6 +38,7 @@ class ConfigEnv {
     // formatData['config.hash'] = '"${hash}"';
     // console.log(compiler);
     // console.log("${hash}");
+    console.log(formatData)
 
     return (new DefinePlugin(formatData)).apply(compiler);
   }
