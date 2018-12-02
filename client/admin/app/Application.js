@@ -1,6 +1,6 @@
 import {Application as BaseApplication} from "myno/client/mvc/Application";
 import App from "../Admin.vue";
-import BootstrapVue from 'bootstrap-vue'
+// import BootstrapVue from 'bootstrap-vue'
 import Vue from 'vue'
 import routes from "../routes";
 
@@ -27,7 +27,7 @@ export class Application extends BaseApplication
     preconfig()
     {
         super.preconfig();
-        Vue.use(BootstrapVue);
+        // Vue.use(BootstrapVue);
         Vue.component('myno-admin-item-item-string', StringField);
         Vue.component('myno-admin-item-item-integer', IntegerField);
         Vue.component('myno-admin-item-item-boolean', BooleanField);
