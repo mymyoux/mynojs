@@ -2,45 +2,34 @@
     <div class="container">
 
         <div class="panel panel-default register">
-            <h2>S'enregistrer</h2>
+            <h2>Signup</h2>
             <div class="panel-body">
                 <form class="form-horizontal" method="POST"  :action="base_href+'/login/manual/callback'">
 
                     <connectors type="signup"></connectors>
 
-                    <p class="or">ou</p>
+                    <p class="or">or</p>
 
-                    <b-form-group>
-                        <b-form-input id="email" name="email" required v-validate="'email|email-unique'" placeholder="Email">
-                        </b-form-input>
-                    </b-form-group>
-
-                    <b-form-group>
-                        <b-form-input id="last_name" name="last_name" required v-validate="'required'" placeholder="Nom">
-                        </b-form-input>
-                    </b-form-group>
-
-                    <b-form-group>
-                        <b-form-input id="first_name" name="first_name" required v-validate="'required'" placeholder="Prénom">
-                        </b-form-input>
-                    </b-form-group>
-
-                    <b-form-group>
-                        <b-form-input id="password" name="password" required v-validate="'required'" type="password" placeholder="Mot de passe">
-                        </b-form-input>
-                    </b-form-group>
-
-                    <b-form-group>
-                        <b-form-input id="password_confirmation" name="password_confirmation" required type="password" v-validate="'required'" placeholder="Confirmation Mot de passe">
-                        </b-form-input>
-                    </b-form-group>
-
-
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">
-                            S'enregistrer
-                        </button>
-                    </div>
+                     <form>
+                        <v-text-field
+                        v-validate="'required|email'"
+                        v-model="email"
+                        :error-messages="errors.collect('email')"
+                        label="E-mail"
+                        data-vv-name="email"
+                        required
+                        ></v-text-field>
+                        <v-text-field
+                        v-validate="'required'"
+                        v-model="password"
+                        :error-messages="errors.collect('password')"
+                        label="Password"
+                        type="password"
+                        data-vv-name="password"
+                        required
+                        ></v-text-field>
+                        <v-btn @click="login">log in</v-btn>
+                    </form>
                 </form>
             </div>
         </div>
