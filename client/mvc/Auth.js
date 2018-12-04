@@ -54,6 +54,14 @@ export class Auth
         }
         event('user:login', user);
     }
+    static async setRawUser(user)
+    {
+        let cls = make('user');
+        let model = new cls();
+        model.readExternal(user);
+
+        return await this.setUser(model)
+    }
     static user()
     {
         return  binding.user;

@@ -25,7 +25,10 @@
             data-vv-validate-on="change"
             data-vv-scope="login"
             ></v-text-field>
-            <v-btn @click="submit('login')">log in</v-btn>
+            <p  class="error-msg">&nbsp;
+                 <template v-if="error.login">{{error.login}}</template>
+            </p>
+            <v-btn @click="submit('login')" :disabled="loading">log in</v-btn>
         </form>
     </v-flex>
     <v-flex lgé fill-height xs12 md2>
@@ -81,7 +84,10 @@
             data-vv-validate-on="change"
             data-vv-scope="signup"
             ></v-text-field>
-            <v-btn @click="submit('signup')">sign up</v-btn>
+            <p  class="error-msg">&nbsp;
+                 <template v-if="error.signup">{{error.signup}}</template>
+            </p>
+            <v-btn @click="submit('signup')" :disabled="loading">sign up</v-btn>
         </form>
     </v-flex>
   </v-layout>
@@ -116,7 +122,13 @@ export default class Login extends VueComponent
                 password_confirmation:null,
                 username:null
             },
-            enableUserAuto:true
+            error:
+            {
+                signup:null,
+                login:null
+            },
+            enableUserAuto:true,
+            loading:false
         };
     }
     onUsernameKey()
@@ -131,25 +143,32 @@ export default class Login extends VueComponent
     }
     async submit(type)
     {
+        if(this.loading)
+            return;
+         this.error = {
+            signup:null,
+            login:null
+        };
         await this.$validator.validate(type+'.*');
         let validated = !this.errors.any(type);
         if(!validated)
             return;
-        debugger;
-    }
-    onSubmit()
-    {
-        api().path('auth/login/manual').params({
-            email:this.email,
-            password:this.password
-        }).then((result)=>
+
+
+        this.loading = true;
+        let request = this[type];
+        api().path('auth/'+type+'/manual').params(request).then((result)=>
         {
-            
+           Auth.setRawUser(result).then(()=>{
+               this.$router.replace({name:'home'})
+           })
         },(error)=>
         {
-            //eventer('toaster', {message:error.message, type:'error'});
-            debugger;
-        });
+            this.error[type] = error.message;
+        }).finally(()=>
+        {
+            this.loading = false;
+        })
     }
 }
 
@@ -157,6 +176,10 @@ export default class Login extends VueComponent
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
+.error-msg
+{
+    color: red;
+    text-align: left;
+}
    
 </style>
