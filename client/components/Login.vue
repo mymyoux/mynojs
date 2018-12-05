@@ -52,14 +52,14 @@
             ></v-text-field>
             <v-text-field
             v-validate="'required|usernameExists'"
-            v-model="signup.username"
-            :error-messages="errors.collect('username','signup')"
-            label="Username"
-            data-vv-name="username"
+            v-model="signup.name"
+            :error-messages="errors.collect('name','signup')"
+            label="name"
+            data-vv-name="name"
             required
             data-vv-validate-on="change"
             data-vv-scope="signup"
-            @keydown="onUsernameKey"
+            @keydown="onnameKey"
             ></v-text-field>
             <v-text-field
             v-validate="'required'"
@@ -120,7 +120,7 @@ export default class Login extends VueComponent
                 email:null,
                 password:null,
                 password_confirmation:null,
-                username:null
+                name:null
             },
             error:
             {
@@ -131,15 +131,15 @@ export default class Login extends VueComponent
             loading:false
         };
     }
-    onUsernameKey()
+    onnameKey()
     {
-        this.enableUserAuto = !this.signup.username;
+        this.enableUserAuto = !this.signup.name;
     }
     onEmailKey()
     {
         if(!this.enableUserAuto)
             return;
-        this.signup.username = this.signup.email.split('@')[0];
+        this.signup.name = this.signup.email.split('@')[0];
     }
     async submit(type)
     {
