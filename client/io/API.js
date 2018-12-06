@@ -66,6 +66,10 @@ export class API extends CoreObject
             this._config = {};
         }
         this._config = Objects.assign(this._config, config);
+        if(this._config.adapter)
+        {
+            this._config.adapter.config(this._config)
+        }
         return this;
     }
     boot()
@@ -188,7 +192,7 @@ class Request
     _previousPaginate = null;
     constructor(api)
     {
-        this._api = api;
+        this._api = api;debugger;
         this._config = Objects.assign({requestInstance:true}, this._api._config);
         this._promise = null;
     }

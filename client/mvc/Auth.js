@@ -25,12 +25,7 @@ export class Auth
             model.readExternal(user);
             Auth.setUser(model);
 
-            API.instance().config({
-                params: {
-                    api_token : user.token,
-                    user_id:user.id
-                }
-            });
+            
             api.boot();
         });
     }
@@ -45,7 +40,13 @@ export class Auth
     static async setUser(user)
     {
         window["user"] = user;
-        binding.user = user;
+        binding.user = user;debugger;
+        API.instance().config({
+            params: {
+                api_token : user?user.token:null,
+                user_id:user?user.id:null
+            }
+        });
         if(user && user.token)
         {
             await this.cache().setItem('user', user.writeExternal?user.writeExternal():user);
