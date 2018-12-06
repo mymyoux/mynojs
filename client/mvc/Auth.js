@@ -39,8 +39,9 @@ export class Auth
     }
     static async setUser(user)
     {
+        let old = binding.user;
         window["user"] = user;
-        binding.user = user;debugger;
+        binding.user = user;
         API.instance().config({
             params: {
                 api_token : user?user.token:null,
@@ -49,11 +50,14 @@ export class Auth
         });
         if(user && user.token)
         {
-            await this.cache().setItem('user', user.writeExternal?user.writeExternal():user);
+            await this.cache().setItem('user', user.writeExternal?user.writeExternal():user)
+            if(!old)
+                event('user:login', user);
         }else{
             await this.cache().removeItem('user');
+            if(old)
+                event('user:logout');
         }
-        event('user:login', user);
     }
     static async setRawUser(user)
     {
@@ -81,14 +85,12 @@ export class Auth
     }
     static logout()
     {
-        binding.user = null;
-        this.cache().removeItem('user').then(()=>
+        return this.setUser(null).then(()=>
         {
-            event('user:logout');
-        });
-        return api().path('user/logout').then((user)=>{
-            
-        });
+            return api().path('user/logout').then((user)=>{
+                return user; 
+            });
+        })
     }
     static cache() {
         return LocalForage.instance().war("auth");

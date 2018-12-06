@@ -3,7 +3,7 @@
     <v-flex lg4 offset-lg1 xs12 md5>
         <h1>Log in</h1>
         <connectors type="login"></connectors>
-        <form lazy-validation>
+        <form lazy-validation @submit.prevent="submit('login')">
             <v-text-field
             v-validate="'required|email'"
             v-model="login.email"
@@ -28,7 +28,7 @@
             <p  class="error-msg">&nbsp;
                  <template v-if="error.login">{{error.login}}</template>
             </p>
-            <v-btn @click="submit('login')" :disabled="loading">log in</v-btn>
+            <v-btn :disabled="loading" type="submit">log in</v-btn>
         </form>
     </v-flex>
     <v-flex lgé fill-height xs12 md2>
@@ -37,7 +37,7 @@
     <v-flex lg4 xs12 md5>
         <h1>Sign up</h1>
         <connectors type="signup"></connectors>
-        <form>
+        <form lazy-validation @submit.prevent="submit('signup')">
             <v-text-field
             v-validate="'required|email|emailExists'"
             v-model="signup.email"
@@ -87,7 +87,7 @@
             <p  class="error-msg">&nbsp;
                  <template v-if="error.signup">{{error.signup}}</template>
             </p>
-            <v-btn @click="submit('signup')" :disabled="loading">sign up</v-btn>
+            <v-btn type="submit" :disabled="loading">sign up</v-btn>
         </form>
     </v-flex>
   </v-layout>

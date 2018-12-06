@@ -192,7 +192,7 @@ class Request
     _previousPaginate = null;
     constructor(api)
     {
-        this._api = api;debugger;
+        this._api = api;
         this._config = Objects.assign({requestInstance:true}, this._api._config);
         this._promise = null;
     }
