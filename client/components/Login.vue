@@ -143,6 +143,7 @@ export default class Login extends VueComponent
     }
     async submit(type)
     {
+        this.loading = true;
         if(this.loading)
             return;
          this.error = {
@@ -152,10 +153,13 @@ export default class Login extends VueComponent
         await this.$validator.validate(type+'.*');
         let validated = !this.errors.any(type);
         if(!validated)
+        {
+            this.loading = false;
             return;
+        }
 
 
-        this.loading = true;
+        
         let request = this[type];
         api().path('auth/'+type+'/manual').params(request).then((result)=>
         {
