@@ -33,7 +33,7 @@ var defaultOptions = {
         color:"4caf50"
     },
     error:{
-        icon:'error',
+        icon:'error_outline',
         color: '#e25858'
     },
     warning:{

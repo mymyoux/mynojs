@@ -80,7 +80,7 @@ export default class Login extends VueComponent
     position: relative;
     justify-content: space-between;
 
-    background-color:#4caf50;
+    background-color:rgb(127, 175, 234);
     &:hover{
         $scale: 1.005;
         transform:scaleX($scale)  scaleY($scale);
