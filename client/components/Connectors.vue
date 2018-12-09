@@ -2,7 +2,7 @@
 
 
 <div class="section row">
-    <div v-for="connector in connectors" class="col-md-6">
+    <div v-for="(connector, i) in connectors" class="col-md-6" :key="i">
         <a  :href="base+'/'+type+'/' + connector.name" class="button btn-social span-left btn-block" :class="connector.name">
         <span>
             <i :class="'fab fa-' + connector.name"></i>
