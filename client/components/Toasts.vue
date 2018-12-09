@@ -1,37 +1,34 @@
 <template>
  <div class="toasts">
-    <transition-group name="fade" tag="p">
-        <b-alert v-for="toast,i in toasts" :key="i" 
-                :variant="toast.variant"
+        <v-alert v-for="toast in toasts" :key="toast.id" 
+                :color="toast.variant"
                 :dismissible="toast.closable"
                 class="toast"
-                :class="{hide:!toast.visible}"
-                :show="true"
                 @dismissed="onRemove(this)"
+                v-show="toast.visible"
+                transition="fade-transition"
+                v-model="toast.visible"
+                @input="onRemove(toast)"
                 >
         {{toast.message}}
-        <b-progress v-if="toast.progress && toast.delay" :key="i" :variant="toast.variant"
-                    :max="toast.delay"
-                    :value="toast.count"
-                    height="4px">
-        </b-progress>
-        </b-alert>
-    </transition-group>
+        </v-alert>
  </div>
 </template>
 
 <script>
 import {VueComponent, Component, Prop, Watch, Emit, Event} from "../mvc/VueComponent";
 import Vue from 'vue';
-import { config } from "../../common/env/Configuration";
 import { api } from "myno/client/io/API";
+import { config } from "myno/common/env/Configuration";
+var count = 0;
 @Component({
   components: {
   }
 })
+
 export default class Login extends VueComponent
 {
-    created()
+    created ()
     {
         this._timer = null;
     }
@@ -45,13 +42,15 @@ export default class Login extends VueComponent
     {
         if(this._timer === null)
         {
-            this._timer = setInterval(this.onTick.bind(this), 100);
+           this._timer = setInterval(this.onTick.bind(this), 100);
         }
     }
     onTick()
     {
         for(var toast of this.toasts)
         {
+            if(!toast.delay)
+                continue;
             toast.count = toast.delay - Math.floor((Date.now() - toast.start)/1000);
             if(toast.count<=-1)
             {
@@ -80,7 +79,11 @@ export default class Login extends VueComponent
         {
             options = {message:options};
         }
-        let toast = Object.assign({closable:true, delay:5, count:0, start:Date.now(), progress:false, visible:true}, options);
+        let toast = Object.assign({closable:false, delay:5, count:0, start:Date.now(), progress:false, visible:true, id:count++}, options);
+        if(!toast.delay)
+        {
+            toast.closable = true;
+        }
         toast.count = toast.delay;
         if(toast.message && toast.message instanceof Error)
         {
@@ -101,6 +104,15 @@ export default class Login extends VueComponent
             this.end();
         }
     }
+    beforeDestroy()
+    {
+        this.end();
+    }
+}
+
+global.toaster = (options)=>
+{
+    eventer('toaster', options);
 }
 
 </script>
