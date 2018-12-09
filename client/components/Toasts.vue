@@ -1,7 +1,8 @@
 <template>
  <div class="toasts">
         <v-alert v-for="toast in toasts" :key="toast.id" 
-                :color="toast.variant"
+                :color="toast.color"
+                :type="toast.type"
                 :dismissible="toast.closable"
                 class="toast"
                 @dismissed="onRemove(this)"
@@ -9,6 +10,7 @@
                 transition="fade-transition"
                 v-model="toast.visible"
                 @input="onRemove(toast)"
+                icon="new_releases"
                 >
         {{toast.message}}
         </v-alert>
@@ -90,7 +92,6 @@ export default class Login extends VueComponent
             toast.type = 'error';
             toast.message = toast.message.message;
         }
-        toast.variant = toast.type == 'error'?'danger':toast.type;
         this.toasts.push(toast)
         this.start();
     }
@@ -107,6 +108,9 @@ export default class Login extends VueComponent
     beforeDestroy()
     {
         this.end();
+    }
+    mounted(){
+        console.log("toaster mounted")
     }
 }
 
