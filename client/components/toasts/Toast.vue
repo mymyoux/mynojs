@@ -8,10 +8,10 @@
         </i>
         <i v-else>
         </i>
-
-        <slot>
-        </slot>
-
+        <div class="text">
+            <slot>
+            </slot>
+        </div>
         <i class="material-icons close" v-if="dismissible" @click="dismiss">
             cancel
         </i>
@@ -85,6 +85,11 @@ export default class Login extends VueComponent
         $scale: 1.005;
         transform:scaleX($scale)  scaleY($scale);
     }
+}
+.text{
+    word-break: break-all;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 .close{
     color: rgba(0, 0,0, 0.3);

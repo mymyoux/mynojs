@@ -162,11 +162,14 @@ global.toaster = (options)=>
 
 .toasts{
     position:fixed;
-    width:50vw;
     right:10px;
     bottom:0;
     z-index:5;
     padding: 10px;
+
+    min-width: 30vw;
+    width: 500px;
+    max-width: 90vw;
 
 }
 .fade-enter-active, .fade-leave-active {
