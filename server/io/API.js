@@ -4,6 +4,8 @@ import path from "path";
 import fs from "fs";
 import colors from "colors";
 import { Functions } from "../../common/utils/Functions";
+
+import { Configuration } from "../../common/env/Configuration";
 export class API
 {
 
@@ -28,6 +30,10 @@ export class API
         return this;
     }
     async loadController(name) {
+        //remove cache when local env
+        if(Configuration.isDebug()) {
+            delete this._controllers[name]   
+        }
         if (this._controllers[name]) {
             return Promise.resolve(this._controllers[name]);
         }
@@ -41,7 +47,10 @@ export class API
             console.log('API['+colors.red('error')+'] '+colors.red('path doesnt exist'));
             controllerPath = path.join(__dirname, "../controllers", className);
         }
-        
+        //remove cache when local env
+        if(Configuration.isDebug()) {
+            delete require.cache[require.resolve(controllerPath)] 
+        }
         var cls = require(controllerPath)[className];//[parts[parts.length - 1]];
         this._controllers[name] = new cls();
         let boot;
