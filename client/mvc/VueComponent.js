@@ -14,6 +14,108 @@ import { Objects } from '../../common/utils/Objects';
 //@Global(true)
 //@Global('test', true)
 //de@Global("test",true)
+
+export const VueMixinComponent = {
+    beforeMount()
+    {
+        bus.trigger('component:mounted', this);
+    },
+    beforeDestroy()
+    {
+        bus.trigger('component:destroyed', this);
+    },
+    methods: {
+        emit(name, ...data)
+        {
+            let current = this;
+            do
+            {
+                if(current._events[name])
+                {
+                    return current.$emit(name, ...data);
+                }else
+                {
+                    current = current.$parent;
+                }
+            }while(current);
+            var event = new CustomEvent(name, {bubbles:true,detail:data})
+            this.$el.dispatchEvent(event);
+        },
+        contains(element, recursive = true)
+        {
+            if(!element)
+            {
+                return false;
+            }
+            if(element instanceof Vue)
+            {
+                element = element.$el;
+            }
+            if(element.__vue__)
+            {
+                if(element.__vue__ === this)
+                {
+                    return true;
+                }else
+                if(!recursive)
+                {
+                    return false;
+                }
+            }
+            return this.contains(element.parentNode);
+        },
+        getAllChildren()
+        {
+            let components = this.$children.slice();
+            for(let component of this.$children)
+            {
+                if(component.getAllChildren)
+                    components = components.concat(component.getAllChildren());
+                else
+                    components = components.concat(this.getAllChildren.call(component));
+            }
+            return components;
+        }
+    }
+}
+
+export const VueEventMixin = {
+    beforeMount()
+    {
+        if(!this.$options.__listeners)
+            return
+
+        this.$options.__listeners.forEach((config)=>
+        {
+            let listener ;
+            if(config.options.debounce)
+            {
+                listener = Buffer.debounce(config.descriptor.value, config.options.debounce === true?100:config.options.debounce);
+            }else
+            if(config.options.throttle)
+            {
+                listener = Buffer.throttle(config.descriptor.value, config.options.throttle === true?100:config.options.throttle);
+            }else
+            {
+                listener = config.descriptor.value;
+            }
+            config.listener = listener;
+            config.dispatcher.on(config.event, listener, this);
+        });
+    },
+    beforeDestroy()
+    {
+        if(!this.$options.__listeners)
+            return
+        this.$options.__listeners.forEach((config)=>
+        {
+            config.dispatcher.off(config.event, config.listener, this);
+        });
+    }
+}
+
+
+
 export class VueComponent extends Vue
 {
     /**
@@ -119,6 +221,28 @@ export class VueComponent extends Vue
  * Link a method to an event from bus
  * @param event {string} event name
  */
+export function Event2(event, options)
+{
+    options = Objects.assign({debounce:false, throttle:false, dispatcher:bus}, options);
+    return function(target, key, descriptor)
+    {
+        if(!event)
+        { 
+            event = Strings.uncamel(key);
+        }
+        if(!target.__listeners)
+        {
+            target.__listeners = [];
+            if(!target.mixins)
+            {
+                target.mixins = []
+            }
+            target.mixins.push(VueEventMixin)
+        }
+        target.__listeners.push({options:options, descriptor:descriptor, event:event, dispatcher:options.dispatcher})
+        return descriptor
+    }
+}
 export function Event(event, options)
 {
     options = Objects.assign({debounce:false, throttle:false, dispatcher:bus}, options);
