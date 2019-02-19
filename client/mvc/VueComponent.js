@@ -2,9 +2,6 @@
 import { Component, Emit, Inject, Model, Prop, Provide, Watch,Vue } from 'vue-property-decorator'
 import { bus } from "../../common/events/Bus";
 import { Strings } from '../../common/utils/Strings';
-import { Global } from '../../common/annotations/Global';
-import { log } from '../../common/annotations/Global';
-import { root } from '../../common/env/Root';
 import { Buffer } from '../../common/buffer/Buffer';
 import { Objects } from '../../common/utils/Objects';
 
@@ -14,8 +11,53 @@ import { Objects } from '../../common/utils/Objects';
 //@Global(true)
 //@Global('test', true)
 //de@Global("test",true)
+function mixinReduce(component)
+{
+    let mixins = component.mixins?component.mixins.slice():[]
+    let result = mixins.slice()
+    for(let p in mixins)
+    {
+        let mixin = mixins[p]
+        result.splice(p, 0, ...mixinReduce(mixin))
+    }
+    return result
+}
+
+export const VueMixinSuper = {
+    methods: {
+        $super(cls, method)
+        {
+            if(!method && typeof cls == 'string')
+            {
+                method = cls;
+                cls = null;
+            }
+            let mixins = mixinReduce(this.$options)
+            let index = mixins.indexOf(cls)
+            if(index == -1)
+            {
+                index = mixins.length
+            }
+            for (let i=index-1; i>=0; i--)
+            {
+                if(mixins[i][method])
+                {
+                    return mixins[i][method].bind(this)
+                }
+                if(mixins[i].methods[method])
+                {
+                    return mixins[i].methods[method].bind(this)
+                }
+            }
+            return function(){
+                throw new Error(`no $super.${method}()`)
+            }
+        }
+    }
+}
 
 export const VueMixinComponent = {
+    mixins: [VueMixinSuper],
     beforeMount()
     {
         bus.trigger('component:mounted', this);
@@ -79,41 +121,182 @@ export const VueMixinComponent = {
     }
 }
 
+var strategies = Vue.config.optionMergeStrategies
+strategies.events = function(oldValue, newValue)
+{
+    if(!oldValue)
+    {
+        return newValue
+    }
+    if(!newValue)
+    {
+        return oldValue
+    }
+    return oldValue.concat(newValue)
+}
 export const VueEventMixin = {
+    optionMergeStrategies:
+    {
+        events: (oldval, newval) =>
+        {
+            debugger
+        }
+    },
+    events: [
+        {
+            event: 'coucou lol',
+            callback:'test',
+            debounce:1000
+        },  {
+            event: 'test',
+            callback:'test2'
+        }
+    ],
+    created()
+    {
+        if(!this.$options.events)
+        {
+            return
+        }
+        if(this.$options.events.initialized)
+        {
+            return
+        }
+        this.$options.events = this.$options.events.map((event)=>
+        {
+            if(!event.event)
+            {
+                throw new Error('event property is required')
+            }
+            if(!event.callback)
+            {
+                throw new Error('callback property is required')
+            }
+            if(!event.dispatcher)
+            {
+                event.dispatcher = bus
+            }
+            if(!Array.isArray(event.event))
+            {
+                event.event = event.event.split(' ')
+            }
+            // if(typeof event.callback == 'string')
+            // {
+            //     event.callback = this[event.callback]
+            // }
+            if(event.debounce)
+            {
+                if(event.debounce === true)
+                {
+                    event.debounce = 100
+                }
+            }
+            if(event.throttle)
+            {
+                if(event.throttle === true)
+                {
+                    event.throttle = 100
+                }
+                if(event.debounce)
+                {
+                    throw new Error('you can\' use together debounce and throttle options')
+                }
+            }
+            return event
+        })
+        this.$options.initialized = true
+    },
     beforeMount()
     {
-        if(!this.$options.__listeners)
+        if(!this.$options.events)
             return
 
-        this.$options.__listeners.forEach((config)=>
+        this.__events = this.$options.events.map((event)=>
         {
+            event = Object.assign({}, event)
             let listener ;
-            if(config.options.debounce)
+            if(event.throttle || event.debounce)
             {
-                listener = Buffer.debounce(config.descriptor.value, config.options.debounce === true?100:config.options.debounce);
-            }else
-            if(config.options.throttle)
-            {
-                listener = Buffer.throttle(config.descriptor.value, config.options.throttle === true?100:config.options.throttle);
-            }else
-            {
-                listener = config.descriptor.value;
+                let callLater = (...params) => {
+                    if(this._isDestroyed)
+                    {
+                        console.log('ignoring late call for ', this)
+                        return
+                    }
+                   let method = typeof event.callback == 'function'? event.callback:this[event.callback] 
+                   method.apply(this, params)
+                }
+                if(event.debounce)
+                {
+                    listener = Buffer.debounce( callLater , event.debounce);
+                }else
+                {
+                    listener = Buffer.throttle( callLater , event.throttle);
+                }
             }
-            config.listener = listener;
-            config.dispatcher.on(config.event, listener, this);
+             else{
+                listener = typeof event.callback == 'function'? event.callback:this[event.callback];
+            }
+            event.listener = listener.bind(this);
+            event.event.forEach((name)=>
+            {
+                event.dispatcher.on(name,  event.listener);
+            })
+            return event
         });
     },
     beforeDestroy()
     {
-        if(!this.$options.__listeners)
+        if(!this.__events)
             return
-        this.$options.__listeners.forEach((config)=>
+        this.__events.forEach((event)=>
         {
-            config.dispatcher.off(config.event, config.listener, this);
+            event.event.forEach((name)=>
+            {
+                event.dispatcher.off(name, event.listener);
+            })
         });
+    },
+    methods : {
+        test()
+        {
+            console.log('test vue events')
+            this.$super(VueEventMixin, 'test')()
+        }
     }
 }
+  
+/**
+ * Link a method to an event from bus
+ * @param event {string} event name
+ */
+export function Event2(event, options)
+{
+    options = Objects.assign({debounce:false, throttle:false, dispatcher:bus}, options);
+    return function(target, key, descriptor)
+    {
 
+        if(!event)
+        { 
+            event = Strings.uncamel(key);
+        }
+        if(!target.events)
+        {
+            target.events = [];
+        }
+        if(!target.mixins)
+        {
+            target.mixins = []
+        }
+        if(!~target.mixins.indexOf(VueEventMixin))
+        {
+            target.mixins.push(VueEventMixin)
+        }
+        debugger
+        target.events.push({...options, callback:descriptor.value, event:event, dispatcher:options.dispatcher})
+        return descriptor
+    }
+}
 
 
 export class VueComponent extends Vue
@@ -146,6 +329,7 @@ export class VueComponent extends Vue
         }
         return this.getComponent(element.parentNode);
     }
+    
     data()
     {
         return {};
@@ -217,32 +401,7 @@ export class VueComponent extends Vue
         return components;
     }
 }
-/**
- * Link a method to an event from bus
- * @param event {string} event name
- */
-export function Event2(event, options)
-{
-    options = Objects.assign({debounce:false, throttle:false, dispatcher:bus}, options);
-    return function(target, key, descriptor)
-    {
-        if(!event)
-        { 
-            event = Strings.uncamel(key);
-        }
-        if(!target.__listeners)
-        {
-            target.__listeners = [];
-            if(!target.mixins)
-            {
-                target.mixins = []
-            }
-            target.mixins.push(VueEventMixin)
-        }
-        target.__listeners.push({options:options, descriptor:descriptor, event:event, dispatcher:options.dispatcher})
-        return descriptor
-    }
-}
+
 export function Event(event, options)
 {
     options = Objects.assign({debounce:false, throttle:false, dispatcher:bus}, options);
