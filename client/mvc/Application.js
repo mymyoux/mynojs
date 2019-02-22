@@ -7,7 +7,7 @@ import Vue from "vue";
 import Debug from "../components/Debug.vue";
 import Login from "../components/Login.vue";
 import Register from "../components/Register.vue";
-import { Configuration, config } from "../../common/env/Configuration";
+import { Configuration, config as configuration} from "../../common/env/Configuration";
 import { getAllScroll } from "../debug/HTML";
 import FFile  from "myno/client/components/form/FFile";
 import FRadioList  from "myno/client/components/form/FRadioList";
@@ -100,11 +100,13 @@ export class Application extends StepHandler(CoreObject)
     }
     preconfig()
     {
+        Configuration.set('app.env', config.app.env)
+        Configuration.set('app.debug', config.app.debug)
         Configuration.merge(preconfig);
     }
     api()
     {
-        let url = config.has('api.url')?config('api.url'):window.location.origin;
+        let url = configuration.has('api.url')?configuration('api.url'):window.location.origin;
         let credentials = !~url.indexOf(window.location.origin);
         API.register({withCredentials:credentials,baseUrl:url,adapter:Hardware.isElectron()?new ipc: new json});
         window["api"] = api;

@@ -24,15 +24,30 @@ function mixinReduce(component)
 }
 
 export const VueMixinSuper = {
+    beforeCreate()
+    {
+    },
     methods: {
         $super(cls, method)
         {
+            if(!this.allmixins)
+            {
+                let allmixins = mixinReduce(this.$options)
+                this.allmixins = []
+                for(let i=allmixins.length-1; i>= 0; i--)
+                {
+                    if(!~this.allmixins.indexOf(allmixins[i]))
+                    {
+                        this.allmixins.unshift(allmixins[i])
+                    }
+                }
+            }
             if(!method && typeof cls == 'string')
             {
                 method = cls;
                 cls = null;
             }
-            let mixins = mixinReduce(this.$options)
+            let mixins = this.allmixins
             let index = mixins.indexOf(cls)
             if(index == -1)
             {
@@ -56,6 +71,36 @@ export const VueMixinSuper = {
     }
 }
 
+export const VueMixinAsync = {
+    beforeCreate()
+    {
+    },
+    created()
+    {
+        if(this.$options.createdAsync)
+        {
+            let promise
+            if(!this.$options.async || !this.$options.async.created)
+            {
+                promise = Promise.resolve()
+            }else{
+                promise = Promise.all(this.$options.async.created)
+            }
+            promise.then(()=>
+            {
+                let result = this.$options.createdAsync.call(this)
+                if(result && result.then)
+                {
+                    return result.then(()=>
+                    {
+    
+                    })
+                }
+                return result
+            })
+        }
+    }
+}
 export const VueMixinComponent = {
     mixins: [VueMixinSuper],
     beforeMount()
