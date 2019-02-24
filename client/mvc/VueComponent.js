@@ -179,7 +179,7 @@ strategies.events = function(oldValue, newValue)
     }
     return oldValue.concat(newValue)
 }
-export const VueEventMixin = {
+export const VueMixinEvent = {
     optionMergeStrategies:
     {
         events: (oldval, newval) =>
@@ -187,16 +187,6 @@ export const VueEventMixin = {
             debugger
         }
     },
-    events: [
-        {
-            event: 'coucou lol',
-            callback:'test',
-            debounce:1000
-        },  {
-            event: 'test',
-            callback:'test2'
-        }
-    ],
     created()
     {
         if(!this.$options.events)

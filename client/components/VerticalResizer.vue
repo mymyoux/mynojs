@@ -3,81 +3,79 @@
 </template>
 
 <script>
-import {VueComponent, Component, Prop, Watch, Emit, Event} from "../mvc/VueComponent";
-import Vue from 'vue';
-import Connectors from 'myno/client/components/Connectors.vue'
+import { VueMixinComponent} from "../mvc/VueComponent";
 import { bus } from "../../common/events/Bus";
 
-@Component({
-    name:"vertical-resizer"
-})
-export default class VerticalResizer extends VueComponent
-{
-    resizing;
+export default {
+    name:"vertical-resizer",
+    mixins: [VueMixinComponent],
     data()
     {
         return {
         };
-    }
-    onMouseDown(event)
-    {
-        let index = Array.from(this.$refs.resizer.parentNode.children).indexOf(this.$refs.resizer);
-        if(index<=0)
-        {
-            console.warn("no left element");
-            debugger;
-        }
-        let target = this.$refs.resizer.parentNode.children[index-1];
-        this.resizing  = { x:event.pageX,  startWidth:target.offsetWidth};
-        bus.on('window:mouseup', this.onMouseUp, this);
-        bus.on('window:touchend', this.onMouseUp, this);
-        bus.on('window:mousemove', this.onMouseMove, this);
-        bus.on('window:touchmove', this.onMouseMove, this);
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-        return false;
-    }
-    onMouseMove()
-    {
-        let index = Array.from(this.$refs.resizer.parentNode.children).indexOf(this.$refs.resizer);
-        if(index<=0)
-        {
-            console.warn("no left element");
-            debugger;
-        }
-        let target = this.$refs.resizer.parentNode.children[index-1];
-        target.style.minWidth  = (this.resizing.startWidth+event.pageX-this.resizing.x)+"px";
-
-
-    }
-    onMouseUp()
-    {
-        let index = Array.from(this.$refs.resizer.parentNode.children).indexOf(this.$refs.resizer);
-        if(index<=0)
-        {
-            console.warn("no left element");
-            debugger;
-        }
-        let target = this.$refs.resizer.parentNode.children[index-1];
-        target.style.minWidth  = (this.resizing.startWidth+event.pageX-this.resizing.x)+"px";
-        bus.off('window:mouseup', this.onMouseUp, this);
-        bus.off('window:touchend', this.onMouseUp, this);
-        bus.off('window:mousemove', this.onMouseMove, this);
-        bus.off('window:touchmove', this.onMouseMove, this);
-        bus.trigger("window:resize", event);
-    }
+    },
     beforeDestroy() {
         bus.off('window:mouseup', this.onMouseUp, this);
         bus.off('window:touchend', this.onMouseUp, this);
         bus.off('window:mousemove', this.onMouseMove, this);
         bus.off('window:touchmove', this.onMouseMove, this);
         bus.trigger("window:resize", event);
+    },
+    methods:
+    {
+
+        onMouseDown(event)
+        {
+            let index = Array.from(this.$refs.resizer.parentNode.children).indexOf(this.$refs.resizer);
+            if(index<=0)
+            {
+                console.warn("no left element");
+                debugger;
+            }
+            let target = this.$refs.resizer.parentNode.children[index-1];
+            this.resizing  = { x:event.pageX,  startWidth:target.offsetWidth};
+            bus.on('window:mouseup', this.onMouseUp, this);
+            bus.on('window:touchend', this.onMouseUp, this);
+            bus.on('window:mousemove', this.onMouseMove, this);
+            bus.on('window:touchmove', this.onMouseMove, this);
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            return false;
+        },
+        onMouseMove()
+        {
+            let index = Array.from(this.$refs.resizer.parentNode.children).indexOf(this.$refs.resizer);
+            if(index<=0)
+            {
+                console.warn("no left element");
+                debugger;
+            }
+            let target = this.$refs.resizer.parentNode.children[index-1];
+            target.style.minWidth  = (this.resizing.startWidth+event.pageX-this.resizing.x)+"px";
+    
+    
+        },
+        onMouseUp()
+        {
+            let index = Array.from(this.$refs.resizer.parentNode.children).indexOf(this.$refs.resizer);
+            if(index<=0)
+            {
+                console.warn("no left element");
+                debugger;
+            }
+            let target = this.$refs.resizer.parentNode.children[index-1];
+            target.style.minWidth  = (this.resizing.startWidth+event.pageX-this.resizing.x)+"px";
+            bus.off('window:mouseup', this.onMouseUp, this);
+            bus.off('window:touchend', this.onMouseUp, this);
+            bus.off('window:mousemove', this.onMouseMove, this);
+            bus.off('window:touchmove', this.onMouseMove, this);
+            bus.trigger("window:resize", event);
+        }
     }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .resizer
 {
