@@ -180,13 +180,6 @@ strategies.events = function(oldValue, newValue)
     return oldValue.concat(newValue)
 }
 export const VueMixinEvent = {
-    optionMergeStrategies:
-    {
-        events: (oldval, newval) =>
-        {
-            debugger
-        }
-    },
     created()
     {
         if(!this.$options.events)
@@ -293,11 +286,6 @@ export const VueMixinEvent = {
         });
     },
     methods : {
-        test()
-        {
-            console.log('test vue events')
-            this.$super(VueEventMixin, 'test')()
-        }
     }
 }
   
