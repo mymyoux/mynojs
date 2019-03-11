@@ -4,8 +4,8 @@
             :class="{selected:item.selected}"
             >
                 <slot  name="item" :item="item" :index="i" :filter="filter">
-                            <p v-if="filter" v-html="filter.transform(item)"></p>
-                            <p v-else>{{item.name}}</p>
+                            <p v-if="filter" v-html="filter.transform(item)" :class="{selected:item.selected}"></p>
+                            <p v-else  :class="{selected:item.selected}">{{item.name}}</p>
                 </slot>
             </div>
             <div class="warning">
@@ -75,6 +75,7 @@ import { Strings } from "../../common/utils/Strings";
         {
             handler()
             {
+                this.prepareItems()
                 this._loadMoreEmitted = false;
                 this._updateScrollBottom();
             }
@@ -111,7 +112,15 @@ export default class List extends VueComponent
         this._itemChanged = [];
         this._lastScroll = -1;
         this._loadMoreEmitted = false;
+        this.prepareItems()
      
+    }
+    prepareItems() {
+        this.items.forEach((item) => 
+        {
+            if(item.selected === undefined)
+            Vue.set(item, 'selected', false)
+        });
     }
     _updateScrollBottom()
     {
