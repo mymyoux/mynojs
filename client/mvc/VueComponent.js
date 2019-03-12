@@ -67,6 +67,14 @@ export const VueMixinSuper = {
             return function(){
                 throw new Error(`no $super.${method}()`)
             }
+        },
+        $superof(cls, method)
+        {
+            if(cls[method])
+                return cls[method].bind(this)
+            if(cls.methods[method])
+             return cls.methods[method].bind(this)
+             throw new Error(method + ' doesn\'t exist on ', cls)
         }
     }
 }
