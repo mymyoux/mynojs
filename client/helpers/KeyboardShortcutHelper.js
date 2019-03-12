@@ -87,10 +87,18 @@ export class KeyboardShortcutHelper
             current = current.parentNode;
             if(current === document)
             {
+                if(item === document || item === document.body)
+                {
+                    console.log('sshorcut body')
+                    break
+                }
                 return item;
             }
         }
-        return document.elementFromPoint(this._last.pageX, this._last.pageY);
+        if(isNaN(this._last.clientX)) {
+            debugger
+        }
+        return document.elementFromPoint(Math.floor(this._last.clientX), Math.floor(this._last.clientY));
     }
     static getTarget()
     {
@@ -110,6 +118,16 @@ export class KeyboardShortcutHelper
         if(!item)
         {
             item = event.target;
+        }
+        console.log()
+        if(item === document || item === document.body) {
+            if(this._last) {
+                console.log('set new item from last')
+                document.elementFromPoint( this._last.clientX,  this._last.clientY);
+            }else {
+                console.log('set new item from event')
+                document.elementFromPoint( event.clientX,  event.clientY);
+            }
         }
         return item;
     }
@@ -135,6 +153,20 @@ export class KeyboardShortcutHelper
         if(event.keyCode == 27)
         {
             debugger;
+        }
+        if(this._last) {
+            if(!isNaN(this._last.pageX)) {
+                event.pageX = this._last.pageX
+            }
+            if(!isNaN(this._last.pageY)) {
+                event.pageY = this._last.pageY
+            }
+            if(!isNaN(this._last.clientX)) {
+                event.clientX = this._last.clientX
+            }
+            if(!isNaN(this._last.clientY)) {
+                event.clientY = this._last.clientY
+            }
         }
         this._last = event;
         console.log('SET LAST key'+event.keyCode, this._last.target);
