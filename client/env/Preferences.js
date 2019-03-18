@@ -1,5 +1,8 @@
 import { Objects } from "../../common/utils/Objects";
 import { api } from "../io/API";
+import {
+    bus
+} from "myno/common/events/Bus";;
 
 export class Preferences
 {
@@ -80,6 +83,7 @@ export class Preferences
             return;
         }
         current[key] = value;
+        bus.trigger('preference:change')
     }
     remove(key)
     {
