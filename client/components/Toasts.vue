@@ -130,7 +130,7 @@ export default {
             {
                 toast = Object.assign({},defaultOptions[toast.type], toast );
             }
-            toast = Object.assign({},{delay:5}, toast );
+            toast = Object.assign({},{delay:1}, toast );
             if(!toast.delay)
             {
                 toast.dismissible = true;
@@ -151,8 +151,13 @@ export default {
         }
     }
 }
-global.toaster = (options)=>
+global.toaster = (message, options = {})=>
 {
+    if(typeof message == 'object') {
+        options = message
+    }else{
+        options.message = message
+    }
     eventer('toaster', options);
 }
 
