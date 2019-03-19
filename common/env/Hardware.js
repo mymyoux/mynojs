@@ -13,6 +13,13 @@ export class Hardware {
     }
     static isElectron()
     {
+        if (Hardware.isBrowser()) {
+            var userAgent = navigator.userAgent.toLowerCase();
+            if (userAgent.indexOf(' electron/') > -1) {
+               return true
+            }
+            
+        }
         return root.process && root.process.versions && root.process.versions['electron'];
     }
     static isWindows()

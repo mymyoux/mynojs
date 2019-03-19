@@ -4,9 +4,13 @@ import { fake } from "../fake/Generic";
 var electron;
 if(Hardware.isElectron())
 {
-    if(Hardware.isBrowser())
+    if (Hardware.isBrowser())
     {
-        electron = window.require("electron");
+        // import('electron').then(()=>
+        // {
+        //     debugger
+        // })
+        electron = nodeRequire("electron");
     }else
     {
         electron = require('electron');

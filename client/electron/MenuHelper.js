@@ -229,6 +229,7 @@ export class MenuHelper {
             }
         }
         let menu;
+        window['hardware'] = Hardware
         if(Hardware.isElectron())
         {
             menu = Menu.buildFromTemplate(template);

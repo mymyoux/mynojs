@@ -95,20 +95,23 @@ export class ipc extends adapter
     config(config)
     {
         super.config(config);
+        this.removeBinds()
         ipcRenderer.on('api-answer',  this._binds['api-answer'] = this.onAPIAnswer.bind(this));
         ipcRenderer.on('stream-data', this._binds['stream-data'] =  this.onStreamData.bind(this));
         ipcRenderer.on('stream-answer', this._binds['stream-answer'] =  this.onStreamAnswer.bind(this));
     }
+    removeBinds()
+    {
+        if (this._binds) {
+            for (var key in this._binds) {
+                ipcRenderer.removeListener(key, this._binds[key]);
+            }
+            this._binds = {}
+        }
+    }
     dispose()
     {
         super.dispose();
-        if(this._binds)
-        {
-            for(var key in this._binds)
-            {
-                ipcMain.removeListener(key, this._binds[key]);
-            }
-            this._binds = null;
-        }
+        this.removeBinds()
     }
 }

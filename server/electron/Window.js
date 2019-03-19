@@ -32,7 +32,8 @@ export class Window {
             //tabbingIdentifier:"carotte",
             webPreferences: {
                 experimentalFeatures: true,
-                webSecurity:false,
+                webSecurity: false,
+                nodeIntegration:true,
                 title: "DBViewer",
             } });
             // and load the index.html of the app.
