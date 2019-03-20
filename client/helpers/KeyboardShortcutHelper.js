@@ -25,6 +25,18 @@ export class KeyboardShortcutHelper
             
             this.trigger("selectall", event);
         })
+        mousetrap.bind(['backspace','delete'], ()=>
+        {
+            let target = KeyboardShortcutHelper.getTarget();
+            if(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)
+            {
+            }else
+            {
+                event.preventDefault();
+            }
+            
+            this.trigger("deletekey", event);
+        })
         mousetrap.bind(['up','shift+up'], ()=>
         {
                 this.trigger("up", event);
