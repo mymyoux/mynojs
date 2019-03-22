@@ -1,24 +1,24 @@
 <template>
     <div class="contextmenu" v-if="value"  :style="{left:x+'px',top:y+'px'}" v-click-outside="onOutside">
-        <tree  :value="value" :item-component="itemComponent" :folder-component="folderComponent" @item-select="onItemSelect">
-           <template slot="item" slot-scope="{item}">
-                    <div v-if="item.type == 'separator'">
-                        ------
-                    </div>
-                    <div v-else :class="{enabled:item.enabled!==false}">
-                        {{  item.label}}
-                    </div>
-           </template>
-            
-        </tree>
+       <context-list v-model="value" @close="onItemClick"></context-list>
+        <!-- <ul>
+            <li v-for="(val,i) in value" :key="i" 
+            :class="{enabled:val.enabled!== false, separator:val.type=='separator'}"
+            @click="onItemClick(val,i)"
+            >{{val.label}}</li>
+        </ul> -->
     </div>
 </template>
  
 <script>
 
+import List from './context/List'
 
 import {VueComponent, Event, Component} from "../mvc/VueComponent";
 @Component({
+    components:{
+        'context-list' :List
+    },
     props:
     {
     },
@@ -29,10 +29,12 @@ export default class ContextMenu extends VueComponent
     @Event('show-context-menu')
     show(template)
     {
+        window['menu'] = this
         console.log(event)
         this.x = event.x;
         this.y = event.y;
         this.value = template.toTree();
+        console.log(this.value)
     }
     onOutside()
     {
@@ -52,15 +54,14 @@ export default class ContextMenu extends VueComponent
     mounted()
     {
     }
-    onItemSelect(model)
-    {
-        if(model.click && !model.disabled)
+    onItemClick(model, index) {
+        console.log(model, model.click, model.enabled)
+        if(model.click && model.enabled !== false)
         {
             this.close();
             model.click();
         }
     }
-  
 }
 
 </script>
@@ -69,16 +70,8 @@ export default class ContextMenu extends VueComponent
 div.contextmenu
 {
     position:fixed;
-    width:100px;
-    height:100px;
-    background:red;
-    div.enabled
-    {
-        &:hover
-        {
-            background-color:green;
-            cursor:pointer;
-        }
-    }
+    min-width:100px;
+    // height:100px;
+    display:inline-block;
 }
 </style>
