@@ -80,7 +80,13 @@ export class API
         this._params = Objects.merge(this._params, params);
         return this;
     }
+    then(resolve, reject) {
 
+        return this.execute().then((result) =>
+        {
+            resolve(result)
+        }, reject)
+    }
     execute()
     {
         console.log("API["+colors.red(this._path)+"]");
