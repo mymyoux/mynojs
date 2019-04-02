@@ -14,6 +14,7 @@ export function Stream(name, onInstance)
             let sender = parameters.get("sender");
             let stream = new StreamClass((type, data, answerID)=>
             {
+                if(sender)
                 sender.send("stream-data", {type,data,streamID:stream.id, answerID},stream);
             });
             parameters.replace("stream", stream);
