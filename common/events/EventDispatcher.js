@@ -2,7 +2,7 @@ import { CoreObject } from "../core/CoreObject";
 import { Maths } from "../../common/utils/Maths";
 
 export class EventDispatcher extends CoreObject {
-    static EVENTS = {ALL:"all"}
+  
     /**
      * Constructor
      */
@@ -273,4 +273,8 @@ export class Listener {
         this.once = false;
         this.disposed = true;
     }
+}
+
+EventDispatcher.EVENTS = {
+    ALL: "all"
 }

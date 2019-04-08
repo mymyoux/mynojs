@@ -10,6 +10,7 @@ global.base_path = function (folder) {
     if (folder) {
         p = path.resolve(p, folder);
     }
+    console.log('BASE_PATH', p);
     return p;
 };
 global.app_path = function (folder) {
@@ -35,6 +36,13 @@ global.source_path = function (folder) {
 };
 global.data_path = function(folder)
 {
+    if (Hardware.isElectron()) {
+        let p = require('electron').app.getPath('appData');
+         if (folder) {
+             p = path.resolve(p, folder);
+         }
+        return p;
+    }
     return base_path(path.join("data", folder?folder:""));
 }
 console.log('app_path:'+app_path());

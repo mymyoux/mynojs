@@ -49,14 +49,26 @@ export class Application extends StepHandler(CoreObject)
         {
             return;
         }
-        let url;
-        if(Configuration.isProduction())
-        {
-            url = "file://"+app_path('public/renderer/index.html');
-        }else
-        {
-            url = 'http://localhost:8080/'
-        }
+        let url = Configuration.get('app.front_path')
+        // electron.protocol.interceptFileProtocol('file', function (req, callback) {
+        //     var url = req.url.substr(7);
+        //     if (url.indexOf(base_path()) === 0) {
+        //         url = url.substring(base_path().length)
+        //     }
+        //     let newurl = base_path(path.join('public', url))
+        //     console.log('intercept', "\n", req.url, "\n", newurl, "\n", path.normalize(newurl), "\n", base_path())
+        //     callback({
+        //         path:path.normalize( newurl)
+        //     })
+        // })
+        // if(Configuration.isProduction())
+        // {
+        //     url = "file://"+app_path('public/index.html');
+        // }else
+        // {
+        //     url = 'http://localhost:8080/'
+        // }
+        console.log('LOADING', url, Configuration.env(), Configuration.isProduction())
         return new Promise((resolve, reject)=>
         {
             const app = electron.app;
@@ -80,3 +92,8 @@ export class Application extends StepHandler(CoreObject)
     }
     
 }
+/*
+
+file:///tmp/.mount_endofqoZw4jb/resources/app.asar/public/index.html
+
+*/

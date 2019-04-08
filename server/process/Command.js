@@ -1,18 +1,19 @@
-import { spawn } from 'child_process';
-import { EventDispatcher } from '../../common/events/EventDispatcher';
-import { Promise } from 'bluebird';
-import { Hardware } from '../../common/env/Hardware';
-import path from "path";
+const { spawn } = require('child_process');
+const { EventDispatcher } = require( '../../common/events/EventDispatcher');
+const { Promise } = require( 'bluebird');
+const { Hardware } = require( '../../common/env/Hardware');
+const path = require( "path");
 
-export class Command extends EventDispatcher
+ class Command extends EventDispatcher
 {
-    _closedPromise = null;
-    _resolved = null;
-    _rejected = null;
-    _hadError = false;
     constructor(command, parameters, options)
     {
         super();
+        this._command = command + ' '+parameters.join(' ')
+        this._closedPromise = null;
+        this._resolved = null;
+        this._rejected = null;
+        this._hadError = false;
         
         this._closedPromise = new Promise((resolve, reject)=>
         {
@@ -53,18 +54,21 @@ export class Command extends EventDispatcher
     }
     onData(data)
     {
+        console.log(data.toString())
         this.trigger("data", data.toString());
     }
     onError(data)
     {
         this._hadError = true;
+        console.log('command error', this._command, data.toString());
         this.trigger("error", data.toString());
 
     }
     onClose()
     {
         this.trigger("close");
-        if(false && this._hadError)
+        console.log('close')
+        if(false && this._hadError) 
         {
             this._rejected();
         }else
@@ -77,4 +81,5 @@ export class Command extends EventDispatcher
     {
         return this._closedPromise;
     }
-}
+ }
+module.exports = {Command}

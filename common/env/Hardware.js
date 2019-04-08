@@ -11,6 +11,9 @@ export class Hardware {
     static isBrowser() {
         return !Hardware.isNode();
     }
+    static isWebpack() {
+        return typeof __non_webpack_require__ !== 'undefined'
+    }
     static isElectron()
     {
         if (Hardware.isBrowser()) {

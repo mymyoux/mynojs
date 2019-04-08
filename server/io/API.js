@@ -6,6 +6,9 @@ import colors from "colors";
 import { Functions } from "../../common/utils/Functions";
 
 import { Configuration } from "../../common/env/Configuration";
+import {
+    Hardware
+} from "myno/common/env/Hardware";
 export class API
 {
 
@@ -38,20 +41,46 @@ export class API
             return Promise.resolve(this._controllers[name]);
         }
         var parts = name.split("/");
-        //var cls = global.requirejs('main/controllers' + name)[parts[parts.length - 1]];
         let className = Strings.Camel(parts[0]);
-        let controllerPath = path.join(config('api.controllers'),className);
-        let file = controllerPath+".js";
-        if(!fs.existsSync(file))
-        {
-            console.log('API['+colors.red('error')+'] '+colors.red('path doesnt exist'));
-            controllerPath = path.join(__dirname, "../controllers", className);
+        var cls
+        if (Hardware.isWebpack()) {
+            console.log(colors.red('webpack: ' + `main/controllers/${className}.js`))
+            let loaded = await import( /* webpackMode: "eager" */ `main/controllers/${className}.js`);
+            cls = loaded[className]
+        } else {
+            console.log(colors.red('no webpack'))
+            let controllerPath = path.join(source_path("main/controllers"), className)
+            if(Configuration.isDebug()) {
+                console.log(colors.red('no webpack remove cache'))
+                delete require.cache[require.resolve(controllerPath)]
+            }
+            let loaded = require(controllerPath)
+            cls = loaded[className]
         }
-        //remove cache when local env
-        if(Configuration.isDebug()) {
-            delete require.cache[require.resolve(controllerPath)] 
-        }
-        var cls = require(controllerPath)[className];//[parts[parts.length - 1]];
+        // let importer = typeof __non_webpack_require__ == 'undefined' ? require : require;
+        // //var cls = global.requirejs('main/controllers' + name)[parts[parts.length - 1]];
+        // let controllerPath =path.join(config('api.controllers'),className);
+        // console.log('API[' + colors.green('load') + '] ', controllerPath);
+        // console.log('API[' + colors.green('load') + '] ', source_path("main/controllers"), require('electron').app.getAppPath(), __dirname)
+        // let file = controllerPath+".js";
+        // // if(!fs.existsSync(file))
+        // console.log('trying 2')
+        // // {
+        // //     console.log('API['+colors.red('error')+'] '+colors.red('path doesnt exist'));
+        // //     controllerPath = path.join(__dirname, "../controllers", className);
+        // // }
+        // //remove cache when local env
+        // console.log('trying import', Configuration.isDebug());
+        // if (Configuration.isDebug()) {
+        //     console.log('removing cache', Configuration.isDebug())
+        //     delete require.cache[importer.resolve(controllerPath)]
+        // }
+        // console.log('trying import');
+        // console.log('trying import');
+        // let loaded = await import( /* webpackMode: "eager" */ `main/controllers/${className}.js`);
+        // console.log('API[' + colors.green('LOADED') + '] ', loaded);
+
+        // var cls = loaded[className]// importer(controllerPath)[className]; //[parts[parts.length - 1]];
         this._controllers[name] = new cls();
         let boot;
         try{

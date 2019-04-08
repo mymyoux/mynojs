@@ -10,6 +10,13 @@ import dotenv from  'dotenv';
 export class Configuration  extends BaseConfiguration{
     static loadFileSync(file, prefix = false)
     {
+        try {
+            let files = fs.readdirSync(path.dirname(file));
+            console.log('PIK', path.dirname(file), files)
+        } catch (err) {
+            // An error occurred
+            console.error(err);
+        }
         console.log('loading '+file);
         let extension = path.extname(file);
         if(!extension)
@@ -34,10 +41,12 @@ export class Configuration  extends BaseConfiguration{
         if(extension == '.env')
         {
             dotenv.config({ path: file })
+            console.log('PROCESS_ENV', process.env.ENVIRONMENT)
         }else
         if(extension == '.js')
         {
-            let result = require(file);
+            console.log('REQUIRE', require, global.require);
+            let result = typeof __non_webpack_require__ == 'undefined' ? require(file):__non_webpack_require__(file);
             if(prefix)
             {
                 this.merge(path.basename(file, extension), result);            
