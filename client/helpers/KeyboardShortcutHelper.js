@@ -47,12 +47,16 @@ export class KeyboardShortcutHelper
         })
         mousetrap.bind(['enter'], ()=>
         {
+            debugger
                 this.trigger("enter", event);
         })
         mousetrap.bind(['escape'], ()=>
         {
-            console.log('LAST ',KeyboardShortcutHelper._last.target);
             this.trigger("escape", event);
+        })
+        mousetrap.bind(["del", "backspace"], ()=>
+        {
+            this.trigger("delete", event);
         })
         document.addEventListener("mousedown", this.onClick.bind(this));
         document.addEventListener("keyup", this.onKeyDown.bind(this));
@@ -180,6 +184,7 @@ export class KeyboardShortcutHelper
                 event.clientY = this._last.clientY
             }
         }
+        console.log(event)
         this._last = event;
         console.log('SET LAST key'+event.keyCode, this._last.target);
     }

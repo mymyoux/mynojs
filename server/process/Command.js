@@ -10,6 +10,7 @@ const path = require( "path");
     {
         super();
         this._command = command + ' '+parameters.join(' ')
+        console.log(this._command)
         this._closedPromise = null;
         this._resolved = null;
         this._rejected = null;
