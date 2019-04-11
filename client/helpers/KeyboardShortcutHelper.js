@@ -25,7 +25,9 @@ export class KeyboardShortcutHelper
             
             this.trigger("selectall", event);
         })
-        mousetrap.bind(['backspace','delete'], ()=>
+        mousetrap.bind([
+                    'backspace', 'delete', 'del'
+                ], () =>
         {
             let target = KeyboardShortcutHelper.getTarget();
             if(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)
@@ -54,10 +56,10 @@ export class KeyboardShortcutHelper
         {
             this.trigger("escape", event);
         })
-        mousetrap.bind(["del", "backspace"], ()=>
-        {
-            this.trigger("delete", event);
-        })
+        // mousetrap.bind(["del", "backspace"], ()=>
+        // {
+        //     this.trigger("delete", event);
+        // })
         document.addEventListener("mousedown", this.onClick.bind(this));
         document.addEventListener("keyup", this.onKeyDown.bind(this));
     }
@@ -184,7 +186,7 @@ export class KeyboardShortcutHelper
                 event.clientY = this._last.clientY
             }
         }
-        console.log(event)
+        console.log(event, event.key)
         this._last = event;
         console.log('SET LAST key'+event.keyCode, this._last.target);
     }
