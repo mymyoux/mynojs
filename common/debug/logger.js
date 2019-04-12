@@ -1,9 +1,14 @@
 const util = require('util')
+const color = require('colors')
 const debug = require('debug')
+let time = -1
 function logger(name) {
 
     let instance = debug(name)
     let wrapper = function (...params) {
+        if (time == -1) {
+            time = Date.now()
+        }
         params = params.map((item) => {
             if (typeof item == 'object')
                 return util.inspect(item, {
@@ -12,6 +17,8 @@ function logger(name) {
                 })
             return item;
         })
+        params.push(color.red('('+(Date.now()-time)+'ms)'))
+        time = Date.now()
         return instance(...params)
     }
     wrapper.extend = function (subname) {
