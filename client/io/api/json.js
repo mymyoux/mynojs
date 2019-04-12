@@ -3,6 +3,10 @@ import axios from "axios";
 import Qs from "qs"
 import { Objects } from "../../../common/utils/Objects";
 import { Form } from "../../utils/Form";
+import {
+    logger
+} from "myno/common/debug/logger"
+var debug = logger('myno:json')
 export class json extends adapter
 {
     constructor(config)
@@ -143,25 +147,38 @@ export class json extends adapter
     }
     retrieveStream(stream)
     {
+        debug('call:' + stream.id)
+        console.log('[json] call')
         this._api.request().path('stream/get').param("stream_id", stream.id).then((result)=>
         {
+             debug('result:' + stream.id)
             let {data:results, end} = result;
             results.forEach((item)=>
             {
-                if(item.type == "stream-data")
-                {
-                    this.onStreamData(stream, item.data);
-                    //stream.onData(item.type, item.data);
-                }else if(item.type == 'stream-answer')
-                {
-                    this.onStreamAnswer(stream, item.data);
+                try {
+                    
+                    if(item.type == "stream-data")
+                    {
+                        debug('data')
+                        this.onStreamData(stream, item.data);
+                        //stream.onData(item.type, item.data);
+                    }else if(item.type == 'stream-answer')
+                    {
+                        debug('answer')
+                        this.onStreamAnswer(stream, item.data);
+                    }
+                } catch (error) {
+                    console.log(error)
+                    debugger
                 }
             });
             if(end)
             {
+                debug('end:' + stream.id)
                 stream.close();
             }else
             {
+                debug('relaunch:' + stream.id)
                 setTimeout(()=>
                 {
                     this.retrieveStream(stream);

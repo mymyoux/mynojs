@@ -7,9 +7,11 @@ import { Window } from "../electron/Window";
 import path from "path";
 import electron from "../../common/electron/Electron";
 import { Model } from "../../common/mvc/Model";
+import es from 'event-stream'
+
 export class Application extends StepHandler(CoreObject)
 {
-    _steps=["model","configuration", "database", "server","window"];
+    _steps=["model","configuration", "database", "server","window", "commmands"];
     constructor()
     {
         super();
@@ -41,6 +43,16 @@ export class Application extends StepHandler(CoreObject)
     server()
     {
         console.log('server');
+    }
+    commmands() {
+        process.stdin
+        .pipe(es.split())
+        .on('data', (data) => {
+            this.onCommand(data)
+        }); 
+    }
+    onCommand(data) {
+
     }
     window()
     {

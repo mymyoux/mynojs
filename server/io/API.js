@@ -9,6 +9,11 @@ import { Configuration } from "../../common/env/Configuration";
 import {
     Hardware
 } from "myno/common/env/Hardware";
+import {logger} from "myno/common/debug/logger"
+const debug = logger('myno:api');
+console.log(debug)
+const debuganswer = debug.extend('answer')
+const errordebug = logger('myno:error');
 export class API
 {
 
@@ -48,10 +53,8 @@ export class API
             let loaded = await import( /* webpackMode: "eager" */ `main/controllers/${className}.js`);
             cls = loaded[className]
         } else {
-            console.log(colors.red('no webpack'))
             let controllerPath = path.join(source_path("main/controllers"), className)
             if(Configuration.isDebug()) {
-                console.log(colors.red('no webpack remove cache'))
                 delete require.cache[require.resolve(controllerPath)]
             }
             let loaded = require(controllerPath)
@@ -118,9 +121,8 @@ export class API
     }
     execute()
     {
-        console.log("API["+colors.red(this._path)+"]");
-        console.log(colors.cyan("Parameters"));
-        console.log(this._params);
+        debug("API["+colors.red(this._path)+"]");
+        debug(colors.cyan("Parameters"), this._params);
         
         return new Promise(async (resolve, reject)=>
         {
@@ -144,10 +146,11 @@ export class API
                     // console.log('initializated '+ controller);
                 }
                 catch (error) {
-                    console.log(colors.red('API ERROR'));
-                    if (error) {
-                        console.error(error);
-                    }
+                    debug(colors.red('API ERROR'), error);
+                    errordebug(colors.red('API ERROR'), error);
+                    // if (error) {
+                    //     // console.error(error);
+                    // }
                     return reject({ lineNumber: error.lineNumber, fileName: error.fileName, message: 'no controller:' + controller }, true);
                 }
             }
@@ -197,8 +200,7 @@ export class API
                 if (data && typeof data == "object" && data.writeExternal) {
                     data = data.writeExternal(user);
                 }
-                console.log(colors.cyan("Result"));
-                console.log(data);
+                debuganswer(colors.cyan("Result"), data);
                 return data;
             }).then(resolve).catch((error)=>
             {
