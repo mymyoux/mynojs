@@ -1,5 +1,5 @@
 <template>
- <div class="toasts">
+ <div class="toasts" :class="{hide}">
       <transition-group name="fade">
         <m-toast v-for="toast in toasts" :key="toast.id" 
                 :color="toast.color"
@@ -47,6 +47,11 @@ export default {
     mixins:[VueMixinComponent, VueMixinEvent],
     components: {
         'm-toast':Toast
+    },
+    computed: {
+        hide() {
+            return this.toasts.length == 0
+        }
     },
     data()
     {
@@ -176,6 +181,9 @@ global.toaster = (message, options = {})=>
     min-width: 30vw;
     width: 500px;
     max-width: 90vw;
+    &.hide {
+        display: none;
+    }
 
 }
 .fade-enter-active, .fade-leave-active {
