@@ -1,6 +1,7 @@
 const util = require('util')
 const color = require('colors')
 const debug = require('debug')
+import {Hardware} from 'myno/common/env/Hardware'
 let time = -1
 function logger(name) {
 
@@ -10,7 +11,7 @@ function logger(name) {
             time = Date.now()
         }
         params = params.map((item) => {
-            if (typeof item == 'object')
+            if (!Hardware.isBrowser() && typeof item == 'object')
                 return util.inspect(item, {
                     colors: true,
                     depth: null
