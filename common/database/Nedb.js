@@ -23,6 +23,7 @@ export class Nedb
     }
     boot()
     {
+        console.log(this._options)
         this._db = new Datastore(this._options);
         return new Promise((resolve, reject)=>
         {

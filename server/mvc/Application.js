@@ -8,6 +8,13 @@ import path from "path";
 import electron from "../../common/electron/Electron";
 import { Model } from "../../common/mvc/Model";
 import es from 'event-stream'
+import {
+    api
+} from "../io/API";
+import {
+    logger
+} from "myno/common/debug/logger"
+const debug = logger('myno:application');
 
 export class Application extends StepHandler(CoreObject)
 {
@@ -15,6 +22,10 @@ export class Application extends StepHandler(CoreObject)
     constructor()
     {
         super();
+        if (process.argv.length > 2) {
+            // cli -> no server
+            this.removeStep('server')
+        }
     }
     async boot()
     {
@@ -50,9 +61,55 @@ export class Application extends StepHandler(CoreObject)
         .on('data', (data) => {
             this.onCommand(data)
         }); 
+
+        //command line arguments -> cli
+        if (process.argv.length > 2) {
+
+            let params = process.argv.slice(2)
+            let path = params.shift()
+            params = params.reduce((previous, item) =>
+            {
+                let parts = item.split('=')
+                let name = parts[0]
+                while (name.substring(0, 1) == '-') {
+                    name = name.substring(1)
+                }
+                name = name.trim()
+                if (!name) {
+                    console.log('[WARNING] argv parameters not understood: ' + item)
+                } else {
+                    let value;
+                    if (parts.length == 1) {
+                        value = true
+                    } else {
+                        value = parts.slice(1).join('=').trim()
+                        if (value == '1' || value.toLowerCase() == 'true') {
+                            value = true
+                        }else
+                        if (value == '0' || value.toLowerCase() == 'false') {
+                            value = false
+                        }
+                    }
+                    previous[name] = value
+                }
+                return previous
+            }, {})
+            // api.current = {path, params}
+            debug('[Command] Execute: '+process.argv.slice(2))
+            api().path(path).params(params).then((result) => {
+                debug('[Command] Executed: ' + process.argv.slice(2))
+                debug(result)
+                process.exit(0)
+            }).catch((error) =>
+            {
+                debug('[Command] Failed: ' + process.argv.slice(2))
+                debug(error)
+                process.exit(1)
+            })
+        }
     }
     onCommand(data) {
-
+        console.log('COMMAND: ' + data)
     }
     window()
     {

@@ -21,6 +21,12 @@ export function StepHandler(parent)
             }
             this._steps.splice(index, 0, step);
         }
+        removeStep(name) {
+            let index = this._steps.indexOf(name)
+            if (~index) {
+                this._steps.splice(index, 1)
+            }
+        }
         insertStepAfter(after, step)
         {
             let index = this._steps.indexOf(after);

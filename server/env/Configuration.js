@@ -11,6 +11,7 @@ export class Configuration  extends BaseConfiguration{
     static loadFileSync(file, prefix = false)
     {
         try {
+            console.log('reading ' + file)
             let files = fs.readdirSync(path.dirname(file));
             console.log('PIK', path.dirname(file), files)
         } catch (err) {
@@ -45,7 +46,7 @@ export class Configuration  extends BaseConfiguration{
         }else
         if(extension == '.js')
         {
-            console.log('REQUIRE', require, global.require);
+            // console.log('REQUIRE', require, global.require);
             let result = typeof __non_webpack_require__ == 'undefined' ? require(file):__non_webpack_require__(file);
             if(prefix)
             {

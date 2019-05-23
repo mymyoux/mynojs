@@ -141,3 +141,4 @@
         }
     }
     Maths.unique = 0;
+global.Maths = Maths

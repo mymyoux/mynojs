@@ -136,6 +136,7 @@ export class API
             });
             let user = this._user;
             var controller = parts.join('/');
+            api.current = {path, params:this._params}
             if (!this._controllers[controller]) {
                 try {
                     var resultAPI = await this.loadController(controller);
