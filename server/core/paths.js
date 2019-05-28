@@ -3,7 +3,8 @@ import {Hardware} from "../../common/env/Hardware";
 
 global.base_path = function (folder) {
     var p = path.resolve(path.resolve());
-    if(Hardware.isElectron())
+    console.log(process.env.PATH_NO_ELECTRON)
+    if (Hardware.isElectron() && !process.env.PATH_NO_ELECTRON)
     {
         p = require('electron').app.getAppPath();
     }

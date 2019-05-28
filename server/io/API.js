@@ -49,7 +49,7 @@ export class API
         let className = Strings.Camel(parts[0]);
         var cls
         if (Hardware.isWebpack()) {
-            console.log(colors.red('webpack: ' + `main/controllers/${className}.js`))
+            console.log(colors.red('!!!!webpack: ' + `main/controllers/${className}.js`))
             let loaded = await import( /* webpackMode: "eager" */ `main/controllers/${className}.js`);
             cls = loaded[className]
         } else {
