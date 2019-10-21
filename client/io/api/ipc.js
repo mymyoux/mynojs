@@ -16,7 +16,7 @@ export class ipc extends adapter
         return (new Promise((resolve, reject)=>
         {
             this._requests[req.answerID] = {resolve:resolve, reject:reject};
-            console.log("send:", req);
+            // console.log("send:", req);
             ipcRenderer.send('api', req);
         })).then((response)=>
         {
@@ -62,6 +62,7 @@ export class ipc extends adapter
     }
     onStreamData(sender, request)
     {
+        // console.log(request)
         let stream = Stream.getStream(request.streamID);
         if(!stream)
         {
